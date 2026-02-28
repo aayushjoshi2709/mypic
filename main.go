@@ -8,24 +8,22 @@ import (
 	"github.com/aayushjoshi2709/mypic/src"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/twitchyliquid64/golang-asm/src"
 )
 
-
-func init(){
-	err:= godotenv.Load()
+func init() {
+	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 		panic("Error locating the .env file")
 	}
 }
 
-func main(){
+func main() {
 	router := gin.Default()
 
 	src.SetUpRoutes(router)
 
-	err := router.Run(fmt.Sprintf(": %s", os.Getenv("PORT")))
+	err := router.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 	if err != nil {
 		log.Fatal("Error starting server:", err)
 	}
