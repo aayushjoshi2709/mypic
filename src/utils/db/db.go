@@ -34,13 +34,13 @@ func getClient() *mongo.Client {
 	maxPoolSize, err := strconv.Atoi(os.Getenv("MONGO_DB_MAX_POOL_SIZE"))
 
 	if err != nil {
-		log.Fatal("Error parsing MONGO_DB_MAX_POOL_SIZE: ", err)
+		maxPoolSize = 10
 	}
 
 	minPoolSize, err := strconv.Atoi(os.Getenv("MONGO_DB_MIN_POOL_SIZE"))
 
 	if err != nil {
-		log.Fatal("Error parsing MONGO_DB_MIN_POOL_SIZE: ", err)
+		minPoolSize = 5
 	}
 
 	clientOptions := options.Client().
