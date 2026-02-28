@@ -1,9 +1,9 @@
-package routes
+package src
 
 import (
-	"github.com/aayushjoshi2709/mypic/routes/comment"
-	"github.com/aayushjoshi2709/mypic/routes/image"
-	"github.com/aayushjoshi2709/mypic/routes/user"
+	"github.com/aayushjoshi2709/mypic/src/comment"
+	"github.com/aayushjoshi2709/mypic/src/image"
+	"github.com/aayushjoshi2709/mypic/src/user"
 	"github.com/gin-gonic/gin"
 )
 

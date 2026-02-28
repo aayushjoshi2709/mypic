@@ -5,9 +5,10 @@ import (
 	"log"
 	"os"
 
+	"github.com/aayushjoshi2709/mypic/src"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/aayushjoshi2709/mypic/routes"
+	"github.com/twitchyliquid64/golang-asm/src"
 )
 
 
@@ -22,7 +23,7 @@ func init(){
 func main(){
 	router := gin.Default()
 
-	routes.SetUpRoutes(router)
+	src.SetUpRoutes(router)
 
 	err := router.Run(fmt.Sprintf(": %s", os.Getenv("PORT")))
 	if err != nil {
