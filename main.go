@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/aayushjoshi2709/mypic/src"
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
@@ -14,8 +15,7 @@ import (
 func init() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
-		panic("Error locating the .env file")
+		log.Println(".env file not found. The server will be using values provided in the os environment variables.")
 	}
 	db.Init()
 }
@@ -23,14 +23,14 @@ func init() {
 func main() {
 	router := gin.Default()
 	src.SetUpRoutes(router)
-	port := os.Getenv("PORT")
 
-	if port == "" {
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
 		log.Println("PORT environment variable not set, defaulting to 8080")
-		port = "8080"
+		port = 8080
 	}
 
-	err := router.Run(fmt.Sprintf(":%s", port))
+	err = router.Run(fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatal("Error starting server:", err)
 	}
