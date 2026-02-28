@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/aayushjoshi2709/mypic/src"
+	"github.com/aayushjoshi2709/mypic/src/utils/db"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -16,13 +17,12 @@ func init() {
 		log.Fatal("Error loading .env file")
 		panic("Error locating the .env file")
 	}
+	db.Init()
 }
 
 func main() {
 	router := gin.Default()
-
 	src.SetUpRoutes(router)
-
 	err := router.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 	if err != nil {
 		log.Fatal("Error starting server:", err)
