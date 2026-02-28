@@ -23,7 +23,14 @@ func init() {
 func main() {
 	router := gin.Default()
 	src.SetUpRoutes(router)
-	err := router.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Println("PORT environment variable not set, defaulting to 8080")
+		port = "8080"
+	}
+
+	err := router.Run(fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatal("Error starting server:", err)
 	}

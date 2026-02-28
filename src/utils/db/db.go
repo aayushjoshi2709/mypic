@@ -34,12 +34,14 @@ func getClient() *mongo.Client {
 	maxPoolSize, err := strconv.Atoi(os.Getenv("MONGO_DB_MAX_POOL_SIZE"))
 
 	if err != nil {
+		log.Println("MONGO_DB_MAX_POOL_SIZE environment variable is not set or invalid, defaulting to 10")
 		maxPoolSize = 10
 	}
 
 	minPoolSize, err := strconv.Atoi(os.Getenv("MONGO_DB_MIN_POOL_SIZE"))
 
 	if err != nil {
+		log.Println("MONGO_DB_MIN_POOL_SIZE environment variable is not set or invalid, defaulting to 5")
 		minPoolSize = 5
 	}
 
