@@ -2,12 +2,11 @@ package comment
 
 import "github.com/gin-gonic/gin"
 
-func get(ctx *gin.Context) {}
 
-func getAll(ctx *gin.Context) {}
-
-func create(ctx *gin.Context) {}
-
-func update(ctx *gin.Context) {}
-
-func delete(ctx *gin.Context) {}
+func Routes(group *gin.RouterGroup){
+	group.GET("/", get)
+	group.GET("/:id", getAll)
+	group.POST("/", create)
+	group.PUT("/:id", update)
+	group.DELETE("/:id", delete)
+}
