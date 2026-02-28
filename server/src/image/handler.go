@@ -11,3 +11,5 @@ func create(ctx *gin.Context) {}
 func update(ctx *gin.Context) {}
 
 func delete(ctx *gin.Context) {}
+
+func getPresignedURL(ctx *gin.Context) {}
