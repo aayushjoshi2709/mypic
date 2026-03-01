@@ -9,6 +9,7 @@ import (
 	_ "github.com/aayushjoshi2709/mypic/docs"
 	"github.com/aayushjoshi2709/mypic/src"
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
+	"github.com/aayushjoshi2709/mypic/src/utils/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
@@ -35,6 +36,7 @@ func main() {
 
 	src.SetUpRepositories()
 	src.SetUpHandlers()
+	router.Use(middleware.RequestIdMiddleware)
 	src.SetUpRoutes(router)
 
 	port, err := strconv.Atoi(os.Getenv("PORT"))
