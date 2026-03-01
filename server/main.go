@@ -6,10 +6,13 @@ import (
 	"os"
 	"strconv"
 
+	_ "github.com/aayushjoshi2709/mypic/docs"
 	"github.com/aayushjoshi2709/mypic/src"
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func init() {
@@ -20,8 +23,16 @@ func init() {
 	db.Init()
 }
 
+// @title MyPic API
+// @version 1.0
+// @description API for MyPic application
+// @host localhost:3000
+// @basePath /
 func main() {
 	router := gin.Default()
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	src.SetUpRoutes(router)
 
 	port, err := strconv.Atoi(os.Getenv("PORT"))
