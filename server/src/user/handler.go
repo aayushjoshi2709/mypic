@@ -1,6 +1,7 @@
 package user
 
 import (
+	"log"
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
@@ -27,12 +28,14 @@ func (h *Handler) New(repo *Repository) {
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
 	user, err := h.repo.GetById(id)
-	
+
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "An error occurred while fetching the user"})
 		slog.Error("Error fetching user", "error", err)
 		return
 	}
+
+	log.Printf("Fetched user: %+v\n", user)
 
 	var getUserResponse GetUserResponse
 	getUserResponse.Set(user)
@@ -94,6 +97,7 @@ func (h *Handler) update(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
 
 	user, err := h.repo.Update(
 		id,
