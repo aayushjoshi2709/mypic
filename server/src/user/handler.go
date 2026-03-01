@@ -14,7 +14,30 @@ func (h *Handler) New(repo *Repository) {
 	h.repo = repo
 }
 
-func (h *Handler) get(ctx *gin.Context) {}
+// GetUser godoc
+// @Summary Get a user by ID
+// @Description Get a user by their unique ID
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} GetUserResponse
+// @Failure 400 {object} map[string]string
+// @Router /api/v1/user/{id} [get]
+func (h *Handler) get(ctx *gin.Context) {
+	id := ctx.Param("id")
+	user, err := h.repo.GetById(id)
+	
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "An error occurred while fetching the user"})
+		slog.Error("Error fetching user", "error", err)
+		return
+	}
+
+	var getUserResponse GetUserResponse
+	getUserResponse.Set(user)
+	ctx.JSON(200, getUserResponse)
+}
 
 func (h *Handler) getAll(ctx *gin.Context) {}
 

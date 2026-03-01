@@ -37,9 +37,14 @@ func (repo *Repository) Init() {
 	repo.createIndexes()
 }
 
-func (repository *Repository) GetById(id bson.ObjectID) (*User, error) {
+func (repository *Repository) GetById(id string) (*User, error) {
+	objectId, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
 	user := &User{}
-	err := repository.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(user)
+	err = repository.collection.FindOne(context.TODO(), bson.M{"_id": objectId}).Decode(user)
 
 	if err != nil {
 		return nil, err
