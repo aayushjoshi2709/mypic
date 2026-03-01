@@ -2,12 +2,20 @@ package comment
 
 import "github.com/gin-gonic/gin"
 
-func get(ctx *gin.Context) {}
+type Handler struct{
+	repo *Repository
+}
 
-func getAll(ctx *gin.Context) {}
+func (h *Handler) New(repo *Repository){
+	h.repo = repo
+}
 
-func create(ctx *gin.Context) {}
+func (h *Handler) get(ctx *gin.Context) {}
 
-func update(ctx *gin.Context) {}
+func (h *Handler) getAll(ctx *gin.Context) {}
 
-func delete(ctx *gin.Context) {}
+func (h *Handler) create(ctx *gin.Context) {}
+
+func (h *Handler) update(ctx *gin.Context) {}
+
+func (h *Handler) delete(ctx *gin.Context) {}

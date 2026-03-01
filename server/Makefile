@@ -4,9 +4,8 @@ run:
 	go run main.go
 
 dev:
-	swag init
-	CompileDaemon -command="go run main.go"
-
+	chmod +x run.sh
+	CompileDaemon --exclude-dir=docs --command="./run.sh"
 build:
 	go build -o $(APP_NAME) main.go
 

@@ -2,12 +2,12 @@ package user
 
 import "github.com/gin-gonic/gin"
 
-func Routes(group *gin.RouterGroup) {
-	group.GET("/", get)
-	group.GET("/:id", getAll)
-	group.POST("/", create)
-	group.PUT("/:id", update)
-	group.DELETE("/:id", delete)
-	group.POST("/login", login)
-	group.POST("/logout", logout)
+func Routes(group *gin.RouterGroup, handler *Handler) {
+	group.GET("/", handler.get)
+	group.GET("/:id", handler.getAll)
+	group.POST("/", handler.create)
+	group.PUT("/:id", handler.update)
+	group.DELETE("/:id", handler.delete)
+	group.POST("/login", handler.login)
+	group.POST("/logout", handler.logout)
 }

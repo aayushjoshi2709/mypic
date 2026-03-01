@@ -13,4 +13,3 @@ type Comment struct {
 	CreatedAt primitive.DateTime `bson:"createdAt,omitempty"`
 	UpdatedAt primitive.DateTime `bson:"updatedAt,omitempty"`
 }
-

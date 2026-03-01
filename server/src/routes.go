@@ -7,9 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetUpRoutes(engine *gin.Engine)  {
+func SetUpRoutes(engine *gin.Engine) {
 	apiGroup := engine.Group("/api")
-	user.Routes(apiGroup.Group("/v1/user"))
-	image.Routes(apiGroup.Group("/v1/image"))
-	comment.Routes(apiGroup.Group("/v1/comment"))
+
+	userHandler := GetHandler[user.Handler]("user_handler")
+	user.Routes(apiGroup.Group("/v1/user"), userHandler)
+
+	imageHandler := GetHandler[image.Handler]("image_handler")
+	image.Routes(apiGroup.Group("/v1/image"), imageHandler)
+
+	commentHandler := GetHandler[comment.Handler]("comment_handler")
+	comment.Routes(apiGroup.Group("/v1/comment"), commentHandler)
 }

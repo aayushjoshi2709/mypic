@@ -10,20 +10,20 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-var client *mongo.Client
+var db *mongo.Database
 
 func Init() {
-	client = getClient()
+	db = getDB()
 }
 
-func New() *mongo.Client {
-	if client == nil {
-		client = getClient()
+func GetConn() *mongo.Database {
+	if db == nil {
+		db = getDB()
 	}
-	return client
+	return db
 }
 
-func getClient() *mongo.Client {
+func getDB() *mongo.Database {
 	uri := os.Getenv("MONGO_DB_URL")
 
 	if uri == "" {
@@ -45,6 +45,13 @@ func getClient() *mongo.Client {
 		minPoolSize = 5
 	}
 
+	dbName := os.Getenv("MONGO_DB_NAME")
+
+	if dbName == "" {
+		log.Println("MONGO_DB_NAME environment variable is not set, defaulting to 'mypic'")
+		dbName = "mypic"
+	}
+
 	clientOptions := options.Client().
 		ApplyURI(uri).
 		SetServerAPIOptions(serverApi).
@@ -60,5 +67,5 @@ func getClient() *mongo.Client {
 	} else {
 		log.Print("Successfully connected to MongoDB")
 	}
-	return client
+	return client.Database(dbName)
 }

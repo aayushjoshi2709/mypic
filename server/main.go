@@ -33,6 +33,8 @@ func main() {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	src.SetUpRepositories()
+	src.SetUpHandlers()
 	src.SetUpRoutes(router)
 
 	port, err := strconv.Atoi(os.Getenv("PORT"))
