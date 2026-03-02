@@ -1,7 +1,6 @@
 package user
 
 import (
-	"log"
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
@@ -27,15 +26,16 @@ func (h *Handler) New(repo *Repository) {
 // @Router /api/v1/user/{id} [get]
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
-	user, err := h.repo.GetById(id)
+	user, err := h.repo.GetById(
+		ctx.Request.Context(),
+		id,
+	)
 
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "An error occurred while fetching the user"})
 		slog.Error("Error fetching user", "error", err)
 		return
 	}
-
-	log.Printf("Fetched user: %+v\n", user)
 
 	var getUserResponse GetUserResponse
 	getUserResponse.Set(user)
@@ -62,6 +62,7 @@ func (h *Handler) create(ctx *gin.Context) {
 	}
 
 	user, err := h.repo.Add(
+		ctx.Request.Context(),
 		createUserRequest.Name,
 		createUserRequest.Username,
 		createUserRequest.Password,
@@ -98,8 +99,8 @@ func (h *Handler) update(ctx *gin.Context) {
 		return
 	}
 
-
 	user, err := h.repo.Update(
+		ctx.Request.Context(),
 		id,
 		updateUserRequest.Name,
 		updateUserRequest.Username,
@@ -127,8 +128,11 @@ func (h *Handler) update(ctx *gin.Context) {
 // @Router /api/v1/user/{id} [delete]
 func (h *Handler) delete(ctx *gin.Context) {
 	id := ctx.Param("id")
+	err := h.repo.Delete(
+		ctx.Request.Context(),
+		id,
+	)
 
-	err := h.repo.Delete(id)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "An error occurred while deleting the user"})
 		slog.Error("Error deleting user", "error", err)

@@ -37,14 +37,14 @@ func (repo *Repository) Init() {
 	repo.createIndexes()
 }
 
-func (repository *Repository) GetById(id string) (*User, error) {
+func (repository *Repository) GetById(ctx context.Context, id string) (*User, error) {
 	objectId, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
 
 	user := &User{}
-	err = repository.collection.FindOne(context.TODO(), bson.M{"_id": objectId}).Decode(user)
+	err = repository.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(user)
 
 	if err != nil {
 		return nil, err
@@ -53,14 +53,14 @@ func (repository *Repository) GetById(id string) (*User, error) {
 	return user, err
 }
 
-func (repository *Repository) Add(name, username, password string) (*User, error) {
+func (repository *Repository) Add(ctx context.Context, name, username, password string) (*User, error) {
 	user := User{}
 	user.Id = bson.NewObjectID()
 	user.Name = name
 	user.Username = username
 	user.Password = password
 
-	_, err := repository.collection.InsertOne(context.TODO(), &user)
+	_, err := repository.collection.InsertOne(ctx, &user)
 
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func (repository *Repository) Add(name, username, password string) (*User, error
 	return &user, err
 }
 
-func (repository *Repository) Update(id string, name, username string) (*User, error) {
+func (repository *Repository) Update(ctx context.Context, id string, name, username string) (*User, error) {
 	objectId, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
@@ -89,13 +89,13 @@ func (repository *Repository) Update(id string, name, username string) (*User, e
 		"$set": updatedFields,
 	}
 
-	_, err = repository.collection.UpdateOne(context.TODO(), bson.M{"_id": objectId}, update)
+	_, err = repository.collection.UpdateOne(ctx, bson.M{"_id": objectId}, update)
 	if err != nil {
 		return nil, err
 	}
 
 	user := &User{}
-	err = repository.collection.FindOne(context.TODO(), bson.M{"_id": objectId}).Decode(user)
+	err = repository.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(user)
 
 	if err != nil {
 		return nil, err
@@ -104,13 +104,13 @@ func (repository *Repository) Update(id string, name, username string) (*User, e
 	return user, err
 }
 
-func (repository *Repository) Delete(id string) error {
+func (repository *Repository) Delete(ctx context.Context, id string) error {
 	objectId, err := bson.ObjectIDFromHex(id)
 
 	if err != nil {
 		return err
 	}
 
-	_, err = repository.collection.DeleteOne(context.TODO(), bson.M{"_id": objectId})
+	_, err = repository.collection.DeleteOne(ctx, bson.M{"_id": objectId})
 	return err
 }
