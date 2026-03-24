@@ -8,7 +8,7 @@ run:
 	go run main.go
 
 dev:
-	chmod +x run.shdocker logs ede4a605e3c1lsof -i :6379
+	chmod +x run.sh
 	CompileDaemon --exclude-dir=docs --command="./run.sh"
 
 build:
