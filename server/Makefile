@@ -1,6 +1,7 @@
 APP_NAME=mypic
 
 install:
+	go install github.com/swaggo/swag/cmd/swag@latest
 	go mod tidy
 	go mod download
 
