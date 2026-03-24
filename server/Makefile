@@ -4,6 +4,10 @@ install:
 	go mod tidy
 	go mod download
 
+install-dev:
+	go install github.com/githubnemo/CompileDaemon@latest
+	make install
+
 run:
 	go run main.go
 
