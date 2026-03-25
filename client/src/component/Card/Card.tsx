@@ -7,7 +7,7 @@ interface CardProps {
 const Card = ({ imgData }: CardProps) => {
   return (
     <div className="break-inside-avoid mb-4">
-      <img className="rounded-sm w-full  h-auto block" src={imgData.src} />
+      <img className="rounded-sm w-full hover:shadow-xl  h-auto block " src={imgData.src} />
     </div>
   );
 };
