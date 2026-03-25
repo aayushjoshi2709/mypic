@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import Header from "../../component/Header/Header";
 import FormInput, {
   type FormInputProps,
 } from "../../component/FormInput/FormInput";
