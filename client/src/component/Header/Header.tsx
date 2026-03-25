@@ -1,5 +1,4 @@
-import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faDoorOpen, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router";
 const Header = () => {
@@ -7,16 +6,16 @@ const Header = () => {
     <header className="p-4 w-full border-b-2 border-gray-100 font-sans">
       <nav className="flex justify-between">
         <Link to="/">
-          <h1 className="text-2xl font-extrabold">My Pic</h1>
+          <h1 className="text-2xl font-extrabold ">My Pic</h1>
         </Link>
         <ul className="flex flex-row gap-4">
           <li>
-            <FontAwesomeIcon icon={faUpload} />
-            Upload
+            <FontAwesomeIcon icon={faUser} />
+            Aayush Joshi
           </li>
           <li>
-            <FontAwesomeIcon icon={faUser} />
-            Upload
+            <FontAwesomeIcon icon={faDoorOpen} />
+            Logout
           </li>
         </ul>
       </nav>

@@ -2,12 +2,17 @@ import {
   faImage,
   faPerson,
   faSearch,
+  faUpload,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import SideBarItems from "./SideBarItems";
 
 const SideNav = () => {
   const menuItems: SideBarItems[] = [
+    {
+      icon: faUpload,
+      text: "upload",
+    },
     {
       icon: faImage,
       text: "photos",

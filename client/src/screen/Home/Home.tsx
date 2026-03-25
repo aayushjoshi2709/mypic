@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import Header from "../../component/Header/Header";
+import RoundedButton from "../../component/Button/RoundedButton";
 
 const Home = () => {
   return (
@@ -15,9 +16,17 @@ const Home = () => {
           </h2>
           <div>
             <Link to="/login">
-              <button className="p-4 px-8 mt-8 bg-green-500 text-white font-semibold rounded-full">
-                Get Started
-              </button>
+              <RoundedButton
+                text="Get Started"
+                classNames={[
+                  "hover:bg-green-600",
+                  "bg-green-500",
+                  "mt-8",
+                  "px-8",
+                  "py-4",
+                  "text-xl"
+                ]}
+              />
             </Link>
           </div>
         </main>

@@ -1,6 +1,6 @@
 import { toTitleCase } from "../../common/functions";
 
-interface FormInputProps {
+export interface FormInputProps {
   type: "button" | "text" | "password" | "datetime" | "email";
   name: string;
   label: string;
