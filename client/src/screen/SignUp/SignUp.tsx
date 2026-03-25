@@ -7,6 +7,7 @@ import {
   RoundedButtonPrimary,
   RoundedButtonSecondary,
 } from "../../component/Button/RoundedButton";
+import FormWrapper from "../../component/Wrapper/FormWrapper";
 
 const SignUp = () => {
   const items: FormInputProps[] = [
@@ -36,25 +37,20 @@ const SignUp = () => {
     },
   ];
   return (
-    <div className="flex flex-col h-screen">
-      <Header />
-      <main className="flex justify-center content-center ">
-        <div className="shadow shadow-black-200 p-4 py-8 w-1/3 mt-32 rounded-2xl">
-          <h1 className="text-6xl text-center">Sign Up</h1>
-          <form className="mt-6">
-            {items.map((item, idx) => {
-              return <FormInput {...item} key={idx} />;
-            })}
-            <div className="flex flex-row gap-4 w-full p-8 justify-center">
-              <RoundedButtonPrimary text="Sign Up" />
-              <Link to="/login">
-                <RoundedButtonSecondary text="Login" />
-              </Link>
-            </div>
-          </form>
+    <FormWrapper>
+      <h1 className="text-6xl text-center">Sign Up</h1>
+      <form className="mt-6">
+        {items.map((item, idx) => {
+          return <FormInput {...item} key={idx} />;
+        })}
+        <div className="flex flex-row gap-4 w-full p-8 justify-center">
+          <RoundedButtonPrimary text="Sign Up" />
+          <Link to="/login">
+            <RoundedButtonSecondary text="Login" />
+          </Link>
         </div>
-      </main>
-    </div>
+      </form>
+    </FormWrapper>
   );
 };
 
