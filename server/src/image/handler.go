@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strconv"
-
+	"github.com/aayushjoshi2709/mypic/src/common"
 	"github.com/aayushjoshi2709/mypic/src/user"
 	"github.com/gin-gonic/gin"
 )
@@ -24,14 +24,14 @@ func (h *Handler) New(repo *Repository) {
 // @Produce json
 // @Param id path string true "Image ID"
 // @Success 200 {object} GetImageResponse
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/image/{id} [get]
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
 	image, err := h.repo.GetById(ctx.Request.Context(), id)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error getting image with id: %s", id), "error", err)
-		ctx.JSON(400, "An error occoured while getting the image")
+		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while getting the image"})
 		return
 	}
 	var getImageResponse GetImageResponse
@@ -47,7 +47,7 @@ func (h *Handler) get(ctx *gin.Context) {
 // @Param page query number false "Page number" default(1)
 // @Param limit query number false "Number of images per page" default(10)
 // @Success 200 {object} []GetImageResponse
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/image [get]
 func (h *Handler) getAll(ctx *gin.Context) {
 	page := ctx.Query("page")
@@ -60,7 +60,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
 		slog.Error("Error converting page variable", "error", err)
-		ctx.JSON(400, "The value provided for page is not valid")
+		ctx.JSON(400, common.ErrorResponseDto{Error: "The value provided for page is not valid"})
 		return
 	}
 
@@ -71,7 +71,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
 		slog.Error("Error converting limit variable", "error", err)
-		ctx.JSON(400, "The value provided for limit is not valid")
+		ctx.JSON(400, common.ErrorResponseDto{Error: "The value provided for limit is not valid"})
 		return
 	}
 
@@ -94,21 +94,22 @@ func (h *Handler) getAll(ctx *gin.Context) {
 // @Produce json
 // @Param image body CreateImageRequest true "Image details"
 // @Success 201 {object} GetImageResponse
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/image [post]
 func (h *Handler) create(ctx *gin.Context) {
 	CreateImageRequest := &CreateImageRequest{}
 
 	if err := ctx.ShouldBindBodyWithJSON(CreateImageRequest); err != nil {
 		slog.Error("Error creating image", "error", err)
-		ctx.JSON(400, gin.H{"error": "Provided data is not valid"})
+		ctx.JSON(400, common.ErrorResponseDto{Error: "Provided data is not valid"})
+		return
 	}
 
 	image, err := h.repo.Add(ctx.Request.Context(), CreateImageRequest.URL, &user.User{})
 
 	if err != nil {
 		slog.Error("Error creating image", "error", err)
-		ctx.JSON(400, gin.H{"error": "An error occoured while creating the image"})
+		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while creating the image"})
 		return
 	}
 
@@ -126,13 +127,13 @@ func (h *Handler) create(ctx *gin.Context) {
 // @Param id path string true "Image ID"
 // @Param image body UpdateImageRequest true "Updated image details"
 // @Success 200 {object} GetImageResponse
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/image/{id} [put]
 func (h *Handler) update(ctx *gin.Context) {
 	UpdateImageRequest := &UpdateImageRequest{}
 	if err := ctx.ShouldBindBodyWithJSON(UpdateImageRequest); err != nil {
 		slog.Error("Error updating image", "error", err)
-		ctx.JSON(400, gin.H{"error": "Provided data is not valid"})
+		ctx.JSON(400, common.ErrorResponseDto{Error: "Provided data is not valid"})
 		return
 	}
 
@@ -140,7 +141,7 @@ func (h *Handler) update(ctx *gin.Context) {
 
 	if err != nil {
 		slog.Error("Error updating image", "error", err)
-		ctx.JSON(400, gin.H{"error": "An error occoured while updating the image"})
+		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while updating the image"})
 		return
 	}
 
@@ -156,20 +157,16 @@ func (h *Handler) update(ctx *gin.Context) {
 // @Produce json
 // @Param id path string true "Image ID"
 // @Success 204 "No Content"
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/image/{id} [delete]
 func (h *Handler) delete(ctx *gin.Context) {
 	err := h.repo.Delete(ctx.Request.Context(), ctx.Param("id"))
 
 	if err != nil {
 		slog.Error("Error deleting image", "error", err)
-		ctx.JSON(400, gin.H{"error": "An error occurred while deleting the image"})
+		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while deleting the image"})
 		return
 	}
 
 	ctx.Status(204)
-}
-
-func (h *Handler) getPresignedURL(ctx *gin.Context) {
-
 }

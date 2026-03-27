@@ -3,6 +3,7 @@ package user
 import (
 	"log/slog"
 
+	"github.com/aayushjoshi2709/mypic/src/common"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,7 +23,7 @@ func (h *Handler) New(repo *Repository) {
 // @Produce json
 // @Param id path string true "User ID"
 // @Success 200 {object} GetUserResponse
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/user/{id} [get]
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -32,7 +33,7 @@ func (h *Handler) get(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "An error occurred while fetching the user"})
+		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while fetching the user"})
 		slog.Error("Error fetching user", "error", err)
 		return
 	}
@@ -52,12 +53,12 @@ func (h *Handler) getAll(ctx *gin.Context) {}
 // @Produce json
 // @Param user body CreateUserRequest true "User details"
 // @Success 201 {object} GetUserResponse
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/user [post]
 func (h *Handler) create(ctx *gin.Context) {
 	var createUserRequest CreateUserRequest
 	if err := ctx.ShouldBindBodyWithJSON(&createUserRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, common.ErrorResponseDto{Error: err.Error()})
 		return
 	}
 
@@ -69,7 +70,7 @@ func (h *Handler) create(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "An error occoured while creating the user"})
+		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while creating the user"})
 		slog.Error("Error creating user", "error", err)
 		return
 	}
@@ -88,14 +89,15 @@ func (h *Handler) create(ctx *gin.Context) {
 // @Param id path string true "User ID"
 // @Param user body UpdateUserRequest true "Updated user details"
 // @Success 200 {object} GetUserResponse
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} common.ErrorResponseDto
+// @Failure 404 {object} common.ErrorResponseDto
 // @Router /api/v1/user/{id} [put]
 func (h *Handler) update(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	var updateUserRequest UpdateUserRequest
 	if err := ctx.ShouldBindBodyWithJSON(&updateUserRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, common.ErrorResponseDto{Error: err.Error()})
 		return
 	}
 
@@ -106,7 +108,7 @@ func (h *Handler) update(ctx *gin.Context) {
 		updateUserRequest.Username,
 	)
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "An error occurred while updating the user"})
+		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while updating the user"})
 		slog.Error("Error updating user", "error", err)
 		return
 	}
@@ -124,7 +126,7 @@ func (h *Handler) update(ctx *gin.Context) {
 // @Produce json
 // @Param id path string true "User ID"
 // @Success 204 "No Content"
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/user/{id} [delete]
 func (h *Handler) delete(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -134,7 +136,7 @@ func (h *Handler) delete(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "An error occurred while deleting the user"})
+		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while deleting the user"})
 		slog.Error("Error deleting user", "error", err)
 		return
 	}

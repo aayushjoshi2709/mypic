@@ -16,6 +16,7 @@ type UpdateImageRequest struct {
 	URL string `json:"url"`
 }
 
+
 func (getImageResponse *GetImageResponse) Set(image *Image) {
 	getImageResponse.ID = image.ID.Hex()
 	getImageResponse.URL = image.URL

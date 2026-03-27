@@ -57,10 +57,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/common.ErrorResponseDto"
                         }
                     }
                 }
@@ -98,10 +95,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/common.ErrorResponseDto"
                         }
                     }
                 }
@@ -139,10 +133,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/common.ErrorResponseDto"
                         }
                     }
                 }
@@ -187,10 +178,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/common.ErrorResponseDto"
                         }
                     }
                 }
@@ -223,10 +211,47 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/common.ErrorResponseDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/presign": {
+            "post": {
+                "description": "Get presigned URL for uploading an object to S3",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Presign"
+                ],
+                "summary": "Get presigned URL for uploading an object to S3",
+                "parameters": [
+                    {
+                        "description": "Presigned Object Request",
+                        "name": "presignedObjectRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/presign.PresignedObjectRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/presign.PresignedObjectResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.ErrorResponseDto"
                         }
                     }
                 }
@@ -266,10 +291,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/common.ErrorResponseDto"
                         }
                     }
                 }
@@ -307,10 +329,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/common.ErrorResponseDto"
                         }
                     }
                 }
@@ -355,10 +374,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/common.ErrorResponseDto"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.ErrorResponseDto"
                         }
                     }
                 }
@@ -391,10 +413,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/common.ErrorResponseDto"
                         }
                     }
                 }
@@ -402,6 +421,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "common.ErrorResponseDto": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
         "image.CreateImageRequest": {
             "type": "object",
             "properties": {
@@ -433,6 +460,31 @@ const docTemplate = `{
         "image.UpdateImageRequest": {
             "type": "object",
             "properties": {
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "presign.PresignedObjectRequest": {
+            "type": "object",
+            "properties": {
+                "originalName": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "presign.PresignedObjectResponse": {
+            "type": "object",
+            "properties": {
+                "bucketName": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
                 "url": {
                     "type": "string"
                 }

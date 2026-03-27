@@ -8,5 +8,4 @@ func Routes(group *gin.RouterGroup, handler *Handler) {
 	group.POST("", handler.create)
 	group.PUT("/:id", handler.update)
 	group.DELETE("/:id", handler.delete)
-	group.GET("/presigned-url", handler.getPresignedURL)
 }

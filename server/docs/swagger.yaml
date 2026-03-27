@@ -1,5 +1,10 @@
 basePath: /
 definitions:
+  common.ErrorResponseDto:
+    properties:
+      error:
+        type: string
+    type: object
   image.CreateImageRequest:
     properties:
       url:
@@ -20,6 +25,22 @@ definitions:
     type: object
   image.UpdateImageRequest:
     properties:
+      url:
+        type: string
+    type: object
+  presign.PresignedObjectRequest:
+    properties:
+      originalName:
+        type: string
+      type:
+        type: string
+    type: object
+  presign.PresignedObjectResponse:
+    properties:
+      bucketName:
+        type: string
+      key:
+        type: string
       url:
         type: string
     type: object
@@ -96,9 +117,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/common.ErrorResponseDto'
       summary: Get all images
       tags:
       - Images
@@ -123,9 +142,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/common.ErrorResponseDto'
       summary: Create a new image
       tags:
       - Images
@@ -148,9 +165,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/common.ErrorResponseDto'
       summary: Delete an existing image
       tags:
       - Images
@@ -174,9 +189,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/common.ErrorResponseDto'
       summary: Get an image by ID
       tags:
       - Images
@@ -206,12 +219,36 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/common.ErrorResponseDto'
       summary: Update an existing image
       tags:
       - Images
+  /api/v1/presign:
+    post:
+      consumes:
+      - application/json
+      description: Get presigned URL for uploading an object to S3
+      parameters:
+      - description: Presigned Object Request
+        in: body
+        name: presignedObjectRequest
+        required: true
+        schema:
+          $ref: '#/definitions/presign.PresignedObjectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presign.PresignedObjectResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponseDto'
+      summary: Get presigned URL for uploading an object to S3
+      tags:
+      - Presign
   /api/v1/user:
     post:
       consumes:
@@ -234,9 +271,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/common.ErrorResponseDto'
       summary: Create a new user
       tags:
       - Users
@@ -259,9 +294,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/common.ErrorResponseDto'
       summary: Delete an existing user
       tags:
       - Users
@@ -285,9 +318,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/common.ErrorResponseDto'
       summary: Get a user by ID
       tags:
       - Users
@@ -317,9 +348,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/common.ErrorResponseDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.ErrorResponseDto'
       summary: Update an existing user
       tags:
       - Users

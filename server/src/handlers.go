@@ -6,6 +6,7 @@ import (
 
 	"github.com/aayushjoshi2709/mypic/src/comment"
 	"github.com/aayushjoshi2709/mypic/src/image"
+	"github.com/aayushjoshi2709/mypic/src/presign"
 	"github.com/aayushjoshi2709/mypic/src/user"
 )
 
@@ -38,6 +39,10 @@ func SetUpHandlers() {
 	commentHandler := comment.Handler{}
 	commentHandler.New(GetRepository[comment.Repository]("comment_repository"))
 	SetHandler("comment_handler", &commentHandler)
+
+	presignHandler := presign.Handler{}
+	presignHandler.New()
+	SetHandler("presign_handler", &presignHandler)
 
 	PrintHandlers()
 }
