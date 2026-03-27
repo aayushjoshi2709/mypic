@@ -7,7 +7,6 @@ import (
 
 type Image struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	UserName  string             `bson:"username,omitempty"`
 	URL       string             `bson:"url,omitempty"`
 	CreatedAt primitive.DateTime `bson:"createdAt,omitempty"`
 	UpdatedAt primitive.DateTime `bson:"updatedAt,omitempty"`

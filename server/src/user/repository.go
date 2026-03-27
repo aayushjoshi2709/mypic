@@ -2,8 +2,10 @@ package user
 
 import (
 	"context"
+	"time"
 
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -59,6 +61,8 @@ func (repository *Repository) Add(ctx context.Context, name, username, password 
 	user.Name = name
 	user.Username = username
 	user.Password = password
+	user.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
+	user.UpdatedAt = primitive.NewDateTimeFromTime(time.Now())
 
 	_, err := repository.collection.InsertOne(ctx, &user)
 
@@ -85,17 +89,24 @@ func (repository *Repository) Update(ctx context.Context, id string, name, usern
 		updatedFields["username"] = username
 	}
 
+	if len(updatedFields) == 0 {
+		return nil, nil
+	}
+
 	update := bson.M{
 		"$set": updatedFields,
 	}
 
-	_, err = repository.collection.UpdateOne(ctx, bson.M{"_id": objectId}, update)
-	if err != nil {
-		return nil, err
-	}
+	update["updatedAt"] = primitive.NewDateTimeFromTime(time.Now())
 
 	user := &User{}
-	err = repository.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(user)
+
+	err = repository.collection.FindOneAndUpdate(
+		ctx,
+		bson.M{"_id": objectId},
+		update,
+		options.FindOneAndUpdate().SetReturnDocument(options.After),
+	).Decode(&user)
 
 	if err != nil {
 		return nil, err

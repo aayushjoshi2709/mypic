@@ -4,6 +4,8 @@ go 1.25.5
 
 require go.mongodb.org/mongo-driver v1.17.9
 
+require github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
+
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
