@@ -22,4 +22,15 @@ func SetUpRoutes(engine *gin.Engine) {
 
 	presignHandler := GetHandler[presign.Handler]("presign_handler")
 	presign.Routes(apiGroup.Group("/v1/presign"), presignHandler)
+
+	engine.Static("/assets", "./public/assets")
+
+	engine.GET("/", func(c *gin.Context) {
+		c.File("./public/index.html")
+	})
+
+	engine.NoRoute(func(c *gin.Context) {
+		c.File("./public/index.html")
+	})
+
 }
