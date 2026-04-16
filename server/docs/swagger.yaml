@@ -33,7 +33,13 @@ definitions:
       originalName:
         type: string
       type:
+        enum:
+        - video
+        - image
         type: string
+    required:
+    - originalName
+    - type
     type: object
   presign.PresignedObjectResponse:
     properties:
@@ -69,6 +75,36 @@ definitions:
       name:
         type: string
       username:
+        type: string
+    type: object
+  user.LoginUserRequest:
+    properties:
+      password:
+        minLength: 6
+        type: string
+      username:
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  user.LoginUserResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  user.LogoutUserRequest:
+    properties:
+      token:
+        type: string
+    required:
+    - token
+    type: object
+  user.LogoutUserResponse:
+    properties:
+      message:
         type: string
     type: object
   user.UpdateUserRequest:
@@ -354,6 +390,58 @@ paths:
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
       summary: Update an existing user
+      tags:
+      - Users
+  /api/v1/user/login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user with their username and password
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/user.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.LoginUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponseDto'
+      summary: Login a user
+      tags:
+      - Users
+  /api/v1/user/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout a user by invalidating their token
+      parameters:
+      - description: Logout payload
+        in: body
+        name: token
+        required: true
+        schema:
+          $ref: '#/definitions/user.LogoutUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.LogoutUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponseDto'
+      summary: Logout a user
       tags:
       - Users
 swagger: "2.0"

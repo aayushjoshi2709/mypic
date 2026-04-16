@@ -144,6 +144,28 @@ func (h *Handler) delete(ctx *gin.Context) {
 	ctx.Status(204)
 }
 
-func (h *Handler) login(ctx *gin.Context) {}
+// @LoginUser godoc
+// @Summary Login a user
+// @Description Login a user with their username and password
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param credentials body LoginUserRequest true "User credentials"
+// @Success 200 {object} LoginUserResponse
+// @Failure 400 {object} common.ErrorResponseDto
+// @Router /api/v1/user/login [post]
+func (h *Handler) login(ctx *gin.Context) {
 
+}
+
+// @LogoutUser godoc
+// @Summary Logout a user
+// @Description Logout a user by invalidating their token
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param token body LogoutUserRequest true "Logout payload"
+// @Success 200 {object} LogoutUserResponse
+// @Failure 400 {object} common.ErrorResponseDto
+// @Router /api/v1/user/logout [post]
 func (h *Handler) logout(ctx *gin.Context) {}

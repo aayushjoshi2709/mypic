@@ -1,8 +1,8 @@
 package presign
 
 type PresignedObjectRequest struct{
-	OriginalName string `json:"originalName"`
-	Type string `json:"type"`
+	OriginalName string `json:"originalName" validate:"required"`
+	Type string `json:"type" validate:"required" enums:"video,image"`
 }
 
 type PresignedObjectResponse struct {

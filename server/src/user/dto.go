@@ -21,6 +21,25 @@ type GetUserResponse struct {
 	Username string        `json:"username"`
 }
 
+type LoginUserRequest struct {
+	Username string `json:"username" validate:"required,min=3,max=20"`
+	Password string `json:"password" validate:"required,min=6"`
+}
+
+
+type LogoutUserRequest struct {
+	Token string `json:"token" validate:"required"`
+}
+
+type LogoutUserResponse struct {
+	Message string `json:"message"`
+}
+
+
+type LoginUserResponse struct {
+	Token string `json:"token"`
+}
+
 func (g *GetUserResponse) Set(user *User) {
 	g.Id = user.Id
 	g.Name = user.Name

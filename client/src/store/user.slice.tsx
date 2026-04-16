@@ -9,19 +9,13 @@ export interface UserState {
   updatedAt: string;
 }
 
-const initialState: UserState = {
-  id: "",
-  username: "",
-  email: "",
-  createdAt: "",
-  updatedAt: "",
-};
+const initialState = null as UserState | null;
 
 const UserSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<UserState>) => {
+    setUser: (_, action: PayloadAction<UserState>) => {
       return action.payload;
     },
     clearUser: () => {

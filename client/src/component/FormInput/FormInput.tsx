@@ -5,6 +5,8 @@ export interface FormInputProps {
   name: string;
   label: string;
   id: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const FormInput = (input: FormInputProps) => {
@@ -14,6 +16,8 @@ const FormInput = (input: FormInputProps) => {
         {toTitleCase(input.label)}
       </label>
       <input
+        value={input.value}
+        onChange={input.onChange}
         className="p-2 px-4 border w-full border-gray-300 rounded-xl"
         type={input.type}
         id={input.id}

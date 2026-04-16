@@ -41,9 +41,9 @@ func SetUpRepositories(ctx context.Context) {
 	commentRepository.Init()
 	SetRepository("comment_repository", &commentRepository)
 
-	s3Repository := presign.Repository{}
-	s3Repository.Init(ctx)
-	SetRepository("s3_repository", &s3Repository)
+	presignRepository := presign.Repository{}
+	presignRepository.Init(ctx)
+	SetRepository("presign_repository", &presignRepository)
 
 	PrintRepositories()
 }

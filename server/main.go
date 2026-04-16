@@ -35,6 +35,21 @@ func main() {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	// cors
+
+	router.Use(func(c *gin.Context) {
+		if os.Getenv("ENV") != "production" {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+			c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization")
+			if c.Request.Method == "OPTIONS" {
+				c.AbortWithStatus(204)
+				return
+			}
+			c.Next()
+		}
+	})
+
 	ctx := context.Background()
 	src.SetUpRepositories(ctx)
 	src.SetUpHandlers()
