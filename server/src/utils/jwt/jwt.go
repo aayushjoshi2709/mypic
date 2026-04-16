@@ -9,7 +9,7 @@ import (
 )
 
 type JWT struct {
-	expiredAt jwt.NumericDate
+	expiredAfter time.Duration
 	secretKey string
 }
 
@@ -17,25 +17,19 @@ var jwtInstance *JWT
 
 func Init() *JWT {
 	if jwtInstance == nil {
-		jwtInstance = newJWT()
+		jwtInstance = getJwtInstance()
 	}
 	return jwtInstance
 }
 
-func newJWT() *JWT {
+func getJwtInstance() *JWT {
 	j := &JWT{}
-	j.expiredAt = *jwt.NewNumericDate(time.Now().Add(j.getExprityInDays()))
+	j.expiredAfter = GetExprityInDays()
 	j.secretKey = j.getSecretKey()
 	return j
 }
 
 
-type Claims struct {
-	Username string
-	UserId   bson.ObjectID
-	ExpiredAt jwt.NumericDate
-	jwt.RegisteredClaims
-}
 
 func (j *JWT) getSecretKey() string {
 	secretKey := os.Getenv("JWT_SECRET_KEY")
@@ -45,7 +39,7 @@ func (j *JWT) getSecretKey() string {
 	return secretKey
 }
 
-func (j *JWT) getExprityInDays() time.Duration {
+func  GetExprityInDays() time.Duration {
 	expiresIn := os.Getenv("JWT_EXPIRES_IN")
 	if expiresIn == "" {
 		return 24 * time.Hour
@@ -60,18 +54,20 @@ func (j *JWT) getExprityInDays() time.Duration {
 
 
 func (j *JWT) GenerateToken(username string, userId bson.ObjectID) (string, error) {
-	claims := Claims{
-		Username: username,
-		UserId:   userId,
-		ExpiredAt: j.expiredAt,
+	timeNow := time.Now()
+	claims := jwt.RegisteredClaims{
+		Subject:   username,
+		ID:        userId.Hex(),
+		ExpiresAt: jwt.NewNumericDate(timeNow.Add(j.expiredAfter)),
+		IssuedAt:  jwt.NewNumericDate(timeNow),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(j.secretKey))
 }
 
-func (j *JWT) ValidateToken(tokenString string) (*Claims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+func (j *JWT) ValidateToken(tokenString string) (*jwt.RegisteredClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.secretKey), nil
 	})
 
@@ -80,7 +76,7 @@ func (j *JWT) ValidateToken(tokenString string) (*Claims, error) {
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
+	if claims, ok := token.Claims.(*jwt.RegisteredClaims); ok && token.Valid {
 		return claims, nil
 	} else {
 		return nil, err

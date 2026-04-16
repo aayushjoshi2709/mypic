@@ -29,7 +29,11 @@ function App() {
         navigate("/dashboard");
       }
     };
-    fetchUserData();
+    if (localStorage.getItem("token") !== null) {
+      fetchUserData();
+    } else {
+      navigate("/login");
+    }
   }, [navigate, dispatch]);
 
   return (

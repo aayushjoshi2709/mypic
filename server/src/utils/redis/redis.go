@@ -16,33 +16,50 @@ type Redis struct{
 var redisInstance *Redis
 
 func Init() *Redis{
-	if redisInstance == nil {
+	if redisInstance != nil {
 		return redisInstance
 	}
-	redisInstance = GetConn()
+	redisInstance = &Redis{
+		RedisClient: GetConn(),
+	}
 	return redisInstance
 }
 
-func GetConn() *Redis {
-	redisURI = os.Getenv("REDIS_URI")
-	redisPassword = os.Getenv("REDIS_PASSWORD")
+func GetConn() *redis.Client {
 
-	client := redis.NewClient(&redis.Options{
-		Addr:     redisURI,
-		Password: redisPassword,
-		DB:       0,
-	})
+	rediUri := os.Getenv("REDIS_URI")
+	if rediUri == "" {
+		panic("REDIS_URI environment variable not set")
+	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	if err := client.Ping(ctx).Err(); err != nil {
+	opt, err := redis.ParseURL(rediUri)
+	if err != nil {
 		panic(err)
 	}
 
-	redisInstance = &Redis{
-		RedisClient: client,
-	}
+	client := redis.NewClient(opt)
 
-	return redisInstance
+	client.Ping(context.Background())
+
+	return client
+}
+
+func (r *Redis) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+	return r.RedisClient.Set(ctx, key, value, expiration).Err()
+}
+
+func (r *Redis) Get(ctx context.Context, key string) (string, error) {
+	return r.RedisClient.Get(ctx, key).Result()
+}
+
+func (r *Redis) Del(ctx context.Context, keys ...string) error {
+	return r.RedisClient.Del(ctx, keys...).Err()
+}
+
+func (r *Redis) Exists(ctx context.Context, key string) (bool, error) {
+	result, err := r.RedisClient.Exists(ctx, key).Result()
+	if err != nil {
+		return false, err
+	}
+	return result > 0, nil
 }

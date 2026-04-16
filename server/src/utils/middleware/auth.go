@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/aayushjoshi2709/mypic/src/utils/jwt"
+	"github.com/aayushjoshi2709/mypic/src/utils/redis"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,6 +25,14 @@ func AuthMiddleware(ctx *gin.Context) {
 
 	tokenString := parts[1]
 
+	redisVal, err := redis.Init().Get(ctx.Request.Context(), "logged_out_"+tokenString)
+	if err == nil && redisVal != "" {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Token has been invalidated"})
+		ctx.Abort()
+		return
+	}
+
+
 	claims, err := jwt.Init().ValidateToken(tokenString)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
@@ -31,7 +40,8 @@ func AuthMiddleware(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Set("username", claims.Username)
-	ctx.Set("userId", claims.UserId.Hex())
+	ctx.Set("username", claims.Subject)
+	ctx.Set("userId", claims.ID)
+	ctx.Set("token", tokenString)
 	ctx.Next()
 }

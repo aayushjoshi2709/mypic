@@ -1,17 +1,26 @@
 import { faDoorOpen, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router";
-import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 import { apiClientObj } from "../../common/apiClient";
 import { routes } from "../../common/routes";
+import { clearUser } from "../../store/user.slice";
+import toast from "react-hot-toast";
 
 const Header = () => {
+
+  const navigate = useNavigate();
+
+  const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
   async function logoutUser() {
     await apiClientObj.delete(routes.LOGOUT);
     localStorage.removeItem("token");
+    dispatch(clearUser());
+    toast.success("Logged out successfully");
+    navigate("/login");
   }
-  const user = useSelector((state: RootState) => state.user);
   return (
     <header className="p-4 w-full border-b-2 border-gray-100 font-sans">
       <nav className="flex justify-between">

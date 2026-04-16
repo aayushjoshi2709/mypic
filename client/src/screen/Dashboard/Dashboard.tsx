@@ -1,11 +1,22 @@
+import { useEffect } from "react";
 import Card from "../../component/Card/Card";
 import HeaderNavWrapper from "../../component/Wrapper/HeaderNavWrapper";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
+import { useNavigate } from "react-router";
 
 interface ImageDataInteface {
   src: string;
 }
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.user);
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
   const images: ImageDataInteface[] = [];
   return (
     <HeaderNavWrapper>

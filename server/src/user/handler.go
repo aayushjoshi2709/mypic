@@ -2,21 +2,25 @@ package user
 
 import (
 	"log/slog"
+	"strings"
 
 	"net/http"
 
 	"github.com/aayushjoshi2709/mypic/src/common"
 	"github.com/aayushjoshi2709/mypic/src/utils/encrypt"
 	"github.com/aayushjoshi2709/mypic/src/utils/jwt"
+	"github.com/aayushjoshi2709/mypic/src/utils/redis"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
 	repo *Repository
+	loggedOutPrefix string
 }
 
 func (h *Handler) New(repo *Repository) {
 	h.repo = repo
+	h.loggedOutPrefix = "logged_out_"
 }
 
 // GetUser godoc
@@ -230,7 +234,30 @@ func (h *Handler) login(ctx *gin.Context) {
 // @Success 200 {object} LogoutUserResponse
 // @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/user/logout [delete]
-func (h *Handler) logout(ctx *gin.Context) {}
+func (h *Handler) logout(ctx *gin.Context) {
+	authHeader := ctx.GetHeader("Authorization")
+	if authHeader == "" {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
+		return
+	}
+
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid auth format"})
+		ctx.Abort()
+		return
+	}
+
+	tokenString, exists := ctx.Get("token")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Token not found in context"})
+		ctx.Abort()
+		return
+	}
+	redisKey := h.loggedOutPrefix + tokenString.(string)
+	redis.Init().Set(ctx.Request.Context(), redisKey, "invalid", jwt.GetExprityInDays())
+	ctx.JSON(http.StatusOK, LogoutUserResponse{Message: "Successfully logged out"})
+}
 
 
 func (h *Handler) getCurrentUser(ctx *gin.Context) {
