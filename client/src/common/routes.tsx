@@ -2,7 +2,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 const endpoints = {
   LOGIN: "/api/v1/user/login",
   SIGN_UP: "/api/v1/user",
-  DASHBOARD: "/api/v1/dashboard",
+  DASHBOARD: "/api/v1/photos",
   USER_DETAILS: "/api/v1/user",
   CURRENT_USER: "/api/v1/user/me",
   LOGOUT: "/api/v1/user/logout",

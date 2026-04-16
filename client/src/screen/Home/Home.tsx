@@ -1,8 +1,12 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Header from "../../component/Header/Header";
 import RoundedButton from "../../component/Button/RoundedButton";
 
 const Home = () => {
+  const navigate = useNavigate();
+  function loginUser() {
+    navigate("/");
+  }
   return (
     <>
       <Header />
@@ -17,6 +21,7 @@ const Home = () => {
           <div>
             <Link to="/login">
               <RoundedButton
+                onClick={loginUser}
                 text="Get Started"
                 classNames={[
                   "hover:bg-green-600",
@@ -24,7 +29,7 @@ const Home = () => {
                   "mt-8",
                   "px-8",
                   "py-4",
-                  "text-xl"
+                  "text-xl",
                 ]}
               />
             </Link>

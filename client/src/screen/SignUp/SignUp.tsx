@@ -57,7 +57,7 @@ const SignUp = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate("/dashboard/photos");
     }
   }, [navigate, user]);
 

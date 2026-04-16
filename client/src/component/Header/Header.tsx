@@ -19,7 +19,7 @@ const Header = () => {
     localStorage.removeItem("token");
     dispatch(clearUser());
     toast.success("Logged out successfully");
-    navigate("/login");
+    navigate("/");
   }
   return (
     <header className="p-4 w-full border-b-2 border-gray-100 font-sans">

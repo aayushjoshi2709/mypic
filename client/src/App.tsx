@@ -1,6 +1,6 @@
 import { Route, Routes, useNavigate } from "react-router";
 import "./App.css";
-import Dashboard from "./screen/Dashboard/Dashboard";
+import Photos from "./screen/Photos/Photos";
 import Home from "./screen/Home/Home";
 import Login from "./screen/Login/Login";
 import SignUp from "./screen/SignUp/SignUp";
@@ -9,6 +9,11 @@ import { useEffect } from "react";
 import { routes } from "./common/routes";
 import { useDispatch } from "react-redux";
 import { setUser } from "./store/user.slice";
+import Upload from "./screen/Upload/Upload";
+import AuthenticatedRoutes from "./component/AuthenticatedRoutes/AuthenticatedRoutes";
+import Search from "./screen/Search/Search";
+import Person from "./screen/Person/Person";
+import Groups from "./screen/Groups/Groups";
 
 function App() {
   const navigate = useNavigate();
@@ -21,27 +26,18 @@ function App() {
       window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
   }, [navigate]);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const userData = await apiClientObj.get(routes.CURRENT_USER);
-      dispatch(setUser(userData));
-      if (userData) {
-        navigate("/dashboard");
-      }
-    };
-    if (localStorage.getItem("token") !== null) {
-      fetchUserData();
-    } else {
-      navigate("/login");
-    }
-  }, [navigate, dispatch]);
-
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="" element={<Home />} />
+      <Route path="/dashboard" element={<AuthenticatedRoutes />}>
+        <Route path="photos" element={<Photos />} />
+        <Route path="upload" element={<Upload />} />
+        <Route path="search" element={<Search />} />
+        <Route path="groups" element={<Groups />} />
+        <Route path="persons" element={<Person />} />
+      </Route>
     </Routes>
   );
 }

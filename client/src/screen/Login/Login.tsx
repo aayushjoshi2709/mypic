@@ -37,7 +37,7 @@ const Login = () => {
     const token = res.token;
     localStorage.setItem("token", token);
     toast.success("Logged in successfully");
-    navigate("/dashboard");
+    navigate("/dashboard/photos");
   }
 
   async function signUpUser() {
@@ -46,7 +46,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate("/dashboard/photos");
     }
   }, [navigate, user]);
 
