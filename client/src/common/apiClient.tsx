@@ -6,6 +6,13 @@ export const UNAUTHORIZED_EVENT = "unauthorized";
 
 
 class ApiClient {
+  async prepareHeaders() {
+    const token = localStorage.getItem("token");
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+  }
   async handleStatus(response: Promise<Response>) {
     const res = await response;
     if (res.status === status.UNAUTHORIZED) {
@@ -15,7 +22,8 @@ class ApiClient {
     }
     if (res.status === status.BAD_REQUEST) {
       const errorData = await res.json();
-      toast.error(errorData.message);
+      toast.error(errorData.error);
+      throw new Error(`API request failed with status ${res.status}: ${errorData.error}`);
     }
 
     if (!res.ok) {
@@ -42,9 +50,7 @@ class ApiClient {
     return this.handleError(async () => {
       return fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: await this.prepareHeaders(),
         body: JSON.stringify(data),
       });
     });
@@ -52,7 +58,9 @@ class ApiClient {
 
   async get(url: string) {
     return this.handleError(async () => {
-      return fetch(url);
+      return fetch(url, {
+        headers: await this.prepareHeaders(),
+      });
     });
   }
 
@@ -60,9 +68,7 @@ class ApiClient {
     return this.handleError(async () => {
       return fetch(url, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: await this.prepareHeaders(),
         body: JSON.stringify(data),
       });
     });
@@ -72,6 +78,7 @@ class ApiClient {
     return this.handleError(async () => {
       return fetch(url, {
         method: "DELETE",
+        headers: await this.prepareHeaders(),
       });
     });
   }

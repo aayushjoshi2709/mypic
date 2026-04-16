@@ -4,11 +4,15 @@ import Dashboard from "./screen/Dashboard/Dashboard";
 import Home from "./screen/Home/Home";
 import Login from "./screen/Login/Login";
 import SignUp from "./screen/SignUp/SignUp";
-import { UNAUTHORIZED_EVENT } from "./common/apiClient";
+import { apiClientObj, UNAUTHORIZED_EVENT } from "./common/apiClient";
 import { useEffect } from "react";
+import { routes } from "./common/routes";
+import { useDispatch } from "react-redux";
+import { setUser } from "./store/user.slice";
 
 function App() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleUnauthorized = () => navigate("/login");
@@ -16,6 +20,18 @@ function App() {
     return () =>
       window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userData = await apiClientObj.get(routes.CURRENT_USER);
+      dispatch(setUser(userData));
+      if (userData) {
+        navigate("/dashboard");
+      }
+    };
+    fetchUserData();
+  }, [navigate, dispatch]);
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />

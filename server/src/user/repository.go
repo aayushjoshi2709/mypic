@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
@@ -44,8 +45,11 @@ func (repository *Repository) GetByUsername(ctx context.Context, username string
 	err := repository.collection.FindOne(ctx, bson.M{"username": username}).Decode(user)
 
 	if err != nil {
-		return nil, err
-	}
+        if errors.Is(err, mongo.ErrNoDocuments) {
+            return nil, nil
+        }
+        return nil, err
+    }
 
 	return user, err
 }

@@ -344,7 +344,7 @@ const docTemplate = `{
             }
         },
         "/api/v1/user/logout": {
-            "post": {
+            "delete": {
                 "description": "Logout a user by invalidating their token",
                 "consumes": [
                     "application/json"

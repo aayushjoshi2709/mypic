@@ -31,10 +31,12 @@ func (h *Handler) New(repo *Repository) {
 // @Router /api/v1/user/{id} [get]
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
+	
 	user, err := h.repo.GetById(
 		ctx.Request.Context(),
 		id,
 	)
+
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while fetching the user"})
@@ -66,6 +68,18 @@ func (h *Handler) create(ctx *gin.Context) {
 		return
 	}
 
+	user, err := h.repo.GetByUsername(ctx.Request.Context(), createUserRequest.Username)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while fetching the user"})
+		slog.Error("Error fetching user", "error", err)
+		return
+	}
+
+	if user != nil {
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Username already exists"})
+		return
+	}
+
 	hashedPassword, err := encrypt.GenerateFromPassword(createUserRequest.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while hashing the password"})
@@ -74,7 +88,7 @@ func (h *Handler) create(ctx *gin.Context) {
 	}
 	createUserRequest.Password = hashedPassword
 
-	user, err := h.repo.Add(
+	user, err = h.repo.Add(
 		ctx.Request.Context(),
 		createUserRequest.Name,
 		createUserRequest.Username,
@@ -193,7 +207,7 @@ func (h *Handler) login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := jwt.GenerateToken(user.Username, user.Id)
+	token, err := jwt.Init().GenerateToken(user.Username, user.Id)
 	
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating the token"})
@@ -215,5 +229,29 @@ func (h *Handler) login(ctx *gin.Context) {
 // @Param token body LogoutUserRequest true "Logout payload"
 // @Success 200 {object} LogoutUserResponse
 // @Failure 400 {object} common.ErrorResponseDto
-// @Router /api/v1/user/logout [post]
+// @Router /api/v1/user/logout [delete]
 func (h *Handler) logout(ctx *gin.Context) {}
+
+
+func (h *Handler) getCurrentUser(ctx *gin.Context) {
+	userId, exists := ctx.Get("userId")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, common.ErrorResponseDto{Error: "User ID not found in context"})
+		return
+	}
+
+	user, err := h.repo.GetById(
+		ctx.Request.Context(),
+		userId.(string),
+	)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while fetching the user"})
+		slog.Error("Error fetching user by ID", "error", err)
+		return
+	}
+
+	var getUserResponse GetUserResponse
+	getUserResponse.Set(user)
+	ctx.JSON(http.StatusOK, getUserResponse)
+}

@@ -9,12 +9,15 @@ import { routes } from "../../common/routes";
 import { apiClientObj } from "../../common/apiClient";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
 
 const Login = () => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const user = useSelector((state: RootState) => state.user);
 
   async function loginUser() {
     if (!username) {
@@ -41,11 +44,10 @@ const Login = () => {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    if (user) {
       navigate("/dashboard");
     }
-  }, [navigate]);
+  }, [navigate, user]);
 
   return (
     <FormWrapper>

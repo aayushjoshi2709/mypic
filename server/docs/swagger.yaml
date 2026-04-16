@@ -423,7 +423,7 @@ paths:
       tags:
       - Users
   /api/v1/user/logout:
-    post:
+    delete:
       consumes:
       - application/json
       description: Logout a user by invalidating their token
