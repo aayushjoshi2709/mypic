@@ -1,8 +1,10 @@
 import status from "http-status";
+import toast from "react-hot-toast";
 class ApiClient {
   async handleStatus(response: Promise<Response>) {
     const res = await response;
     if (res.status === status.UNAUTHORIZED) {
+      toast.error("Unauthorized. Please log in again.");
       window.location.href = "/login";
       return;
     }
@@ -25,6 +27,7 @@ class ApiClient {
       return this.handleStatus(func());
     } catch (error) {
       console.error("API POST request failed:", error);
+      toast.error("An error occurred. Please try again.");
       throw error;
     }
   }

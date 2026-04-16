@@ -7,6 +7,7 @@ import (
 	"github.com/aayushjoshi2709/mypic/src/common"
 	"github.com/aayushjoshi2709/mypic/src/user"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type Handler struct {
@@ -31,12 +32,12 @@ func (h *Handler) get(ctx *gin.Context) {
 	image, err := h.repo.GetById(ctx.Request.Context(), id)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error getting image with id: %s", id), "error", err)
-		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while getting the image"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while getting the image"})
 		return
 	}
 	var getImageResponse GetImageResponse
 	getImageResponse.Set(image)
-	ctx.JSON(200, getImageResponse)
+	ctx.JSON(http.StatusOK, getImageResponse)
 }
 
 // @Summary Get all images
@@ -60,7 +61,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
 		slog.Error("Error converting page variable", "error", err)
-		ctx.JSON(400, common.ErrorResponseDto{Error: "The value provided for page is not valid"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for page is not valid"})
 		return
 	}
 
@@ -71,7 +72,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
 		slog.Error("Error converting limit variable", "error", err)
-		ctx.JSON(400, common.ErrorResponseDto{Error: "The value provided for limit is not valid"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for limit is not valid"})
 		return
 	}
 
@@ -84,7 +85,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 		getImageResponse.Set(&image)
 		GetImageResponseArr = append(GetImageResponseArr, getImageResponse)
 	}
-	ctx.JSON(200, GetImageResponseArr)
+	ctx.JSON(http.StatusOK, GetImageResponseArr)
 }
 
 // @Summary Create a new image
@@ -101,7 +102,7 @@ func (h *Handler) create(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindBodyWithJSON(CreateImageRequest); err != nil {
 		slog.Error("Error creating image", "error", err)
-		ctx.JSON(400, common.ErrorResponseDto{Error: "Provided data is not valid"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Provided data is not valid"})
 		return
 	}
 
@@ -109,13 +110,13 @@ func (h *Handler) create(ctx *gin.Context) {
 
 	if err != nil {
 		slog.Error("Error creating image", "error", err)
-		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while creating the image"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while creating the image"})
 		return
 	}
 
 	var getImageResponse GetImageResponse
 	getImageResponse.Set(image)
-	ctx.JSON(201, getImageResponse)
+	ctx.JSON(http.StatusCreated, getImageResponse)
 }
 
 // @UpdateImage godoc
@@ -133,7 +134,7 @@ func (h *Handler) update(ctx *gin.Context) {
 	UpdateImageRequest := &UpdateImageRequest{}
 	if err := ctx.ShouldBindBodyWithJSON(UpdateImageRequest); err != nil {
 		slog.Error("Error updating image", "error", err)
-		ctx.JSON(400, common.ErrorResponseDto{Error: "Provided data is not valid"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Provided data is not valid"})
 		return
 	}
 
@@ -141,7 +142,7 @@ func (h *Handler) update(ctx *gin.Context) {
 
 	if err != nil {
 		slog.Error("Error updating image", "error", err)
-		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while updating the image"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while updating the image"})
 		return
 	}
 
@@ -164,9 +165,9 @@ func (h *Handler) delete(ctx *gin.Context) {
 
 	if err != nil {
 		slog.Error("Error deleting image", "error", err)
-		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while deleting the image"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while deleting the image"})
 		return
 	}
 
-	ctx.Status(204)
+	ctx.Status(http.StatusNoContent)
 }

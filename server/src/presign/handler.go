@@ -7,6 +7,7 @@ import (
 
 	"github.com/aayushjoshi2709/mypic/src/common"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type Handler struct {
@@ -35,7 +36,7 @@ func (h *Handler) New(repository *Repository) {
 func (h *Handler) getUrl(ctx *gin.Context) {
 	var presignedObjectRequest = &PresignedObjectRequest{}
 	if err := ctx.ShouldBindBodyWithJSON(presignedObjectRequest); err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: "Provided data is not valid"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Provided data is not valid"})
 		return
 	}
 
@@ -50,11 +51,11 @@ func (h *Handler) getUrl(ctx *gin.Context) {
 	)
 	if err != nil {
 		slog.Error("Error generating presigned URL", "error", err)
-		ctx.JSON(500, common.ErrorResponseDto{Error: "An error occurred while generating the presigned URL"})
+		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating the presigned URL"})
 		return
 	}
 
-	ctx.JSON(200, PresignedObjectResponse{
+	ctx.JSON(http.StatusOK, PresignedObjectResponse{
 		URL: url,
 		BucketName: bucket,
 		Key: key,

@@ -7,6 +7,7 @@ import (
 	"github.com/aayushjoshi2709/mypic/src/utils/encrypt"
 	"github.com/aayushjoshi2709/mypic/src/utils/jwt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type Handler struct {
@@ -35,14 +36,14 @@ func (h *Handler) get(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while fetching the user"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while fetching the user"})
 		slog.Error("Error fetching user", "error", err)
 		return
 	}
 
 	var getUserResponse GetUserResponse
 	getUserResponse.Set(user)
-	ctx.JSON(200, getUserResponse)
+	ctx.JSON(http.StatusOK, getUserResponse)
 }
 
 func (h *Handler) getAll(ctx *gin.Context) {}
@@ -60,13 +61,13 @@ func (h *Handler) getAll(ctx *gin.Context) {}
 func (h *Handler) create(ctx *gin.Context) {
 	var createUserRequest CreateUserRequest
 	if err := ctx.ShouldBindBodyWithJSON(&createUserRequest); err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: err.Error()})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: err.Error()})
 		return
 	}
 
 	hashedPassword, err := encrypt.GenerateFromPassword(createUserRequest.Password)
 	if err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while hashing the password"})
+		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while hashing the password"})
 		slog.Error("Error hashing password", "error", err)
 		return
 	}
@@ -80,14 +81,14 @@ func (h *Handler) create(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while creating the user"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while creating the user"})
 		slog.Error("Error creating user", "error", err)
 		return
 	}
 
 	var getUserResponse GetUserResponse
 	getUserResponse.Set(user)
-	ctx.JSON(201, getUserResponse)
+	ctx.JSON(http.StatusCreated, getUserResponse)
 }
 
 // @UpdateUser godoc
@@ -107,7 +108,7 @@ func (h *Handler) update(ctx *gin.Context) {
 
 	var updateUserRequest UpdateUserRequest
 	if err := ctx.ShouldBindBodyWithJSON(&updateUserRequest); err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: err.Error()})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: err.Error()})
 		return
 	}
 
@@ -118,14 +119,14 @@ func (h *Handler) update(ctx *gin.Context) {
 		updateUserRequest.Username,
 	)
 	if err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while updating the user"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while updating the user"})
 		slog.Error("Error updating user", "error", err)
 		return
 	}
 
 	var getUserResponse GetUserResponse
 	getUserResponse.Set(user)
-	ctx.JSON(200, getUserResponse)
+	ctx.JSON(http.StatusOK, getUserResponse)
 }
 
 // @DeleteUser godoc
@@ -146,12 +147,12 @@ func (h *Handler) delete(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while deleting the user"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while deleting the user"})
 		slog.Error("Error deleting user", "error", err)
 		return
 	}
 
-	ctx.Status(204)
+	ctx.Status(http.StatusNoContent)
 }
 
 // @LoginUser godoc
@@ -167,7 +168,7 @@ func (h *Handler) delete(ctx *gin.Context) {
 func (h *Handler) login(ctx *gin.Context) {
 	var loginUserRequest LoginUserRequest
 	if err := ctx.ShouldBindBodyWithJSON(&loginUserRequest); err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: err.Error()})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: err.Error()})
 		return
 	}
 
@@ -177,7 +178,7 @@ func (h *Handler) login(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: "Invalid username"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid username"})
 		slog.Error("Error fetching user by username", "error", err)
 		return
 	}
@@ -185,7 +186,7 @@ func (h *Handler) login(ctx *gin.Context) {
 	bcryptEncodedPassword := user.Password
 	err = encrypt.CompareHashAndPassword(bcryptEncodedPassword, loginUserRequest.Password)
 	if err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: "Invalid password"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid password"})
 		slog.Error("Error comparing passwords", "error", err)
 		return
 	}
@@ -193,13 +194,14 @@ func (h *Handler) login(ctx *gin.Context) {
 	token, err := jwt.GenerateToken(user.Username, user.Id)
 	
 	if err != nil {
-		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while generating the token"})
+		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating the token"})
 		slog.Error("Error generating token", "error", err)	
+		return
 	}
 	
 	var loginUserResponse LoginUserResponse
 	loginUserResponse.Token = token
-	ctx.JSON(200, loginUserResponse)
+	ctx.JSON(http.StatusOK, loginUserResponse)
 }
 
 // @LogoutUser godoc
