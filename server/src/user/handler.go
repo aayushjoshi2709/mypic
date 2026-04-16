@@ -3,11 +3,12 @@ package user
 import (
 	"log/slog"
 
+	"net/http"
+
 	"github.com/aayushjoshi2709/mypic/src/common"
 	"github.com/aayushjoshi2709/mypic/src/utils/encrypt"
 	"github.com/aayushjoshi2709/mypic/src/utils/jwt"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type Handler struct {
@@ -164,6 +165,7 @@ func (h *Handler) delete(ctx *gin.Context) {
 // @Param credentials body LoginUserRequest true "User credentials"
 // @Success 200 {object} LoginUserResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Failure 401 {object} common.ErrorResponseDto
 // @Router /api/v1/user/login [post]
 func (h *Handler) login(ctx *gin.Context) {
 	var loginUserRequest LoginUserRequest
@@ -178,7 +180,7 @@ func (h *Handler) login(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid username"})
+		ctx.JSON(http.StatusUnauthorized, common.ErrorResponseDto{Error: "Invalid username"})
 		slog.Error("Error fetching user by username", "error", err)
 		return
 	}
@@ -186,7 +188,7 @@ func (h *Handler) login(ctx *gin.Context) {
 	bcryptEncodedPassword := user.Password
 	err = encrypt.CompareHashAndPassword(bcryptEncodedPassword, loginUserRequest.Password)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid password"})
+		ctx.JSON(http.StatusUnauthorized, common.ErrorResponseDto{Error: "Invalid password"})
 		slog.Error("Error comparing passwords", "error", err)
 		return
 	}

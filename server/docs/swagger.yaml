@@ -415,6 +415,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/common.ErrorResponseDto'
       summary: Login a user
       tags:
       - Users

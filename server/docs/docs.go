@@ -333,6 +333,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/common.ErrorResponseDto"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/common.ErrorResponseDto"
+                        }
                     }
                 }
             }
