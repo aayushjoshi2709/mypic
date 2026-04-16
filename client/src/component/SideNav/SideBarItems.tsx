@@ -11,12 +11,14 @@ interface SideBarItems {
 }
 const SideBarItems = ({ icon, text, link, isActive }: SideBarItems) => {
   return (
-    <li className={`p-8 py-5 mx-4 my-2  text-xl hover:bg-blue-100  hover:rounded-full rounded-m-2 ${isActive ? "bg-blue-200 rounded-full" : ""}`}>
-      <Link to={link}>
+    <Link to={link}>
+      <li
+        className={`p-8 py-5 mx-4 my-2  text-xl hover:bg-blue-100  hover:rounded-full rounded-m-2 ${isActive ? "bg-blue-200 rounded-full" : ""}`}
+      >
         <FontAwesomeIcon icon={icon} />
         <span className="ml-2 font-semibold">{toTitleCase(text)}</span>
-      </Link>
-    </li>
+      </li>
+    </Link>
   );
 };
 
