@@ -17,10 +17,6 @@ type Handler struct {
 
 func (h *Handler) New(repository *Repository) {
 	h.repo = repository;
-	h.typeBucketMap = map[string]string{
-		"images": "mypic-images",
-		"profilePic": "mypic-videos",
-	}
 }
 
 
@@ -41,11 +37,8 @@ func (h *Handler) getUrl(ctx *gin.Context) {
 	}
 
 	key := fmt.Sprintf("image-%d-%s", time.Now().Unix(), presignedObjectRequest.OriginalName)
-	bucket := h.typeBucketMap[presignedObjectRequest.Type]
-
 	url, err := h.repo.PutObject(
 		ctx.Request.Context(),
-		bucket,
 		key,
 		15,
 	)
@@ -57,7 +50,5 @@ func (h *Handler) getUrl(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, PresignedObjectResponse{
 		URL: url,
-		BucketName: bucket,
-		Key: key,
 	})
 }

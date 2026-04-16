@@ -18,7 +18,7 @@ type UpdateImageRequest struct {
 
 
 func (getImageResponse *GetImageResponse) Set(image *Image) {
-	getImageResponse.ID = image.ID.Hex()
+	getImageResponse.ID = image.Id.Hex()
 	getImageResponse.URL = image.URL
 	getImageResponse.User = image.User.Username
 	getImageResponse.CreatedAt = image.CreatedAt.Time().String()

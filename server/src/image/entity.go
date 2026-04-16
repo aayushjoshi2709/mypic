@@ -6,7 +6,7 @@ import (
 )
 
 type Image struct {
-	ID        bson.ObjectID `bson:"_id,omitempty"`
+	Id        bson.ObjectID      `bson:"_id,omitempty"`
 	URL       string             `bson:"url,omitempty"`
 	CreatedAt bson.DateTime `bson:"createdAt,omitempty"`
 	UpdatedAt bson.DateTime `bson:"updatedAt,omitempty"`

@@ -63,7 +63,7 @@ func (repository *Repository) GetAll(ctx context.Context, page, limit int) ([]Im
 
 func (repository *Repository) Add(ctx context.Context, url string, user *user.User) (*Image, error) {
 	image := &Image{
-		ID:        bson.NewObjectID(),
+		Id:        bson.NewObjectID(),
 		URL:       url,
 		User:      user,
 		CreatedAt: bson.NewDateTimeFromTime(time.Now()),

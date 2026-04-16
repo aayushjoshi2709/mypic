@@ -58,10 +58,17 @@ func (repo *Repository) getS3Client(ctx context.Context) (*s3.Client, error){
 
 func (repo *Repository) PutObject(
 	ctx context.Context,
-	bucketName string,
 	objectKey string,
 	expirationInMin int,
 ) (string, error) {
+
+	bucketName := os.Getenv("AWS_S3_BUCKET_NAME")
+
+	if bucketName == "" {
+		slog.Error("Error loading aws bucket name")
+		panic("Error loading aws bucket name")
+	}
+
 	presignParams := &s3.PutObjectInput{
 		Bucket: &bucketName,
 		Key:    &objectKey,
