@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"log/slog"
 	"strconv"
+
 	"github.com/aayushjoshi2709/mypic/src/common"
 	"github.com/aayushjoshi2709/mypic/src/user"
 	"github.com/gin-gonic/gin"
+
 	"net/http"
+
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Handler struct {
@@ -100,13 +104,22 @@ func (h *Handler) getAll(ctx *gin.Context) {
 func (h *Handler) create(ctx *gin.Context) {
 	CreateImageRequest := &CreateImageRequest{}
 
+	userId, _ := ctx.Get("userId")
+	userObjectId, err := bson.ObjectIDFromHex(userId.(string))
+	if err != nil {
+		slog.Error("Error converting userId to ObjectID", "error", err)
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid user ID"})
+		return
+	}
+	loggedInUser := &user.User{Id: userObjectId}
+
 	if err := ctx.ShouldBindBodyWithJSON(CreateImageRequest); err != nil {
 		slog.Error("Error creating image", "error", err)
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Provided data is not valid"})
 		return
 	}
 
-	image, err := h.repo.Add(ctx.Request.Context(), CreateImageRequest.URL, &user.User{})
+	image, err := h.repo.Add(ctx.Request.Context(), CreateImageRequest.URL, loggedInUser)
 
 	if err != nil {
 		slog.Error("Error creating image", "error", err)

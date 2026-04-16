@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -76,8 +75,8 @@ func (repository *Repository) Add(ctx context.Context, name, username, password 
 	user.Name = name
 	user.Username = username
 	user.Password = password
-	user.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
-	user.UpdatedAt = primitive.NewDateTimeFromTime(time.Now())
+	user.CreatedAt = bson.NewDateTimeFromTime(time.Now())
+	user.UpdatedAt = bson.NewDateTimeFromTime(time.Now())
 
 	_, err := repository.collection.InsertOne(ctx, &user)
 
@@ -112,7 +111,7 @@ func (repository *Repository) Update(ctx context.Context, id string, name, usern
 		"$set": updatedFields,
 	}
 
-	update["updatedAt"] = primitive.NewDateTimeFromTime(time.Now())
+	update["updatedAt"] = bson.NewDateTimeFromTime(time.Now())
 
 	user := &User{}
 

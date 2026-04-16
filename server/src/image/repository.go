@@ -6,7 +6,6 @@ import (
 
 	"github.com/aayushjoshi2709/mypic/src/user"
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -64,11 +63,11 @@ func (repository *Repository) GetAll(ctx context.Context, page, limit int) ([]Im
 
 func (repository *Repository) Add(ctx context.Context, url string, user *user.User) (*Image, error) {
 	image := &Image{
-		ID:        primitive.NewObjectID(),
+		ID:        bson.NewObjectID(),
 		URL:       url,
 		User:      user,
-		CreatedAt: primitive.NewDateTimeFromTime(time.Now()),
-		UpdatedAt: primitive.NewDateTimeFromTime(time.Now()),
+		CreatedAt: bson.NewDateTimeFromTime(time.Now()),
+		UpdatedAt: bson.NewDateTimeFromTime(time.Now()),
 	}
 
 	_, err := repository.collection.InsertOne(ctx, image)
@@ -96,7 +95,7 @@ func (repository *Repository) Update(ctx context.Context, id string, url string)
 		return nil, nil
 	}
 
-	updateFields["UpdatedAt"] = primitive.NewDateTimeFromTime(time.Now())
+	updateFields["UpdatedAt"] = bson.NewDateTimeFromTime(time.Now())
 
 	image := &Image{}
 
