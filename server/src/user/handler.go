@@ -4,6 +4,8 @@ import (
 	"log/slog"
 
 	"github.com/aayushjoshi2709/mypic/src/common"
+	"github.com/aayushjoshi2709/mypic/src/utils/encrypt"
+	"github.com/aayushjoshi2709/mypic/src/utils/jwt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -61,6 +63,14 @@ func (h *Handler) create(ctx *gin.Context) {
 		ctx.JSON(400, common.ErrorResponseDto{Error: err.Error()})
 		return
 	}
+
+	hashedPassword, err := encrypt.GenerateFromPassword(createUserRequest.Password)
+	if err != nil {
+		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while hashing the password"})
+		slog.Error("Error hashing password", "error", err)
+		return
+	}
+	createUserRequest.Password = hashedPassword
 
 	user, err := h.repo.Add(
 		ctx.Request.Context(),
@@ -155,7 +165,41 @@ func (h *Handler) delete(ctx *gin.Context) {
 // @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/user/login [post]
 func (h *Handler) login(ctx *gin.Context) {
+	var loginUserRequest LoginUserRequest
+	if err := ctx.ShouldBindBodyWithJSON(&loginUserRequest); err != nil {
+		ctx.JSON(400, common.ErrorResponseDto{Error: err.Error()})
+		return
+	}
 
+	user, err := h.repo.GetByUsername(
+		ctx.Request.Context(),
+		loginUserRequest.Username,
+	)
+
+	if err != nil {
+		ctx.JSON(400, common.ErrorResponseDto{Error: "Invalid username"})
+		slog.Error("Error fetching user by username", "error", err)
+		return
+	}
+
+	bcryptEncodedPassword := user.Password
+	err = encrypt.CompareHashAndPassword(bcryptEncodedPassword, loginUserRequest.Password)
+	if err != nil {
+		ctx.JSON(400, common.ErrorResponseDto{Error: "Invalid password"})
+		slog.Error("Error comparing passwords", "error", err)
+		return
+	}
+
+	token, err := jwt.GenerateToken(user.Username, user.Id)
+	
+	if err != nil {
+		ctx.JSON(400, common.ErrorResponseDto{Error: "An error occurred while generating the token"})
+		slog.Error("Error generating token", "error", err)	
+	}
+	
+	var loginUserResponse LoginUserResponse
+	loginUserResponse.Token = token
+	ctx.JSON(200, loginUserResponse)
 }
 
 // @LogoutUser godoc

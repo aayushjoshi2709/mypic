@@ -6,6 +6,7 @@ export interface FormInputProps {
   label: string;
   id: string;
   value?: string;
+  required?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -17,6 +18,7 @@ const FormInput = (input: FormInputProps) => {
       </label>
       <input
         value={input.value}
+        required={input.required}
         onChange={input.onChange}
         className="p-2 px-4 border w-full border-gray-300 rounded-xl"
         type={input.type}

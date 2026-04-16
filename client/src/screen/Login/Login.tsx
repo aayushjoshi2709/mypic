@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { routes } from "../../common/routes";
 import { apiClientObj } from "../../common/apiClient";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,6 +17,16 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   async function loginUser() {
+    if (!username) {
+      toast.error("Username is required");
+      return;
+    }
+
+    if (!password) {
+      toast.error("Password is required");
+      return;
+    }
+
     const res = await apiClientObj.post(routes.LOGIN, {
       username,
       password,
@@ -46,6 +57,7 @@ const Login = () => {
           type="text"
           label="username"
           value={username}
+          required={true}
           onChange={(e) => setUsername(e.target.value)}
         />
         <FormInput
@@ -54,6 +66,7 @@ const Login = () => {
           type="password"
           label="password"
           value={password}
+          required={true}
           onChange={(e) => setPassword(e.target.value)}
         />
         <div className="flex flex-row gap-4 w-full p-8 justify-center">

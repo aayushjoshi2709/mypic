@@ -39,6 +39,17 @@ func (repo *Repository) Init() {
 	repo.createIndexes()
 }
 
+func (repository *Repository) GetByUsername(ctx context.Context, username string) (*User, error) {
+	user := &User{}
+	err := repository.collection.FindOne(ctx, bson.M{"username": username}).Decode(user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, err
+}
+
 func (repository *Repository) GetById(ctx context.Context, id string) (*User, error) {
 	objectId, err := bson.ObjectIDFromHex(id)
 	if err != nil {
