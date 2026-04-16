@@ -6,6 +6,8 @@ const endpoints = {
   USER_DETAILS: "/api/v1/user",
   CURRENT_USER: "/api/v1/user/me",
   LOGOUT: "/api/v1/user/logout",
+  GET_PRESIGNED_URL: "/api/v1/presign",
+  CREATE_IMAGE: "/api/v1/image",
 };
 
 function getFullUrl(route: string) {
@@ -19,4 +21,6 @@ export const routes = {
   USER_DETAILS: getFullUrl(endpoints.USER_DETAILS),
   CURRENT_USER: getFullUrl(endpoints.CURRENT_USER),
   LOGOUT: getFullUrl(endpoints.LOGOUT),
+  GET_PRESIGNED_URL: getFullUrl(endpoints.GET_PRESIGNED_URL),
+  CREATE_IMAGE: getFullUrl(endpoints.CREATE_IMAGE),
 };

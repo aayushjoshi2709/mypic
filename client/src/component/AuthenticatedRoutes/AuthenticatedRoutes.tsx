@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { apiClientObj } from "../../common/apiClient";
+import { apiClientObj, UNAUTHORIZED_EVENT } from "../../common/apiClient";
 import { setUser } from "../../store/user.slice";
 import { routes } from "../../common/routes";
 import { Outlet, useNavigate } from "react-router";
@@ -11,6 +11,14 @@ const AuthenticatedRoutes = () => {
   const user = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    const handleUnauthorized = () => navigate("/login");
+    window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
+    return () =>
+    window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
+  }, [navigate]);
   useEffect(() => {
     const fetchUserData = async () => {
       const userData = await apiClientObj.get(routes.CURRENT_USER);
