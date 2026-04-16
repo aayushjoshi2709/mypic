@@ -41,7 +41,7 @@ func SetUpHandlers() {
 	SetHandler("comment_handler", &commentHandler)
 
 	presignHandler := presign.Handler{}
-	presignHandler.New()
+	presignHandler.New(GetRepository[presign.Repository]("presign_repository"))
 	SetHandler("presign_handler", &presignHandler)
 
 	PrintHandlers()

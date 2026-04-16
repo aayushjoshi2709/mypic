@@ -1,4 +1,4 @@
-package store
+package presign
 
 import (
 	"context"
@@ -13,12 +13,21 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-type S3Presigner struct {
+type Repository struct {
 	presignClient	*s3.PresignClient 
 }
 
+func (repo *Repository)Init(ctx context.Context) (*Repository) {
+	s3Client, err := repo.getS3Client(ctx)
+	if err != nil {
+		log.Printf("Error creating S3 client: %v", err)
+		panic("Error connecting to S3")
+	}
+	repo.presignClient = s3.NewPresignClient(s3Client)
+	return repo
+}
 
-func (presigner *S3Presigner) getS3Client(ctx context.Context) (*s3.Client, error){
+func (repo *Repository) getS3Client(ctx context.Context) (*s3.Client, error){
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
 
 	if accessKey == "" {
@@ -47,21 +56,7 @@ func (presigner *S3Presigner) getS3Client(ctx context.Context) (*s3.Client, erro
 	return s3.NewFromConfig(cfg), nil
 }
 
-
-func  New(ctx context.Context) (*S3Presigner, error) {
-	var presigner *S3Presigner = &S3Presigner{}
-	s3Client, err := presigner.getS3Client(ctx)
-	if err != nil {
-		log.Printf("Error creating S3 client: %v", err)
-		return nil, err
-	}
-
-	presigner.presignClient = s3.NewPresignClient(s3Client)
-	return presigner, nil
-}
-
-
-func (presigner *S3Presigner) PutObject(
+func (repo *Repository) PutObject(
 	ctx context.Context,
 	bucketName string,
 	objectKey string,
@@ -75,7 +70,7 @@ func (presigner *S3Presigner) PutObject(
 	presignOpts := func(o *s3.PresignOptions) {
 		o.Expires = time.Duration(expirationInMin) * time.Minute
 	}
-	presignResult, err := presigner.presignClient.PresignPutObject(ctx, presignParams, presignOpts)
+	presignResult, err := repo.presignClient.PresignPutObject(ctx, presignParams, presignOpts)
 	if err != nil {
 		log.Printf("Error generating presigned URL: %v", err)
 		return "", errors.New("Error generating presigned URL")

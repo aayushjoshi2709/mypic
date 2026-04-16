@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -34,7 +35,8 @@ func main() {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	src.SetUpRepositories()
+	ctx := context.Background()
+	src.SetUpRepositories(ctx)
 	src.SetUpHandlers()
 	router.Use(middleware.RequestIdMiddleware)
 	src.SetUpRoutes(router)

@@ -6,15 +6,16 @@ import (
 	"time"
 
 	"github.com/aayushjoshi2709/mypic/src/common"
-	"github.com/aayushjoshi2709/mypic/src/utils/store"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	typeBucketMap map[string]string
+	typeBucketMap map[string]string;
+	repo *Repository
 }
 
-func (h *Handler) New() {
+func (h *Handler) New(repository *Repository) {
+	h.repo = repository;
 	h.typeBucketMap = map[string]string{
 		"images": "mypic-images",
 		"profilePic": "mypic-videos",
@@ -32,13 +33,6 @@ func (h *Handler) New() {
 // @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/presign [post]
 func (h *Handler) getUrl(ctx *gin.Context) {
-	s3Presigner, err := store.New(ctx.Request.Context())
-	if err != nil {
-		slog.Error("Error creating S3 presigner", "error", err)
-		ctx.JSON(500, common.ErrorResponseDto{Error: "An error occurred while creating the S3 presigner"})
-		return
-	}
-
 	var presignedObjectRequest = &PresignedObjectRequest{}
 	if err := ctx.ShouldBindBodyWithJSON(presignedObjectRequest); err != nil {
 		ctx.JSON(400, common.ErrorResponseDto{Error: "Provided data is not valid"})
@@ -48,7 +42,7 @@ func (h *Handler) getUrl(ctx *gin.Context) {
 	key := fmt.Sprintf("image-%d-%s", time.Now().Unix(), presignedObjectRequest.OriginalName)
 	bucket := h.typeBucketMap[presignedObjectRequest.Type]
 
-	url, err := s3Presigner.PutObject(
+	url, err := h.repo.PutObject(
 		ctx.Request.Context(),
 		bucket,
 		key,

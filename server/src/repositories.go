@@ -1,11 +1,13 @@
 package src
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
 	"github.com/aayushjoshi2709/mypic/src/comment"
 	"github.com/aayushjoshi2709/mypic/src/image"
+	"github.com/aayushjoshi2709/mypic/src/presign"
 	"github.com/aayushjoshi2709/mypic/src/user"
 )
 
@@ -26,7 +28,7 @@ func PrintRepositories() {
 	}
 }
 
-func SetUpRepositories() {
+func SetUpRepositories(ctx context.Context) {
 	userRepository := user.Repository{}
 	userRepository.Init()
 	SetRepository("user_repository", &userRepository)
@@ -38,6 +40,10 @@ func SetUpRepositories() {
 	commentRepository := comment.Repository{}
 	commentRepository.Init()
 	SetRepository("comment_repository", &commentRepository)
+
+	s3Repository := presign.Repository{}
+	s3Repository.Init(ctx)
+	SetRepository("s3_repository", &s3Repository)
 
 	PrintRepositories()
 }
