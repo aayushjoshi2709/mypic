@@ -7,7 +7,6 @@ import SignUp from "./screen/SignUp/SignUp";
 import Upload from "./screen/Upload/Upload";
 import AuthenticatedRoutes from "./component/AuthenticatedRoutes/AuthenticatedRoutes";
 import Search from "./screen/Search/Search";
-import Person from "./screen/Person/Person";
 import Groups from "./screen/Groups/Groups";
 
 function App() {
@@ -23,7 +22,6 @@ function App() {
         <Route path="upload" element={<Upload />} />
         <Route path="search" element={<Search />} />
         <Route path="groups" element={<Groups />} />
-        <Route path="persons" element={<Person />} />
       </Route>
     </Routes>
   );

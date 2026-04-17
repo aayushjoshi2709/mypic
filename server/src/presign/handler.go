@@ -2,6 +2,7 @@ package presign
 
 import (
 	"fmt"
+	"io"
 	"log/slog"
 	"time"
 
@@ -87,5 +88,26 @@ func (h *Handler) getImageByPublicUrl(ctx *gin.Context) {
 	ctx.Header("Content-Disposition", fmt.Sprintf("inline; filename=\"%s\"", originalImageKey))
 	// 1 day cache control for the image as it will be available in s3 for 1 hour and we want to avoid hitting s3 for every request
 	ctx.Header("Cache-Control", "public, max-age=86400")
-	ctx.DataFromReader(http.StatusOK, *obj.ContentLength, "image/jpeg", obj.Body, nil)
+
+	bodyCh := make(chan []byte, 1)
+    errCh := make(chan error, 1)
+
+    go func() {
+        defer obj.Body.Close()
+        b, err := io.ReadAll(obj.Body)
+        if err != nil {
+            errCh <- err
+            return
+        }
+        bodyCh <- b
+    }()
+
+    select {
+    case err := <-errCh:
+        slog.Error("Error reading object body", "error", err)
+        ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while streaming the image"})
+        return
+    case b := <-bodyCh:
+        ctx.Data(http.StatusOK, "image/jpeg", b)
+    }
 }

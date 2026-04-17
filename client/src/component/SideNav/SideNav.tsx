@@ -1,6 +1,5 @@
 import {
   faImage,
-  faPerson,
   faSearch,
   faUpload,
   faUserGroup,
@@ -25,22 +24,16 @@ const SideNav = () => {
       isActive: location.pathname === "/dashboard/photos",
     },
     {
-      icon: faSearch,
-      text: "search",
-      link: "/dashboard/search",
-      isActive: location.pathname === "/dashboard/search",
-    },
-    {
       icon: faUserGroup,
       text: "groups",
       link: "/dashboard/groups",
       isActive: location.pathname === "/dashboard/groups",
     },
     {
-      icon: faPerson,
-      text: "persons",
-      link: "/dashboard/persons",
-      isActive: location.pathname === "/dashboard/persons",
+      icon: faSearch,
+      text: "search",
+      link: "/dashboard/search",
+      isActive: location.pathname === "/dashboard/search",
     },
   ];
   return (
