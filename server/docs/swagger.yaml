@@ -7,25 +7,25 @@ definitions:
     type: object
   image.CreateImageRequest:
     properties:
-      url:
+      key:
         type: string
     type: object
   image.GetImageResponse:
     properties:
-      created_at:
+      createdAt:
         type: string
       id:
         type: string
-      updated_at:
+      key:
         type: string
-      url:
+      updatedAt:
         type: string
-      user:
+      userId:
         type: string
     type: object
   image.UpdateImageRequest:
     properties:
-      url:
+      key:
         type: string
     type: object
   presign.PresignedObjectRequest:
@@ -43,8 +43,6 @@ definitions:
     type: object
   presign.PresignedObjectResponse:
     properties:
-      bucketName:
-        type: string
       key:
         type: string
       url:
@@ -283,6 +281,31 @@ paths:
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
       summary: Get presigned URL for uploading an object to S3
+      tags:
+      - Presign
+  /api/v1/presign/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get an image by its public URL
+      parameters:
+      - description: Public URL ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponseDto'
+      summary: Get an image by public URL
       tags:
       - Presign
   /api/v1/user:

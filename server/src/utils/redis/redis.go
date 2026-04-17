@@ -52,6 +52,24 @@ func (r *Redis) Get(ctx context.Context, key string) (string, error) {
 	return r.RedisClient.Get(ctx, key).Result()
 }
 
+func (r *Redis) GetAndDelete(ctx context.Context, key string) (string, error) {
+	luaScript := `
+		local value = redis.call("GET", KEYS[1])
+		if value then
+			redis.call("DEL", KEYS[1])
+		end
+		return value
+	`
+	result, err := r.RedisClient.Eval(ctx, luaScript, []string{key}).Result()
+	if err != nil {
+		return "", err
+	}
+	if result == nil {
+		return "", redis.Nil
+	}
+	return result.(string), nil
+}
+
 func (r *Redis) Del(ctx context.Context, keys ...string) error {
 	return r.RedisClient.Del(ctx, keys...).Err()
 }
@@ -62,4 +80,13 @@ func (r *Redis) Exists(ctx context.Context, key string) (bool, error) {
 		return false, err
 	}
 	return result > 0, nil
+}
+
+func (r *Redis) BulkSet(ctx context.Context, keyValuePairs map[string]string, expiration time.Duration) error {
+	pipe := r.RedisClient.Pipeline()
+	for key, value := range keyValuePairs {
+		pipe.Set(ctx, key, value, expiration)
+	}
+	_, err := pipe.Exec(ctx)
+	return err
 }

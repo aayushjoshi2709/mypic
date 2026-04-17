@@ -7,6 +7,5 @@ type PresignedObjectRequest struct{
 
 type PresignedObjectResponse struct {
 	URL string `json:"url"`
-	BucketName string `json:"bucketName"`
 	Key string `json:"key"`
 }

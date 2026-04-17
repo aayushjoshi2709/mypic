@@ -2,6 +2,7 @@ package image
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"github.com/aayushjoshi2709/mypic/src/user"
@@ -41,10 +42,10 @@ func (repository *Repository) GetById(ctx context.Context, id string) (*Image, e
 	return image, err
 }
 
-func (repository *Repository) GetAll(ctx context.Context, page, limit int) ([]Image, error) {
+func (repository *Repository) GetAll(ctx context.Context, userId bson.ObjectID, page, limit int) ([]Image, error) {
 	cursor, err := repository.collection.Find(
 		ctx,
-		bson.M{},
+		bson.M{"userId": userId},
 		options.
 			Find().
 			SetSort(bson.M{"created_at": -1}).
@@ -61,11 +62,12 @@ func (repository *Repository) GetAll(ctx context.Context, page, limit int) ([]Im
 	return images, err
 }
 
-func (repository *Repository) Add(ctx context.Context, url string, user *user.User) (*Image, error) {
+func (repository *Repository) Add(ctx context.Context, key string, user *user.User) (*Image, error) {
+	slog.Info("Adding image with key", "key", key, "userId", user.Id.Hex())
 	image := &Image{
 		Id:        bson.NewObjectID(),
-		URL:       url,
-		User:      user,
+		Key:       key,
+		UserId:    user.Id,
 		CreatedAt: bson.NewDateTimeFromTime(time.Now()),
 		UpdatedAt: bson.NewDateTimeFromTime(time.Now()),
 	}
@@ -78,7 +80,7 @@ func (repository *Repository) Add(ctx context.Context, url string, user *user.Us
 	return image, err
 }
 
-func (repository *Repository) Update(ctx context.Context, id string, url string) (*Image, error) {
+func (repository *Repository) Update(ctx context.Context, id string, key string) (*Image, error) {
 	objectId, err := bson.ObjectIDFromHex(id)
 
 	if err != nil {
@@ -87,8 +89,8 @@ func (repository *Repository) Update(ctx context.Context, id string, url string)
 
 	updateFields := bson.M{}
 
-	if url != "" {
-		updateFields["url"] = url
+	if key != "" {
+		updateFields["key"] = key
 	}
 
 	if len(updateFields) == 0 {

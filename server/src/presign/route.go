@@ -6,6 +6,6 @@ import (
 )
 
 func Routes(group *gin.RouterGroup, handler *Handler) {
-	group.Use(middleware.AuthMiddleware)
-	group.POST("", handler.getUrl)
+	group.POST("", middleware.AuthMiddleware, handler.getUrl)
+	group.GET("/:id", handler.getImageByPublicUrl)
 }

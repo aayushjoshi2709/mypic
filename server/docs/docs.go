@@ -257,6 +257,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/presign/{id}": {
+            "get": {
+                "description": "Get an image by its public URL",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Presign"
+                ],
+                "summary": "Get an image by public URL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Public URL ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.ErrorResponseDto"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user": {
             "post": {
                 "description": "Create a new user with the provided details",
@@ -518,7 +556,7 @@ const docTemplate = `{
         "image.CreateImageRequest": {
             "type": "object",
             "properties": {
-                "url": {
+                "key": {
                     "type": "string"
                 }
             }
@@ -526,19 +564,19 @@ const docTemplate = `{
         "image.GetImageResponse": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "updated_at": {
+                "key": {
                     "type": "string"
                 },
-                "url": {
+                "updatedAt": {
                     "type": "string"
                 },
-                "user": {
+                "userId": {
                     "type": "string"
                 }
             }
@@ -546,7 +584,7 @@ const docTemplate = `{
         "image.UpdateImageRequest": {
             "type": "object",
             "properties": {
-                "url": {
+                "key": {
                     "type": "string"
                 }
             }
@@ -573,9 +611,6 @@ const docTemplate = `{
         "presign.PresignedObjectResponse": {
             "type": "object",
             "properties": {
-                "bucketName": {
-                    "type": "string"
-                },
                 "key": {
                     "type": "string"
                 },

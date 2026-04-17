@@ -40,7 +40,7 @@ func (h *Handler) get(ctx *gin.Context) {
 		return
 	}
 	var getImageResponse GetImageResponse
-	getImageResponse.Set(image)
+	getImageResponse.Set(ctx.Request.Context(), image)
 	ctx.JSON(http.StatusOK, getImageResponse)
 }
 
@@ -80,13 +80,22 @@ func (h *Handler) getAll(ctx *gin.Context) {
 		return
 	}
 
-	images, err := h.repo.GetAll(ctx.Request.Context(), pageInt, limitInt)
+	userId, _ := ctx.Get("userId")
+	slog.Info("Getting all images for user", "userId", userId, "page", pageInt, "limit", limitInt)
+	userIdObjectId, err := bson.ObjectIDFromHex(userId.(string))
+	if err != nil {
+		slog.Error("Error converting userId to ObjectID", "error", err)
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid user ID"})
+		return
+	}
+
+	images, err := h.repo.GetAll(ctx.Request.Context(), userIdObjectId, pageInt, limitInt)
 
 	GetImageResponseArr := []GetImageResponse{}
 
 	for _, image := range images {
 		var getImageResponse GetImageResponse
-		getImageResponse.Set(&image)
+		getImageResponse.Set(ctx.Request.Context(), &image)
 		GetImageResponseArr = append(GetImageResponseArr, getImageResponse)
 	}
 	ctx.JSON(http.StatusOK, GetImageResponseArr)
@@ -119,7 +128,7 @@ func (h *Handler) create(ctx *gin.Context) {
 		return
 	}
 
-	image, err := h.repo.Add(ctx.Request.Context(), CreateImageRequest.URL, loggedInUser)
+	image, err := h.repo.Add(ctx.Request.Context(), CreateImageRequest.Key, loggedInUser)
 
 	if err != nil {
 		slog.Error("Error creating image", "error", err)
@@ -128,7 +137,7 @@ func (h *Handler) create(ctx *gin.Context) {
 	}
 
 	var getImageResponse GetImageResponse
-	getImageResponse.Set(image)
+	getImageResponse.Set(ctx.Request.Context(), image)
 	ctx.JSON(http.StatusCreated, getImageResponse)
 }
 
@@ -151,7 +160,7 @@ func (h *Handler) update(ctx *gin.Context) {
 		return
 	}
 
-	image, err := h.repo.Update(ctx.Request.Context(), ctx.Param("id"), UpdateImageRequest.URL)
+	image, err := h.repo.Update(ctx.Request.Context(), ctx.Param("id"), UpdateImageRequest.Key)
 
 	if err != nil {
 		slog.Error("Error updating image", "error", err)
@@ -160,7 +169,7 @@ func (h *Handler) update(ctx *gin.Context) {
 	}
 
 	var getImageResponse GetImageResponse
-	getImageResponse.Set(image)
+	getImageResponse.Set(ctx.Request.Context(), image)
 	ctx.JSON(200, getImageResponse)
 }
 

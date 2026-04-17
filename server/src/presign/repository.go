@@ -8,22 +8,35 @@ import (
 	"os"
 	"time"
 
+	"github.com/aayushjoshi2709/mypic/src/utils/redis"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Repository struct {
-	presignClient	*s3.PresignClient 
+	client 			*s3.Client			
+	presignClient	*s3.PresignClient
+	bucketName		string
 }
 
-func (repo *Repository)Init(ctx context.Context) (*Repository) {
-	s3Client, err := repo.getS3Client(ctx)
+func (repo *Repository) Init(ctx context.Context) (*Repository) {
+	client, err := repo.getS3Client(ctx)
 	if err != nil {
 		log.Printf("Error creating S3 client: %v", err)
 		panic("Error connecting to S3")
 	}
-	repo.presignClient = s3.NewPresignClient(s3Client)
+	repo.client = client
+	repo.presignClient = s3.NewPresignClient(client)
+
+	repo.bucketName = os.Getenv("AWS_S3_BUCKET_NAME")
+
+	if repo.bucketName == "" {
+		slog.Error("Error loading aws bucket name")
+		panic("Error loading aws bucket name")
+	}
+
 	return repo
 }
 
@@ -60,7 +73,7 @@ func (repo *Repository) PutObject(
 	ctx context.Context,
 	objectKey string,
 	expirationInMin int,
-) (string, error) {
+) (*PresignedObjectResponse, error) {
 
 	bucketName := os.Getenv("AWS_S3_BUCKET_NAME")
 
@@ -80,8 +93,41 @@ func (repo *Repository) PutObject(
 	presignResult, err := repo.presignClient.PresignPutObject(ctx, presignParams, presignOpts)
 	if err != nil {
 		log.Printf("Error generating presigned URL: %v", err)
-		return "", errors.New("Error generating presigned URL")
+		return nil, errors.New("Error generating presigned URL")
 	}
 
-	return presignResult.URL, nil
+	return &PresignedObjectResponse {
+		URL: presignResult.URL,
+		Key: objectKey,
+	}, nil
 }
+
+func (repository *Repository) GetObjectStream(ctx context.Context, key string) (*s3.GetObjectOutput, error) {
+	out, err := repository.client.GetObject(ctx, &s3.GetObjectInput{
+		Bucket: &repository.bucketName,
+		Key:    &key,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func GeneratePublicUrl(ctx context.Context, imageKey string) (string, error) {
+	randomHash := "presign_image_" + bson.NewObjectID().Hex()
+	redis.Init().Set(ctx, randomHash, imageKey, time.Minute * 2)
+	return randomHash, nil
+}
+
+func GeneratePublicUrls(ctx context.Context, imageKeys []string) ([]string, error) {
+	publicUrls := make([]string, len(imageKeys))
+	var keyVal map[string]string  = make(map[string]string)
+	for i, key := range imageKeys {
+		randomHash := "presign_image_" + bson.NewObjectID().Hex()
+		keyVal[randomHash] = key
+		publicUrls[i] = randomHash
+	}
+	redis.Init().BulkSet(ctx, keyVal, time.Minute * 2)
+	return publicUrls, nil
+}
+

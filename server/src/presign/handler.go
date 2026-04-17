@@ -5,9 +5,11 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/aayushjoshi2709/mypic/src/common"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/aayushjoshi2709/mypic/src/common"
+	"github.com/aayushjoshi2709/mypic/src/utils/redis"
+	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
@@ -37,7 +39,7 @@ func (h *Handler) getUrl(ctx *gin.Context) {
 	}
 
 	key := fmt.Sprintf("image-%d-%s", time.Now().Unix(), presignedObjectRequest.OriginalName)
-	url, err := h.repo.PutObject(
+	presignedObj, err := h.repo.PutObject(
 		ctx.Request.Context(),
 		key,
 		15,
@@ -48,7 +50,38 @@ func (h *Handler) getUrl(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, PresignedObjectResponse{
-		URL: url,
-	})
+	ctx.JSON(http.StatusOK, presignedObj)
+}
+
+// @Summary Get an image by public URL
+// @Description Get an image by its public URL
+// @Tags Presign
+// @Accept json
+// @Produce json
+// @Param id path string true "Public URL ID"
+// @Success 200 {file} file
+// @Failure 400 {object} common.ErrorResponseDto
+// @Router /api/v1/presign/{id} [get]
+func (h *Handler) getImageByPublicUrl(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	val, err := redis.Init().GetAndDelete(ctx.Request.Context(), id)
+	if err != nil {
+		slog.Error("Error fetching original image key from Redis", "error", err)
+		ctx.JSON(http.StatusNotFound, common.ErrorResponseDto{Error: "Image not found"})
+		return
+	}
+
+	originalImageKey := val
+
+	obj, err := h.repo.GetObjectStream(ctx.Request.Context(), originalImageKey)
+
+	if err != nil {
+		slog.Error("Error fetching object from S3", "error", err)
+		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while fetching the image"})
+		return
+	}
+
+	ctx.Header("Content-Type", "image/jpeg")
+	ctx.DataFromReader(http.StatusOK, *obj.ContentLength, "image/jpeg", obj.Body, nil)
 }
