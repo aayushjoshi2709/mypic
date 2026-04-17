@@ -83,5 +83,11 @@ func (h *Handler) getImageByPublicUrl(ctx *gin.Context) {
 	}
 
 	ctx.Header("Content-Type", "image/jpeg")
+	ctx.Header("Content-Length", fmt.Sprintf("%d", *obj.ContentLength))
+	ctx.Header("Content-Disposition", fmt.Sprintf("inline; filename=\"%s\"", originalImageKey))
+	// 1 day cache control for the image as it will be available in s3 for 1 hour and we want to avoid hitting s3 for every request
+	ctx.Header("Cache-Control", "public, max-age=86400")
+	ctx.Header("Pragma", "no-cache")
+	ctx.Header("Expires", "0")
 	ctx.DataFromReader(http.StatusOK, *obj.ContentLength, "image/jpeg", obj.Body, nil)
 }
