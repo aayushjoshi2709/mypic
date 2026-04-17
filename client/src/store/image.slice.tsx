@@ -4,7 +4,7 @@ import type { UserState } from "./user.slice";
 
 export interface ImageState {
   id: string;
-  url: string;
+  key: string;
   createdAt: string;
   updatedAt: string;
   user: Partial<UserState>;

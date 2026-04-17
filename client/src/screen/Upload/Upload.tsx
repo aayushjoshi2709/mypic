@@ -19,9 +19,9 @@ const Upload = () => {
     });
   }
 
-  async function updateImageDatabase(url: string) {
+  async function updateImageDatabase(key: string) {
     await apiClientObj.post(routes.CREATE_IMAGE, {
-      url,
+      key,
     });
   }
 
@@ -38,9 +38,9 @@ const Upload = () => {
         const imageOrVedio = file.type.startsWith("image/")
           ? "images"
           : "videos";
-        const { url } = await getPresinedUrl(fileName, imageOrVedio);
+        const { url, key } = await getPresinedUrl(fileName, imageOrVedio);
         await uploadImageToS3(url, file);
-        await updateImageDatabase(url);
+        await updateImageDatabase(key);
       }
     };
     fileInput.click();
