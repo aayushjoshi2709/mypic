@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/aayushjoshi2709/mypic/src/common"
+	"github.com/aayushjoshi2709/mypic/src/presign"
 	"github.com/aayushjoshi2709/mypic/src/user"
 	"github.com/gin-gonic/gin"
 
@@ -93,10 +94,22 @@ func (h *Handler) getAll(ctx *gin.Context) {
 
 	GetImageResponseArr := []GetImageResponse{}
 
+	imageUrl := []string{}
 	for _, image := range images {
 		var getImageResponse GetImageResponse
 		getImageResponse.Set(ctx.Request.Context(), &image)
+		imageUrl = append(imageUrl, image.Key)
 		GetImageResponseArr = append(GetImageResponseArr, getImageResponse)
+	}
+	imageUrlArr, err := presign.GeneratePublicUrls(ctx.Request.Context(), imageUrl)
+	if err != nil {
+		slog.Error("Error generating public URLs for images", "error", err)
+		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating public URLs for the images"})
+		return
+	}
+
+	for i := range GetImageResponseArr {
+		GetImageResponseArr[i].Key = imageUrlArr[i]
 	}
 	ctx.JSON(http.StatusOK, GetImageResponseArr)
 }
@@ -138,6 +151,12 @@ func (h *Handler) create(ctx *gin.Context) {
 
 	var getImageResponse GetImageResponse
 	getImageResponse.Set(ctx.Request.Context(), image)
+	getImageResponse.Key, err = presign.GeneratePublicUrl(ctx.Request.Context(), image.Key)
+	if err != nil {
+		slog.Error("Error generating public URL for image", "error", err)
+		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating the public URL for the image"})
+		return
+	}
 	ctx.JSON(http.StatusCreated, getImageResponse)
 }
 
@@ -170,6 +189,12 @@ func (h *Handler) update(ctx *gin.Context) {
 
 	var getImageResponse GetImageResponse
 	getImageResponse.Set(ctx.Request.Context(), image)
+	getImageResponse.Key, err = presign.GeneratePublicUrl(ctx.Request.Context(), image.Key)
+	if err != nil {
+		slog.Error("Error generating public URL for image", "error", err)
+		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating the public URL for the image"})
+		return
+	}
 	ctx.JSON(200, getImageResponse)
 }
 
