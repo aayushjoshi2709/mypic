@@ -1,7 +1,13 @@
+import { useDispatch } from "react-redux";
 import { apiClientObj } from "../../common/apiClient";
 import { routes } from "../../common/routes";
+import { addImage } from "../../store/image.slice";
+import toast from "react-hot-toast";
+import { useState } from "react";
 
 const Upload = () => {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   async function getPresinedUrl(fileName: string, fileType: string) {
     return await apiClientObj.post(routes.GET_PRESIGNED_URL, {
       originalName: fileName,
@@ -20,9 +26,10 @@ const Upload = () => {
   }
 
   async function updateImageDatabase(key: string) {
-    await apiClientObj.post(routes.CREATE_IMAGE, {
+    const response = await apiClientObj.post(routes.CREATE_IMAGE, {
       key,
     });
+    dispatch(addImage(response));
   }
 
   async function openFileDialog() {
@@ -31,6 +38,7 @@ const Upload = () => {
     fileInput.accept = "image/*";
     fileInput.multiple = false;
     fileInput.onchange = async (event) => {
+      setLoading(true);
       const files = (event.target as HTMLInputElement).files;
       const file = files ? files[0] : null;
       if (file) {
@@ -41,7 +49,9 @@ const Upload = () => {
         const { url, key } = await getPresinedUrl(fileName, imageOrVedio);
         await uploadImageToS3(url, file);
         await updateImageDatabase(key);
+        toast.success("Image uploaded successfully!");
       }
+      setLoading(false);
     };
     fileInput.click();
   }
@@ -52,8 +62,9 @@ const Upload = () => {
       <button
         onClick={openFileDialog}
         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+        disabled={loading}
       >
-        Upload
+        {loading ? "Uploading..." : "Upload"}
       </button>
     </div>
   );

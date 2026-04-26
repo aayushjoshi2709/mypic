@@ -15,11 +15,11 @@ import (
 
 type Handler struct {
 	typeBucketMap map[string]string;
-	repo *Repository
+	repo map[string]any
 }
 
-func (h *Handler) New(repository *Repository) {
-	h.repo = repository;
+func (h *Handler) New(repos map[string]any) {
+	h.repo = repos;
 }
 
 
@@ -40,7 +40,7 @@ func (h *Handler) getUrl(ctx *gin.Context) {
 	}
 
 	key := fmt.Sprintf("image-%d-%s", time.Now().Unix(), presignedObjectRequest.OriginalName)
-	presignedObj, err := h.repo.PutObject(
+	presignedObj, err := h.repo["presignRepository"].(*Repository).PutObject(
 		ctx.Request.Context(),
 		key,
 		15,
@@ -75,7 +75,7 @@ func (h *Handler) getImageByPublicUrl(ctx *gin.Context) {
 
 	originalImageKey := val
 
-	obj, err := h.repo.GetObjectStream(ctx.Request.Context(), originalImageKey)
+	obj, err := h.repo["presignRepository"].(*Repository).GetObjectStream(ctx.Request.Context(), originalImageKey)
 
 	if err != nil {
 		slog.Error("Error fetching object from S3", "error", err)

@@ -2,6 +2,7 @@ package src
 
 import (
 	"github.com/aayushjoshi2709/mypic/src/comment"
+	"github.com/aayushjoshi2709/mypic/src/group"
 	"github.com/aayushjoshi2709/mypic/src/image"
 	"github.com/aayushjoshi2709/mypic/src/presign"
 	"github.com/aayushjoshi2709/mypic/src/user"
@@ -11,17 +12,20 @@ import (
 func SetUpRoutes(engine *gin.Engine) {
 	apiGroup := engine.Group("/api")
 
-	userHandler := GetHandler[user.Handler]("user_handler")
+	userHandler := GetHandler[user.Handler]("userHandler")
 	user.Routes(apiGroup.Group("/v1/user"), userHandler)
 
-	imageHandler := GetHandler[image.Handler]("image_handler")
+	imageHandler := GetHandler[image.Handler]("imageHandler")
 	image.Routes(apiGroup.Group("/v1/image"), imageHandler)
 
-	commentHandler := GetHandler[comment.Handler]("comment_handler")
+	commentHandler := GetHandler[comment.Handler]("commentHandler")
 	comment.Routes(apiGroup.Group("/v1/comment"), commentHandler)
 
-	presignHandler := GetHandler[presign.Handler]("presign_handler")
+	presignHandler := GetHandler[presign.Handler]("presignHandler")
 	presign.Routes(apiGroup.Group("/v1/presign"), presignHandler)
+
+	groupHandler := GetHandler[group.Handler]("groupHandler")
+	group.Routes(apiGroup.Group("/v1/group"), groupHandler)
 
 	engine.Static("/assets", "./public/assets")
 

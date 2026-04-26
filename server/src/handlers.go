@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/aayushjoshi2709/mypic/src/comment"
+	"github.com/aayushjoshi2709/mypic/src/group"
 	"github.com/aayushjoshi2709/mypic/src/image"
 	"github.com/aayushjoshi2709/mypic/src/presign"
 	"github.com/aayushjoshi2709/mypic/src/user"
@@ -29,20 +30,36 @@ func PrintHandlers() {
 
 func SetUpHandlers() {
 	userHandler := user.Handler{}
-	userHandler.New(GetRepository[user.Repository]("user_repository"))
-	SetHandler("user_handler", &userHandler)
+	userHandler.New(map[string]any{
+		"userRepository": GetRepository[user.Repository]("userRepository"),
+	})
+	SetHandler("userHandler", &userHandler)
 
 	imageHandler := image.Handler{}
-	imageHandler.New(GetRepository[image.Repository]("image_repository"))
-	SetHandler("image_handler", &imageHandler)
+	imageHandler.New(map[string]any{
+		"imageRepository": GetRepository[image.Repository]("imageRepository"),
+	})
+	SetHandler("imageHandler", &imageHandler)
 
 	commentHandler := comment.Handler{}
-	commentHandler.New(GetRepository[comment.Repository]("comment_repository"))
-	SetHandler("comment_handler", &commentHandler)
+	commentHandler.New(map[string]any{
+		"commentRepository": GetRepository[comment.Repository]("commentRepository"),
+	})
+	SetHandler("commentHandler", &commentHandler)
 
 	presignHandler := presign.Handler{}
-	presignHandler.New(GetRepository[presign.Repository]("presign_repository"))
-	SetHandler("presign_handler", &presignHandler)
+	presignHandler.New(map[string]any{
+		"presignRepository": GetRepository[presign.Repository]("presignRepository"),
+	})
+	SetHandler("presignHandler", &presignHandler)
+
+	groupHandler := group.Handler{}
+	groupHandler.New(map[string]any{
+		"groupRepository": GetRepository[group.Repository]("groupRepository"),
+		"imageRepository": GetRepository[image.Repository]("imageRepository"),
+		"userRepository": GetRepository[user.Repository]("userRepository"),
+	})
+	SetHandler("groupHandler", &groupHandler)
 
 	PrintHandlers()
 }

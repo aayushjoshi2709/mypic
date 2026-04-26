@@ -16,11 +16,11 @@ import (
 )
 
 type Handler struct {
-	repo *Repository
+	repo map[string]any
 }
 
-func (h *Handler) New(repo *Repository) {
-	h.repo = repo
+func (h *Handler) New(repos map[string]any) {
+	h.repo = repos
 }
 
 // @Summary Get an image by ID
@@ -34,7 +34,7 @@ func (h *Handler) New(repo *Repository) {
 // @Router /api/v1/image/{id} [get]
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
-	image, err := h.repo.GetById(ctx.Request.Context(), id)
+	image, err := h.repo["imageRepository"].(*Repository).GetById(ctx.Request.Context(), id)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error getting image with id: %s", id), "error", err)
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while getting the image"})
@@ -90,7 +90,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 		return
 	}
 
-	images, err := h.repo.GetAll(ctx.Request.Context(), userIdObjectId, pageInt, limitInt)
+	images, err := h.repo["imageRepository"].(*Repository).GetAll(ctx.Request.Context(), userIdObjectId, pageInt, limitInt)
 
 	GetImageResponseArr := []GetImageResponse{}
 
@@ -141,7 +141,7 @@ func (h *Handler) create(ctx *gin.Context) {
 		return
 	}
 
-	image, err := h.repo.Add(ctx.Request.Context(), CreateImageRequest.Key, loggedInUser)
+	image, err := h.repo["imageRepository"].(*Repository).Add(ctx.Request.Context(), CreateImageRequest.Key, loggedInUser)
 
 	if err != nil {
 		slog.Error("Error creating image", "error", err)
@@ -179,7 +179,7 @@ func (h *Handler) update(ctx *gin.Context) {
 		return
 	}
 
-	image, err := h.repo.Update(ctx.Request.Context(), ctx.Param("id"), UpdateImageRequest.Key)
+	image, err := h.repo["imageRepository"].(*Repository).Update(ctx.Request.Context(), ctx.Param("id"), UpdateImageRequest.Key)
 
 	if err != nil {
 		slog.Error("Error updating image", "error", err)
@@ -208,7 +208,7 @@ func (h *Handler) update(ctx *gin.Context) {
 // @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/image/{id} [delete]
 func (h *Handler) delete(ctx *gin.Context) {
-	err := h.repo.Delete(ctx.Request.Context(), ctx.Param("id"))
+	err := h.repo["imageRepository"].(*Repository).Delete(ctx.Request.Context(), ctx.Param("id"))
 
 	if err != nil {
 		slog.Error("Error deleting image", "error", err)

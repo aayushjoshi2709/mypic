@@ -14,12 +14,12 @@ import (
 )
 
 type Handler struct {
-	repo *Repository
+	repos map[string]any
 	loggedOutPrefix string
 }
 
-func (h *Handler) New(repo *Repository) {
-	h.repo = repo
+func (h *Handler) New(repos map[string]any) {
+	h.repos = repos
 	h.loggedOutPrefix = "logged_out_"
 }
 
@@ -36,7 +36,7 @@ func (h *Handler) New(repo *Repository) {
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
 	
-	user, err := h.repo.GetById(
+	user, err := h.repos["userRepository"].(*Repository).GetById(
 		ctx.Request.Context(),
 		id,
 	)
@@ -72,7 +72,7 @@ func (h *Handler) create(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.repo.GetByUsername(ctx.Request.Context(), createUserRequest.Username)
+	user, err := h.repos["userRepository"].(*Repository).GetByUsername(ctx.Request.Context(), createUserRequest.Username)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while fetching the user"})
 		slog.Error("Error fetching user", "error", err)
@@ -92,7 +92,7 @@ func (h *Handler) create(ctx *gin.Context) {
 	}
 	createUserRequest.Password = hashedPassword
 
-	user, err = h.repo.Add(
+	user, err = h.repos["userRepository"].(*Repository).Add(
 		ctx.Request.Context(),
 		createUserRequest.Name,
 		createUserRequest.Username,
@@ -131,7 +131,7 @@ func (h *Handler) update(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.repo.Update(
+	user, err := h.repos["userRepository"].(*Repository).Update(
 		ctx.Request.Context(),
 		id,
 		updateUserRequest.Name,
@@ -160,7 +160,7 @@ func (h *Handler) update(ctx *gin.Context) {
 // @Router /api/v1/user/{id} [delete]
 func (h *Handler) delete(ctx *gin.Context) {
 	id := ctx.Param("id")
-	err := h.repo.Delete(
+	err := h.repos["userRepository"].(*Repository).Delete(
 		ctx.Request.Context(),
 		id,
 	)
@@ -192,7 +192,7 @@ func (h *Handler) login(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.repo.GetByUsername(
+	user, err := h.repos["userRepository"].(*Repository).GetByUsername(
 		ctx.Request.Context(),
 		loginUserRequest.Username,
 	)
@@ -267,7 +267,7 @@ func (h *Handler) getCurrentUser(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.repo.GetById(
+	user, err := h.repos["userRepository"].(*Repository).GetById(
 		ctx.Request.Context(),
 		userId.(string),
 	)

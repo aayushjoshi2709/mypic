@@ -6,6 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/aayushjoshi2709/mypic/src/comment"
+	"github.com/aayushjoshi2709/mypic/src/group"
 	"github.com/aayushjoshi2709/mypic/src/image"
 	"github.com/aayushjoshi2709/mypic/src/presign"
 	"github.com/aayushjoshi2709/mypic/src/user"
@@ -31,19 +32,23 @@ func PrintRepositories() {
 func SetUpRepositories(ctx context.Context) {
 	userRepository := user.Repository{}
 	userRepository.Init()
-	SetRepository("user_repository", &userRepository)
+	SetRepository("userRepository", &userRepository)
 
 	imageRepository := image.Repository{}
 	imageRepository.Init()
-	SetRepository("image_repository", &imageRepository)
+	SetRepository("imageRepository", &imageRepository)
 
 	commentRepository := comment.Repository{}
 	commentRepository.Init()
-	SetRepository("comment_repository", &commentRepository)
+	SetRepository("commentRepository", &commentRepository)
 
 	presignRepository := presign.Repository{}
 	presignRepository.Init(ctx)
-	SetRepository("presign_repository", &presignRepository)
+	SetRepository("presignRepository", &presignRepository)
+
+	groupRepository := group.Repository{}
+	groupRepository.Init()
+	SetRepository("groupRepository", &groupRepository)
 
 	PrintRepositories()
 }

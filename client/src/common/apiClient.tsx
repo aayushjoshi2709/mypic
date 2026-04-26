@@ -23,7 +23,9 @@ class ApiClient {
     if (res.status === status.BAD_REQUEST) {
       const errorData = await res.json();
       toast.error(errorData.error);
-      throw new Error(`API request failed with status ${res.status}: ${errorData.error}`);
+      throw new Error(
+        `API request failed with status ${res.status}: ${errorData.error}`,
+      );
     }
 
     if (res.status >= 400) {
