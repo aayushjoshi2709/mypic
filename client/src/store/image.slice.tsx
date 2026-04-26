@@ -13,9 +13,11 @@ export interface ImageState {
 const initialState: {
   images: ImageState[] | null;
   currentImage: ImageState | null;
+  fetchImages: boolean;
 } = {
   images: null,
   currentImage: null,
+  fetchImages: true,
 };
 
 const ImageSlice = createSlice({
@@ -43,8 +45,14 @@ const ImageSlice = createSlice({
     clearImage: () => {
       return initialState;
     },
+    setFetchImages: (state)=>{
+      state.fetchImages = true;
+    },
+    unsetFetchImages: (state)=>{
+      state.fetchImages = false;
+    }
   },
 });
 
-export const { setImages, addImage, removeImage, setCurrentImage, clearImage } = ImageSlice.actions;
+export const { setImages, addImage, removeImage, setCurrentImage, clearImage, setFetchImages, unsetFetchImages } = ImageSlice.actions;
 export default ImageSlice.reducer;

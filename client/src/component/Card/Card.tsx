@@ -2,7 +2,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { routes } from "../../common/routes";
 import { faDownload, faEye, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
-import { setModal } from "../../store/modal.slice";
+import { clearModal, setModal } from "../../store/modal.slice";
+import { ModalNames } from "../../common/Constants";
+import DeleteModal from "../Modal/DeleteModal/DeleteModal";
+import PreviewModal from "../Modal/PreviewModal/PreviewModal";
+import { apiClientObj } from "../../common/apiClient";
+import { setFetchImages } from "../../store/image.slice";
 
 interface CardProps {
   imgData: {
@@ -13,24 +18,33 @@ interface CardProps {
 
 const Card = ({ imgData }: CardProps) => {
   const dispatch = useDispatch();
+  const deleteImage = async () => {
+    await apiClientObj.delete(routes.GET_SINGLE_IMAGE + imgData.id);
+    console.log("done deleting image")
+    dispatch(clearModal())
+    dispatch(setFetchImages())
+  }
   const deleteButton = (key: string) => {
       dispatch(setModal({
-        name: "DELETE_MODAL",
-        data:{
+        name: ModalNames.DELETE_MODAL,
+        data: {
           id: key,
-          heading: "Do you want to delete this image?"
+          heading: "Do you want to delete this image?",
+          onSubmit: deleteImage
         }
       }));
   }
   const previewButton  = (key: string) => {
       dispatch(setModal({
-        name: "PREVIEW_MODAL",
+        name: ModalNames.PREVIEW_MODAL,
         data:{
           id: key
         }
       }));
   }
-  return (
+  return <>
+    <DeleteModal/>
+    <PreviewModal/>
     <div className="group break-inside-avoid mb-4 relative">
       <img
         className="rounded-sm w-full hover:shadow-xl min-h-[200px] h-auto block"
@@ -49,8 +63,9 @@ const Card = ({ imgData }: CardProps) => {
             </button>
         </div>
       </div>
+
     </div>
-  );
+    </>
 };
 
 export default Card;

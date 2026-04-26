@@ -5,6 +5,11 @@ import { routes } from "../../../common/routes";
 import { useEffect, useState } from "react";
 import { apiClientObj } from "../../../common/apiClient";
 import type { ImageState } from "../../../store/image.slice";
+import { ModalNames } from "../../../common/Constants";
+
+export interface PreviewModalInterface{
+  id: string;
+}
 
 const PreviewModal = () => {
 
@@ -20,16 +25,17 @@ const PreviewModal = () => {
   }
 
   useEffect(()=>{
-    if(modal.name === "PREVIEW_MODAL"){
-        const id = modal.data.id;
+    const data:PreviewModalInterface = modal.data as PreviewModalInterface;
+    if(modal.name === ModalNames.PREVIEW_MODAL){
+        const id = data.id;
         if(id){
             getImageData(id);
         }
     }
-  }, [modal.data.id, modal.name])
+  }, [modal.data, modal.name])
 
   return (
-    modal.name == "PREVIEW_MODAL"?
+    modal.name == ModalNames.PREVIEW_MODAL?
     <Modal>
         <div className="bg-black rounded text-white max-w-[80%]" onClick={(e) => e.stopPropagation()}>
             {

@@ -35,6 +35,11 @@ class ApiClient {
         `API request failed with status ${res.status}: ${errorData.message || res.statusText}`,
       );
     }
+
+    if(res.status == 204){
+      return;
+    }
+
     return res.json();
   }
 

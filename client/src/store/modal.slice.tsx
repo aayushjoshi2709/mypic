@@ -1,16 +1,15 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
+import type { DeleteModalInterface } from "../component/Modal/DeleteModal/DeleteModal"
+import type { PreviewModalInterface } from "../component/Modal/PreviewModal/PreviewModal"
 
 export interface Modal{
-    data: {
-        heading?: string,
-        id?: string
-    },
-    name: string | null
+    data: DeleteModalInterface | PreviewModalInterface | null,
+    name: string
 }
 
 const initialState: Modal = {
-    data: {},
-    name: null
+    data: null,
+    name: ""
 }
 
 const ModalSlice = createSlice({
