@@ -1,9 +1,9 @@
 import { useDispatch } from "react-redux";
 import { apiClientObj } from "../../common/apiClient";
 import { routes } from "../../common/routes";
-import { addImage } from "../../store/image.slice";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { setFetchImages } from "../../store/image.slice";
 
 const Upload = () => {
   const dispatch = useDispatch();
@@ -26,10 +26,10 @@ const Upload = () => {
   }
 
   async function updateImageDatabase(key: string) {
-    const response = await apiClientObj.post(routes.CREATE_IMAGE, {
+    await apiClientObj.post(routes.CREATE_IMAGE, {
       key,
     });
-    dispatch(addImage(response));
+    dispatch(setFetchImages());
   }
 
   async function openFileDialog() {

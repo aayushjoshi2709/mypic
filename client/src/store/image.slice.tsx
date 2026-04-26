@@ -27,21 +27,6 @@ const ImageSlice = createSlice({
     setImages: (state, action: PayloadAction<ImageState[]>) => {
       state.images = [...action.payload];
     },
-    addImage: (state, action: PayloadAction<ImageState>) => {
-      state.images = [...(state.images ?? []), action.payload];
-    },
-    removeImage: (state, action: PayloadAction<string>) => {
-      const imageId = action.payload;
-      state.images = state.images?.filter((image) => image.id !== imageId) ?? null;
-      if (state.currentImage?.id === imageId) {
-        state.currentImage = null;
-      }
-    },
-    setCurrentImage: (state, action: PayloadAction<string>) => {
-      const imageId = action.payload;
-      state.currentImage =
-        state.images?.find((image) => image.id === imageId) ?? null;
-    },
     clearImage: () => {
       return initialState;
     },
@@ -54,5 +39,5 @@ const ImageSlice = createSlice({
   },
 });
 
-export const { setImages, addImage, removeImage, setCurrentImage, clearImage, setFetchImages, unsetFetchImages } = ImageSlice.actions;
+export const { setImages, clearImage, setFetchImages, unsetFetchImages } = ImageSlice.actions;
 export default ImageSlice.reducer;

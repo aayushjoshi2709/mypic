@@ -20,7 +20,6 @@ const Card = ({ imgData }: CardProps) => {
   const dispatch = useDispatch();
   const deleteImage = async () => {
     await apiClientObj.delete(routes.GET_SINGLE_IMAGE + imgData.id);
-    console.log("done deleting image")
     dispatch(clearModal())
     dispatch(setFetchImages())
   }
