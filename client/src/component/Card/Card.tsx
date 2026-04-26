@@ -7,10 +7,9 @@ import { setModal } from "../../store/modal.slice";
 interface CardProps {
   imgData: {
     key: string;
+    id: string;
   };
 }
-
-
 
 const Card = ({ imgData }: CardProps) => {
   const dispatch = useDispatch();
@@ -18,7 +17,7 @@ const Card = ({ imgData }: CardProps) => {
       dispatch(setModal({
         name: "DELETE_MODAL",
         data:{
-          key: key,
+          id: key,
           heading: "Do you want to delete this image?"
         }
       }));
@@ -27,7 +26,7 @@ const Card = ({ imgData }: CardProps) => {
       dispatch(setModal({
         name: "PREVIEW_MODAL",
         data:{
-          key: key
+          id: key
         }
       }));
   }
@@ -42,10 +41,10 @@ const Card = ({ imgData }: CardProps) => {
             <button className="rounded p-2 bg-green-600 text-white">
               <FontAwesomeIcon icon={faDownload} />
             </button>
-            <button className="rounded p-2 bg-yellow-600 text-white" onClick={()=> previewButton(imgData.key)}>
+            <button className="rounded p-2 bg-yellow-600 text-white" onClick={()=> previewButton(imgData.id)}>
               <FontAwesomeIcon icon={faEye}/>
             </button>
-            <button className="rounded p-2 bg-red-600 text-white" onClick={ () => deleteButton(imgData.key)}>
+            <button className="rounded p-2 bg-red-600 text-white" onClick={ () => deleteButton(imgData.id)}>
               <FontAwesomeIcon icon={faTrashAlt}/>
             </button>
         </div>

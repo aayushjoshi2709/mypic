@@ -39,6 +39,13 @@ func (h *Handler) get(ctx *gin.Context) {
 	}
 	var getImageResponse GetImageResponse
 	getImageResponse.Set(ctx, image)
+	key, err := presign.GeneratePublicUrl(ctx, getImageResponse.Key)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error getting image with id: %s", id), "error", err)
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while getting the image"})
+		return
+	}
+	getImageResponse.Key = key
 	ctx.JSON(http.StatusOK, getImageResponse)
 }
 

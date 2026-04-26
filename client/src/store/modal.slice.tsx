@@ -3,7 +3,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 export interface Modal{
     data: {
         heading?: string,
-        key?: string
+        id?: string
     },
     name: string | null
 }
