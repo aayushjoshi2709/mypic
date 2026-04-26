@@ -112,8 +112,16 @@ func (h *Handler) getAll(ctx *gin.Context) {
 // @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/image [post]
 func (h *Handler) create(ctx *gin.Context) {
-	CreateImageRequest := &CreateImageRequest{}
-	image, err := h.repos["imageRepository"].(*Repository).Add(ctx, CreateImageRequest.Key)
+	createImageRequest := &CreateImageRequest{}
+	err := ctx.ShouldBindBodyWithJSON(createImageRequest)
+
+	if err != nil {
+		slog.Error("Error creating image entity", "error", err)
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid key name provided"})
+		return
+	}
+
+	image, err := h.repos["imageRepository"].(*Repository).Add(ctx, createImageRequest.Key)
 
 	if err != nil {
 		slog.Error("Error creating image", "error", err)
