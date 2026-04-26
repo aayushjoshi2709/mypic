@@ -32,6 +32,7 @@ const Photos = () => {
     fetchImages();
   }, [dispatch, loaded]);
   return (
+    <>
     <div className="flex-1 justify-center w-full">
       {loading ? (
         <div>Loading...</div>
@@ -53,6 +54,7 @@ const Photos = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

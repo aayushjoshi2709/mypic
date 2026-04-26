@@ -24,7 +24,6 @@ const AuthenticatedRoutes = () => {
       const userData = await apiClientObj.get(routes.CURRENT_USER);
       dispatch(setUser(userData));
     };
-    console.log("AuthenticatedRoutes: Checking authentication...");
     if (localStorage.getItem("token") !== null) {
       if (!user) {
         fetchUserData();

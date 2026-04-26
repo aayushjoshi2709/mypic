@@ -8,11 +8,15 @@ import Upload from "./screen/Upload/Upload";
 import AuthenticatedRoutes from "./component/AuthenticatedRoutes/AuthenticatedRoutes";
 import Search from "./screen/Search/Search";
 import Groups from "./screen/Groups/Groups";
+import DeleteModal from "./component/Modal/DeleteModal/DeleteModal";
+import PreviewModal from "./component/Modal/PreviewModal/PreviewModal";
 
 function App() {
 
 
-  return (
+  return <>
+    <DeleteModal/>
+    <PreviewModal/>
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
@@ -24,7 +28,7 @@ function App() {
         <Route path="groups" element={<Groups />} />
       </Route>
     </Routes>
-  );
+  </>
 }
 
 export default App;
