@@ -1,7 +1,6 @@
 package presign
 
 import (
-	"context"
 	"errors"
 	"log"
 	"log/slog"
@@ -12,16 +11,17 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Repository struct {
-	client 			*s3.Client			
-	presignClient	*s3.PresignClient
-	bucketName		string
+	client        *s3.Client
+	presignClient *s3.PresignClient
+	bucketName    string
 }
 
-func (repo *Repository) Init(ctx context.Context) (*Repository) {
+func (repo *Repository) Init(ctx *gin.Context) *Repository {
 	client, err := repo.getS3Client(ctx)
 	if err != nil {
 		log.Printf("Error creating S3 client: %v", err)
@@ -40,7 +40,7 @@ func (repo *Repository) Init(ctx context.Context) (*Repository) {
 	return repo
 }
 
-func (repo *Repository) getS3Client(ctx context.Context) (*s3.Client, error){
+func (repo *Repository) getS3Client(ctx *gin.Context) (*s3.Client, error) {
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
 
 	if accessKey == "" {
@@ -55,8 +55,15 @@ func (repo *Repository) getS3Client(ctx context.Context) (*s3.Client, error){
 		panic("Error loading aws secret key")
 	}
 
+	region := os.Getenv("AWS_REGION")
+
+	if region == "" {
+		slog.Error("Error loading aws region")
+		panic("Error loading aws region")
+	}
 
 	cfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(region),
 		config.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
 		),
@@ -65,12 +72,12 @@ func (repo *Repository) getS3Client(ctx context.Context) (*s3.Client, error){
 		log.Printf("Error loading AWS config: %v", err)
 		return nil, err
 	}
-	
+
 	return s3.NewFromConfig(cfg), nil
 }
 
 func (repo *Repository) PutObject(
-	ctx context.Context,
+	ctx *gin.Context,
 	objectKey string,
 	expirationInMin int,
 ) (*PresignedObjectResponse, error) {
@@ -96,13 +103,13 @@ func (repo *Repository) PutObject(
 		return nil, errors.New("Error generating presigned URL")
 	}
 
-	return &PresignedObjectResponse {
+	return &PresignedObjectResponse{
 		URL: presignResult.URL,
 		Key: objectKey,
 	}, nil
 }
 
-func (repository *Repository) GetObjectStream(ctx context.Context, key string) (*s3.GetObjectOutput, error) {
+func (repository *Repository) GetObjectStream(ctx *gin.Context, key string) (*s3.GetObjectOutput, error) {
 	out, err := repository.client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: &repository.bucketName,
 		Key:    &key,
@@ -113,21 +120,20 @@ func (repository *Repository) GetObjectStream(ctx context.Context, key string) (
 	return out, nil
 }
 
-func GeneratePublicUrl(ctx context.Context, imageKey string) (string, error) {
+func GeneratePublicUrl(ctx *gin.Context, imageKey string) (string, error) {
 	randomHash := "presign_image_" + bson.NewObjectID().Hex()
-	redis.Init().Set(ctx, randomHash, imageKey, time.Minute * 2)
+	redis.Init().Set(ctx, randomHash, imageKey, time.Minute*2)
 	return randomHash, nil
 }
 
-func GeneratePublicUrls(ctx context.Context, imageKeys []string) ([]string, error) {
+func GeneratePublicUrls(ctx *gin.Context, imageKeys []string) ([]string, error) {
 	publicUrls := make([]string, len(imageKeys))
-	var keyVal map[string]string  = make(map[string]string)
+	var keyVal map[string]string = make(map[string]string)
 	for i, key := range imageKeys {
 		randomHash := "presign_image_" + bson.NewObjectID().Hex()
 		keyVal[randomHash] = key
 		publicUrls[i] = randomHash
 	}
-	redis.Init().BulkSet(ctx, keyVal, time.Minute * 2)
+	redis.Init().BulkSet(ctx, keyVal, time.Minute*2)
 	return publicUrls, nil
 }
-

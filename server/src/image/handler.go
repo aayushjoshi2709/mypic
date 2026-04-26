@@ -7,20 +7,17 @@ import (
 
 	"github.com/aayushjoshi2709/mypic/src/common"
 	"github.com/aayushjoshi2709/mypic/src/presign"
-	"github.com/aayushjoshi2709/mypic/src/user"
 	"github.com/gin-gonic/gin"
 
 	"net/http"
-
-	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Handler struct {
-	repo map[string]any
+	repos map[string]any
 }
 
 func (h *Handler) New(repos map[string]any) {
-	h.repo = repos
+	h.repos = repos
 }
 
 // @Summary Get an image by ID
@@ -34,14 +31,14 @@ func (h *Handler) New(repos map[string]any) {
 // @Router /api/v1/image/{id} [get]
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
-	image, err := h.repo["imageRepository"].(*Repository).GetById(ctx.Request.Context(), id)
+	image, err := h.repos["imageRepository"].(*Repository).GetById(ctx, id)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error getting image with id: %s", id), "error", err)
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while getting the image"})
 		return
 	}
 	var getImageResponse GetImageResponse
-	getImageResponse.Set(ctx.Request.Context(), image)
+	getImageResponse.Set(ctx, image)
 	ctx.JSON(http.StatusOK, getImageResponse)
 }
 
@@ -81,27 +78,18 @@ func (h *Handler) getAll(ctx *gin.Context) {
 		return
 	}
 
-	userId, _ := ctx.Get("userId")
-	slog.Info("Getting all images for user", "userId", userId, "page", pageInt, "limit", limitInt)
-	userIdObjectId, err := bson.ObjectIDFromHex(userId.(string))
-	if err != nil {
-		slog.Error("Error converting userId to ObjectID", "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid user ID"})
-		return
-	}
-
-	images, err := h.repo["imageRepository"].(*Repository).GetAll(ctx.Request.Context(), userIdObjectId, pageInt, limitInt)
+	images, err := h.repos["imageRepository"].(*Repository).GetAll(ctx, pageInt, limitInt)
 
 	GetImageResponseArr := []GetImageResponse{}
 
 	imageUrl := []string{}
 	for _, image := range images {
 		var getImageResponse GetImageResponse
-		getImageResponse.Set(ctx.Request.Context(), &image)
+		getImageResponse.Set(ctx, &image)
 		imageUrl = append(imageUrl, image.Key)
 		GetImageResponseArr = append(GetImageResponseArr, getImageResponse)
 	}
-	imageUrlArr, err := presign.GeneratePublicUrls(ctx.Request.Context(), imageUrl)
+	imageUrlArr, err := presign.GeneratePublicUrls(ctx, imageUrl)
 	if err != nil {
 		slog.Error("Error generating public URLs for images", "error", err)
 		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating public URLs for the images"})
@@ -125,23 +113,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 // @Router /api/v1/image [post]
 func (h *Handler) create(ctx *gin.Context) {
 	CreateImageRequest := &CreateImageRequest{}
-
-	userId, _ := ctx.Get("userId")
-	userObjectId, err := bson.ObjectIDFromHex(userId.(string))
-	if err != nil {
-		slog.Error("Error converting userId to ObjectID", "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid user ID"})
-		return
-	}
-	loggedInUser := &user.User{Id: userObjectId}
-
-	if err := ctx.ShouldBindBodyWithJSON(CreateImageRequest); err != nil {
-		slog.Error("Error creating image", "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Provided data is not valid"})
-		return
-	}
-
-	image, err := h.repo["imageRepository"].(*Repository).Add(ctx.Request.Context(), CreateImageRequest.Key, loggedInUser)
+	image, err := h.repos["imageRepository"].(*Repository).Add(ctx, CreateImageRequest.Key)
 
 	if err != nil {
 		slog.Error("Error creating image", "error", err)
@@ -150,8 +122,8 @@ func (h *Handler) create(ctx *gin.Context) {
 	}
 
 	var getImageResponse GetImageResponse
-	getImageResponse.Set(ctx.Request.Context(), image)
-	getImageResponse.Key, err = presign.GeneratePublicUrl(ctx.Request.Context(), image.Key)
+	getImageResponse.Set(ctx, image)
+	getImageResponse.Key, err = presign.GeneratePublicUrl(ctx, image.Key)
 	if err != nil {
 		slog.Error("Error generating public URL for image", "error", err)
 		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating the public URL for the image"})
@@ -179,7 +151,7 @@ func (h *Handler) update(ctx *gin.Context) {
 		return
 	}
 
-	image, err := h.repo["imageRepository"].(*Repository).Update(ctx.Request.Context(), ctx.Param("id"), UpdateImageRequest.Key)
+	image, err := h.repos["imageRepository"].(*Repository).Update(ctx, ctx.Param("id"), UpdateImageRequest.Key)
 
 	if err != nil {
 		slog.Error("Error updating image", "error", err)
@@ -188,8 +160,8 @@ func (h *Handler) update(ctx *gin.Context) {
 	}
 
 	var getImageResponse GetImageResponse
-	getImageResponse.Set(ctx.Request.Context(), image)
-	getImageResponse.Key, err = presign.GeneratePublicUrl(ctx.Request.Context(), image.Key)
+	getImageResponse.Set(ctx, image)
+	getImageResponse.Key, err = presign.GeneratePublicUrl(ctx, image.Key)
 	if err != nil {
 		slog.Error("Error generating public URL for image", "error", err)
 		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating the public URL for the image"})
@@ -208,7 +180,7 @@ func (h *Handler) update(ctx *gin.Context) {
 // @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/image/{id} [delete]
 func (h *Handler) delete(ctx *gin.Context) {
-	err := h.repo["imageRepository"].(*Repository).Delete(ctx.Request.Context(), ctx.Param("id"))
+	err := h.repos["imageRepository"].(*Repository).Delete(ctx, ctx.Param("id"))
 
 	if err != nil {
 		slog.Error("Error deleting image", "error", err)

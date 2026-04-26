@@ -1,12 +1,11 @@
 package image
 
 import (
-	"context"
 	"log/slog"
 	"time"
 
-	"github.com/aayushjoshi2709/mypic/src/user"
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -26,14 +25,18 @@ func (repository *Repository) Init() {
 	repository.getImageCollection()
 }
 
-func (repository *Repository) GetById(ctx context.Context, id string) (*Image, error) {
+func (repository *Repository) GetById(ctx *gin.Context, id string) (*Image, error) {
+	userId, _ := ctx.Get("userId")
 	ObjectId, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
 
 	image := &Image{}
-	err = repository.collection.FindOne(ctx, bson.M{"_id": ObjectId}).Decode(image)
+	err = repository.collection.FindOne(ctx, bson.M{
+		"_id":    ObjectId,
+		"userId": userId,
+	}).Decode(image)
 
 	if err != nil {
 		return nil, err
@@ -42,7 +45,10 @@ func (repository *Repository) GetById(ctx context.Context, id string) (*Image, e
 	return image, err
 }
 
-func (repository *Repository) GetAll(ctx context.Context, userId bson.ObjectID, page, limit int) ([]Image, error) {
+func (repository *Repository) GetAll(ctx *gin.Context, page, limit int) ([]Image, error) {
+	userId, _ := ctx.Get("userId")
+
+	slog.Info("Getting all images for user", "userId", userId.(bson.ObjectID).String(), "page", page, "limit", limit)
 	cursor, err := repository.collection.Find(
 		ctx,
 		bson.M{"userId": userId},
@@ -62,12 +68,13 @@ func (repository *Repository) GetAll(ctx context.Context, userId bson.ObjectID, 
 	return images, err
 }
 
-func (repository *Repository) Add(ctx context.Context, key string, user *user.User) (*Image, error) {
-	slog.Info("Adding image with key", "key", key, "userId", user.Id.Hex())
+func (repository *Repository) Add(ctx *gin.Context, key string) (*Image, error) {
+	userId, _ := ctx.Get("userId")
+	slog.Info("Adding image with key", "key", key, "userId", userId.(bson.ObjectID).String())
 	image := &Image{
 		Id:        bson.NewObjectID(),
 		Key:       key,
-		UserId:    user.Id,
+		UserId:    userId.(bson.ObjectID),
 		CreatedAt: bson.NewDateTimeFromTime(time.Now()),
 		UpdatedAt: bson.NewDateTimeFromTime(time.Now()),
 	}
@@ -80,8 +87,9 @@ func (repository *Repository) Add(ctx context.Context, key string, user *user.Us
 	return image, err
 }
 
-func (repository *Repository) Update(ctx context.Context, id string, key string) (*Image, error) {
+func (repository *Repository) Update(ctx *gin.Context, id string, key string) (*Image, error) {
 	objectId, err := bson.ObjectIDFromHex(id)
+	userId, _ := ctx.Get("userId")
 
 	if err != nil {
 		return nil, err
@@ -103,7 +111,10 @@ func (repository *Repository) Update(ctx context.Context, id string, key string)
 
 	err = repository.collection.FindOneAndUpdate(
 		ctx,
-		bson.M{"_id": objectId},
+		bson.M{
+			"_id":    objectId,
+			"userId": userId,
+		},
 		updateFields,
 		options.FindOneAndUpdate().SetReturnDocument(options.After),
 	).Decode(image)
@@ -115,13 +126,16 @@ func (repository *Repository) Update(ctx context.Context, id string, key string)
 	return image, err
 }
 
-func (repository *Repository) Delete(ctx context.Context, id string) error {
+func (repository *Repository) Delete(ctx *gin.Context, id string) error {
+	userId, _ := ctx.Get("userId")
 	objectId, err := bson.ObjectIDFromHex(id)
-
 	if err != nil {
 		return err
 	}
 
-	_, err = repository.collection.DeleteOne(ctx, bson.M{"_id": objectId})
+	_, err = repository.collection.DeleteOne(ctx, bson.M{
+		"_id":    objectId,
+		"userId": userId,
+	})
 	return err
 }

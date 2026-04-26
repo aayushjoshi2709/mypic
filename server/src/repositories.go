@@ -1,7 +1,6 @@
 package src
 
 import (
-	"context"
 	"fmt"
 	"log/slog"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/aayushjoshi2709/mypic/src/image"
 	"github.com/aayushjoshi2709/mypic/src/presign"
 	"github.com/aayushjoshi2709/mypic/src/user"
+	"github.com/gin-gonic/gin"
 )
 
 var repositories = make(map[string]any)
@@ -29,7 +29,7 @@ func PrintRepositories() {
 	}
 }
 
-func SetUpRepositories(ctx context.Context) {
+func SetUpRepositories(ctx *gin.Context) {
 	userRepository := user.Repository{}
 	userRepository.Init()
 	SetRepository("userRepository", &userRepository)

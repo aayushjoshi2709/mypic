@@ -1,8 +1,6 @@
 package image
 
-import (
-	"context"
-)
+import "github.com/gin-gonic/gin"
 
 type GetImageResponse struct {
 	ID        string `json:"id"`
@@ -20,8 +18,7 @@ type UpdateImageRequest struct {
 	Key string `json:"key"`
 }
 
-
-func (getImageResponse *GetImageResponse) Set(ctx context.Context, image *Image) {
+func (getImageResponse *GetImageResponse) Set(ctx *gin.Context, image *Image) {
 	getImageResponse.ID = image.Id.Hex()
 	getImageResponse.Key = image.Key
 	getImageResponse.UserId = image.UserId.Hex()

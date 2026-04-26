@@ -14,14 +14,13 @@ import (
 )
 
 type Handler struct {
-	typeBucketMap map[string]string;
-	repo map[string]any
+	typeBucketMap map[string]string
+	repos         map[string]any
 }
 
 func (h *Handler) New(repos map[string]any) {
-	h.repo = repos;
+	h.repos = repos
 }
-
 
 // @Summary Get presigned URL for uploading an object to S3
 // @Description  Get presigned URL for uploading an object to S3
@@ -40,8 +39,8 @@ func (h *Handler) getUrl(ctx *gin.Context) {
 	}
 
 	key := fmt.Sprintf("image-%d-%s", time.Now().Unix(), presignedObjectRequest.OriginalName)
-	presignedObj, err := h.repo["presignRepository"].(*Repository).PutObject(
-		ctx.Request.Context(),
+	presignedObj, err := h.repos["presignRepository"].(*Repository).PutObject(
+		ctx,
 		key,
 		15,
 	)
@@ -66,7 +65,7 @@ func (h *Handler) getUrl(ctx *gin.Context) {
 func (h *Handler) getImageByPublicUrl(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	val, err := redis.Init().GetAndDelete(ctx.Request.Context(), id)
+	val, err := redis.Init().GetAndDelete(ctx, id)
 	if err != nil {
 		slog.Error("Error fetching original image key from Redis", "error", err)
 		ctx.JSON(http.StatusNotFound, common.ErrorResponseDto{Error: "Image not found"})
@@ -75,7 +74,7 @@ func (h *Handler) getImageByPublicUrl(ctx *gin.Context) {
 
 	originalImageKey := val
 
-	obj, err := h.repo["presignRepository"].(*Repository).GetObjectStream(ctx.Request.Context(), originalImageKey)
+	obj, err := h.repos["presignRepository"].(*Repository).GetObjectStream(ctx, originalImageKey)
 
 	if err != nil {
 		slog.Error("Error fetching object from S3", "error", err)
@@ -90,24 +89,24 @@ func (h *Handler) getImageByPublicUrl(ctx *gin.Context) {
 	ctx.Header("Cache-Control", "public, max-age=86400")
 
 	bodyCh := make(chan []byte, 1)
-    errCh := make(chan error, 1)
+	errCh := make(chan error, 1)
 
-    go func() {
-        defer obj.Body.Close()
-        b, err := io.ReadAll(obj.Body)
-        if err != nil {
-            errCh <- err
-            return
-        }
-        bodyCh <- b
-    }()
+	go func() {
+		defer obj.Body.Close()
+		b, err := io.ReadAll(obj.Body)
+		if err != nil {
+			errCh <- err
+			return
+		}
+		bodyCh <- b
+	}()
 
-    select {
-    case err := <-errCh:
-        slog.Error("Error reading object body", "error", err)
-        ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while streaming the image"})
-        return
-    case b := <-bodyCh:
-        ctx.Data(http.StatusOK, "image/jpeg", b)
-    }
+	select {
+	case err := <-errCh:
+		slog.Error("Error reading object body", "error", err)
+		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while streaming the image"})
+		return
+	case b := <-bodyCh:
+		ctx.Data(http.StatusOK, "image/jpeg", b)
+	}
 }

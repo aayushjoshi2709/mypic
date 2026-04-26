@@ -14,7 +14,7 @@ import (
 )
 
 type Handler struct {
-	repos map[string]any
+	repos           map[string]any
 	loggedOutPrefix string
 }
 
@@ -35,12 +35,11 @@ func (h *Handler) New(repos map[string]any) {
 // @Router /api/v1/user/{id} [get]
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
-	
+
 	user, err := h.repos["userRepository"].(*Repository).GetById(
-		ctx.Request.Context(),
+		ctx,
 		id,
 	)
-
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while fetching the user"})
@@ -72,7 +71,7 @@ func (h *Handler) create(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.repos["userRepository"].(*Repository).GetByUsername(ctx.Request.Context(), createUserRequest.Username)
+	user, err := h.repos["userRepository"].(*Repository).GetByUsername(ctx, createUserRequest.Username)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while fetching the user"})
 		slog.Error("Error fetching user", "error", err)
@@ -93,7 +92,7 @@ func (h *Handler) create(ctx *gin.Context) {
 	createUserRequest.Password = hashedPassword
 
 	user, err = h.repos["userRepository"].(*Repository).Add(
-		ctx.Request.Context(),
+		ctx,
 		createUserRequest.Name,
 		createUserRequest.Username,
 		createUserRequest.Password,
@@ -132,7 +131,7 @@ func (h *Handler) update(ctx *gin.Context) {
 	}
 
 	user, err := h.repos["userRepository"].(*Repository).Update(
-		ctx.Request.Context(),
+		ctx,
 		id,
 		updateUserRequest.Name,
 		updateUserRequest.Username,
@@ -161,7 +160,7 @@ func (h *Handler) update(ctx *gin.Context) {
 func (h *Handler) delete(ctx *gin.Context) {
 	id := ctx.Param("id")
 	err := h.repos["userRepository"].(*Repository).Delete(
-		ctx.Request.Context(),
+		ctx,
 		id,
 	)
 
@@ -193,7 +192,7 @@ func (h *Handler) login(ctx *gin.Context) {
 	}
 
 	user, err := h.repos["userRepository"].(*Repository).GetByUsername(
-		ctx.Request.Context(),
+		ctx,
 		loginUserRequest.Username,
 	)
 
@@ -212,13 +211,13 @@ func (h *Handler) login(ctx *gin.Context) {
 	}
 
 	token, err := jwt.Init().GenerateToken(user.Username, user.Id)
-	
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating the token"})
-		slog.Error("Error generating token", "error", err)	
+		slog.Error("Error generating token", "error", err)
 		return
 	}
-	
+
 	var loginUserResponse LoginUserResponse
 	loginUserResponse.Token = token
 	ctx.JSON(http.StatusOK, loginUserResponse)
@@ -255,22 +254,12 @@ func (h *Handler) logout(ctx *gin.Context) {
 		return
 	}
 	redisKey := h.loggedOutPrefix + tokenString.(string)
-	redis.Init().Set(ctx.Request.Context(), redisKey, "invalid", jwt.GetExprityInDays())
+	redis.Init().Set(ctx, redisKey, "invalid", jwt.GetExprityInDays())
 	ctx.JSON(http.StatusOK, LogoutUserResponse{Message: "Successfully logged out"})
 }
 
-
 func (h *Handler) getCurrentUser(ctx *gin.Context) {
-	userId, exists := ctx.Get("userId")
-	if !exists {
-		ctx.JSON(http.StatusUnauthorized, common.ErrorResponseDto{Error: "User ID not found in context"})
-		return
-	}
-
-	user, err := h.repos["userRepository"].(*Repository).GetById(
-		ctx.Request.Context(),
-		userId.(string),
-	)
+	user, err := h.repos["userRepository"].(*Repository).getCurrentUser(ctx)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while fetching the user"})

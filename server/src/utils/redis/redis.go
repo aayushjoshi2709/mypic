@@ -5,17 +5,17 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 )
 
-type Redis struct{
+type Redis struct {
 	RedisClient *redis.Client
 }
 
-
 var redisInstance *Redis
 
-func Init() *Redis{
+func Init() *Redis {
 	if redisInstance != nil {
 		return redisInstance
 	}
@@ -44,15 +44,15 @@ func GetConn() *redis.Client {
 	return client
 }
 
-func (r *Redis) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+func (r *Redis) Set(ctx *gin.Context, key string, value interface{}, expiration time.Duration) error {
 	return r.RedisClient.Set(ctx, key, value, expiration).Err()
 }
 
-func (r *Redis) Get(ctx context.Context, key string) (string, error) {
+func (r *Redis) Get(ctx *gin.Context, key string) (string, error) {
 	return r.RedisClient.Get(ctx, key).Result()
 }
 
-func (r *Redis) GetAndDelete(ctx context.Context, key string) (string, error) {
+func (r *Redis) GetAndDelete(ctx *gin.Context, key string) (string, error) {
 	luaScript := `
 		local value = redis.call("GET", KEYS[1])
 		if value then
@@ -70,11 +70,11 @@ func (r *Redis) GetAndDelete(ctx context.Context, key string) (string, error) {
 	return result.(string), nil
 }
 
-func (r *Redis) Del(ctx context.Context, keys ...string) error {
+func (r *Redis) Del(ctx *gin.Context, keys ...string) error {
 	return r.RedisClient.Del(ctx, keys...).Err()
 }
 
-func (r *Redis) Exists(ctx context.Context, key string) (bool, error) {
+func (r *Redis) Exists(ctx *gin.Context, key string) (bool, error) {
 	result, err := r.RedisClient.Exists(ctx, key).Result()
 	if err != nil {
 		return false, err
@@ -82,7 +82,7 @@ func (r *Redis) Exists(ctx context.Context, key string) (bool, error) {
 	return result > 0, nil
 }
 
-func (r *Redis) BulkSet(ctx context.Context, keyValuePairs map[string]string, expiration time.Duration) error {
+func (r *Redis) BulkSet(ctx *gin.Context, keyValuePairs map[string]string, expiration time.Duration) error {
 	pipe := r.RedisClient.Pipeline()
 	for key, value := range keyValuePairs {
 		pipe.Set(ctx, key, value, expiration)

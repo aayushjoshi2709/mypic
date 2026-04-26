@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
@@ -50,8 +49,7 @@ func main() {
 		}
 	})
 
-	ctx := context.Background()
-	src.SetUpRepositories(ctx)
+	src.SetUpRepositories(&gin.Context{})
 	src.SetUpHandlers()
 	router.Use(middleware.RequestIdMiddleware)
 	src.SetUpRoutes(router)

@@ -3,11 +3,11 @@ package comment
 import "github.com/gin-gonic/gin"
 
 type Handler struct{
-	repo map[string]any
+	repos map[string]any
 }
 
 func (h *Handler) New(repos map[string]any){
-	h.repo = repos
+	h.repos = repos
 }
 
 func (h *Handler) get(ctx *gin.Context) {}

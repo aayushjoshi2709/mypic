@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -39,21 +40,21 @@ func (repo *Repository) Init() {
 	repo.createIndexes()
 }
 
-func (repository *Repository) GetByUsername(ctx context.Context, username string) (*User, error) {
+func (repository *Repository) GetByUsername(ctx *gin.Context, username string) (*User, error) {
 	user := &User{}
 	err := repository.collection.FindOne(ctx, bson.M{"username": username}).Decode(user)
 
 	if err != nil {
-        if errors.Is(err, mongo.ErrNoDocuments) {
-            return nil, nil
-        }
-        return nil, err
-    }
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
+		return nil, err
+	}
 
 	return user, err
 }
 
-func (repository *Repository) GetById(ctx context.Context, id string) (*User, error) {
+func (repository *Repository) GetById(ctx *gin.Context, id string) (*User, error) {
 	objectId, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
@@ -69,7 +70,20 @@ func (repository *Repository) GetById(ctx context.Context, id string) (*User, er
 	return user, err
 }
 
-func (repository *Repository) Add(ctx context.Context, name, username, password string) (*User, error) {
+func (repository *Repository) getCurrentUser(ctx *gin.Context) (*User, error) {
+	userId, _ := ctx.Get("userId")
+
+	user := &User{}
+	err := repository.collection.FindOne(ctx, bson.M{"_id": userId}).Decode(user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, err
+}
+
+func (repository *Repository) Add(ctx *gin.Context, name, username, password string) (*User, error) {
 	user := User{}
 	user.Id = bson.NewObjectID()
 	user.Name = name
@@ -87,7 +101,7 @@ func (repository *Repository) Add(ctx context.Context, name, username, password 
 	return &user, err
 }
 
-func (repository *Repository) Update(ctx context.Context, id string, name, username string) (*User, error) {
+func (repository *Repository) Update(ctx *gin.Context, id string, name, username string) (*User, error) {
 	objectId, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
@@ -129,7 +143,7 @@ func (repository *Repository) Update(ctx context.Context, id string, name, usern
 	return user, err
 }
 
-func (repository *Repository) Delete(ctx context.Context, id string) error {
+func (repository *Repository) Delete(ctx *gin.Context, id string) error {
 	objectId, err := bson.ObjectIDFromHex(id)
 
 	if err != nil {
