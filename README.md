@@ -60,3 +60,14 @@ My pic is a application to store all the momories of your loved once at a single
     ```
     cd server && make dev
     ```
+
+# Running using docker 
+
+- Build the docker image
+    ```
+    docker build -t my-pic .
+    ```
+- Run the docker image
+    ```
+    docker run my-pic -p 80:80
+    ```
