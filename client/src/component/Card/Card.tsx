@@ -7,14 +7,12 @@ import { ModalNames } from "../../common/Constants";
 import DeleteModal from "../Modal/DeleteModal/DeleteModal";
 import PreviewModal from "../Modal/PreviewModal/PreviewModal";
 import { apiClientObj } from "../../common/apiClient";
-import { setFetchImages } from "../../store/image.slice";
+import { setCurrentImage, setFetchImages } from "../../store/image.slice";
 import toast from "react-hot-toast";
+import type { ImageDataInterface } from "../../common/interFaces";
 
 interface CardProps {
-  imgData: {
-    id: string;
-    url: string;
-  };
+  imgData: ImageDataInterface
 }
 
 const Card = ({ imgData }: CardProps) => {
@@ -35,12 +33,10 @@ const Card = ({ imgData }: CardProps) => {
         }
       }));
   }
-  const previewButton  = (key: string) => {
+  const previewButton  = (id: string) => {
+      dispatch(setCurrentImage({id}))
       dispatch(setModal({
-        name: ModalNames.PREVIEW_MODAL,
-        data:{
-          id: key
-        }
+        name: ModalNames.PREVIEW_MODAL
       }));
   }
   return <>

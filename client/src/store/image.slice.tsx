@@ -1,21 +1,15 @@
 import { createSlice, createListenerMiddleware } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { UserState } from "./user.slice";
 import { apiClientObj } from "../common/apiClient";
 import { routes } from "../common/routes";
+import type { ImageDataInterface } from "../common/interFaces";
 
 
-export interface ImageState {
-  id: string;
-  url: string;
-  createdAt: string;
-  updatedAt: string;
-  user: Partial<UserState>;
-}
+
 
 const initialState: {
-  images: ImageState[] | null;
-  currentImage: ImageState | null;
+  images: ImageDataInterface[] | null;
+  currentImage: ImageDataInterface | null;
   fetchImages: boolean;
 } = {
   images: null,
@@ -27,8 +21,15 @@ const ImageSlice = createSlice({
   name: "image",
   initialState,
   reducers: {
-    setImages: (state, action: PayloadAction<ImageState[]>) => {
+    setImages: (state, action: PayloadAction<ImageDataInterface[]>) => {
       state.images = [...action.payload];
+    },
+    setCurrentImage: (state, action: PayloadAction<{id: string}>) =>{
+      const newState = {
+        ...state,
+        currentImage: state.images?.find((image) => image.id === action.payload.id) || null
+      }
+      return newState
     },
     clearImage: () => {
       return initialState;
@@ -45,7 +46,7 @@ const ImageSlice = createSlice({
 
 
 
-export const { setImages, clearImage, setFetchImages, unsetFetchImages } = ImageSlice.actions;
+export const { setImages, clearImage, setCurrentImage, setFetchImages, unsetFetchImages } = ImageSlice.actions;
 
 
 export const listenerMiddleware = createListenerMiddleware();

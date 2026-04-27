@@ -1,9 +1,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import type { DeleteModalInterface } from "../component/Modal/DeleteModal/DeleteModal"
-import type { PreviewModalInterface } from "../component/Modal/PreviewModal/PreviewModal"
 
 export interface Modal{
-    data: DeleteModalInterface | PreviewModalInterface | null,
+    data?: DeleteModalInterface | null,
     name: string
 }
 
