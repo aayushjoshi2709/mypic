@@ -6,7 +6,7 @@ My pic is a application to store all the momories of your loved once at a single
 
 - Create a env file in the server folder
 
-```
+    ```
     # Application configuration
     PORT=3000
 
@@ -31,32 +31,32 @@ My pic is a application to store all the momories of your loved once at a single
     JWT_EXPIRES_IN=
 
     SITE_DOMAIN=""
-```
+    ```
 
 - Create another env file in client folder
-```
+    ```
     VITE_BASE_URL=http://localhost:3000
-```
+    ```
 
 - Install client dependencies
-```
+    ```
     cd client && npm install
-```
+    ```
 
 - Install server dependencies
-```
-   cd server && go mod download
-```
+    ```
+    cd server && go mod download
+    ```
 
 
 # Running dev env
 
 - Run frontend server
-```
-  cd client && npm run dev
-```
+    ```
+    cd client && npm run dev    
+    ```
 
 - Run backend server
-```
-  cd server && make dev
-```
+    ```
+    cd server && make dev
+    ```
