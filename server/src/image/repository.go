@@ -54,7 +54,7 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int) ([]Image
 		bson.M{"userId": userId},
 		options.
 			Find().
-			SetSort(bson.M{"created_at": -1}).
+			SetSort(bson.M{"created_at": 1}).
 			SetSkip(int64(limit*(page-1))).
 			SetLimit(int64(limit)),
 	)
