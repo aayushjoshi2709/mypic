@@ -19,7 +19,19 @@ func (h *Handler) New(repos map[string]any) {
 }
 
 func (h *Handler) add(ctx *gin.Context) {
+	createGroupRequest := &CreateGroupRequest{}
+	err := ctx.ShouldBindBodyWithJSON(createGroupRequest)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid value for the group name"})
+	}
 
+	err = h.repos["groupRepository"].(*Repository).Add(ctx, createGroupRequest.Name)
+	
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "Something went wrong"})
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Group created successfully"})
 }
 
 func (h *Handler) get(ctx *gin.Context) {

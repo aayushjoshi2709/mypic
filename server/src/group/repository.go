@@ -1,6 +1,8 @@
 package group
 
 import (
+	"time"
+
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -41,14 +43,14 @@ func (repository *Repository) GetById(ctx *gin.Context, id string) (*Group, erro
 		"id":      ObjectId,
 		"userIds": userId,
 	},
-	options.
-		FindOne().
-		SetProjection(
-			bson.M{
-				"_id":  1,
-				"name": 1,
-			},
-		),
+		options.
+			FindOne().
+			SetProjection(
+				bson.M{
+					"_id":  1,
+					"name": 1,
+				},
+			),
 	).Decode(group)
 
 	if err != nil {
@@ -83,8 +85,19 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int) ([]Group
 	return images, err
 }
 
-func (repository *Repository) Add(ctx *gin.Context) (Group, error) {
-	return Group{}, nil
+func (repository *Repository) Add(ctx *gin.Context, name string) error {
+	userId, _ := ctx.Get("userId")
+	
+	group := Group{
+		Id:        bson.NewObjectID(),
+		Name:      name,
+		createdBy: userId.(bson.ObjectID),
+		CreatedAt: bson.NewDateTimeFromTime(time.Now()),
+		UpdatedAt: bson.NewDateTimeFromTime(time.Now()),
+	}
+
+	_, err := repository.collection.InsertOne(ctx, group)
+	return err
 }
 
 func (repository *Repository) Update() (Group, error) {
