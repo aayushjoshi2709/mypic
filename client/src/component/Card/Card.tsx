@@ -9,7 +9,7 @@ import PreviewModal from "../Modal/PreviewModal/PreviewModal";
 import { apiClientObj } from "../../common/apiClient";
 import { setCurrentImage, setFetchImages } from "../../store/image.slice";
 import toast from "react-hot-toast";
-import type { ImageDataInterface } from "../../common/interFaces";
+import type { ImageDataInterface } from "../../common/interfaces";
 
 interface CardProps {
   imgData: ImageDataInterface

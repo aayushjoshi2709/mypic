@@ -2,7 +2,7 @@ import { createSlice, createListenerMiddleware } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { apiClientObj } from "../common/apiClient";
 import { routes } from "../common/routes";
-import type { ImageDataInterface } from "../common/interFaces";
+import type { ImageDataInterface } from "../common/interfaces";
 
 
 
