@@ -8,34 +8,34 @@ My pic is a application to store all the momories of your loved once at a single
 
     ```
     # Application configuration
-    PORT=3000
+    PORT=<backend port>
 
     # MongoDB configuration
-    MONGO_DB_URL=
-    MONGO_DB_MAX_POOL_SIZE=
-    MONGO_DB_MIN_POOL_SIZE=
-    MONGO_DB_NAME=
+    MONGO_DB_URL=<mongodb url>
+    MONGO_DB_MAX_POOL_SIZE=<max pool size for mongdb>
+    MONGO_DB_MIN_POOL_SIZE=<min pool size for mongdb>
+    MONGO_DB_NAME=<dbname for mongodb to connect to>
 
     # Redis configuration
-    REDIS_URI=
+    REDIS_URI=<redis url>
 
     # AWS S3 configuration
-    AWS_ACCESS_KEY_ID=
-    AWS_SECRET_KEY=
-    AWS_REGION=
-    AWS_S3_BUCKET_NAME=
-    AWS_CLOUD_FRONT_URL =
+    AWS_ACCESS_KEY_ID=<access key for aws>
+    AWS_SECRET_KEY=<access key secret for aws>
+    AWS_REGION=<access key secret for aws>
+    AWS_S3_BUCKET_NAME=<bucket name for s3>
+    AWS_CLOUD_FRONT_URL =<cloudfront url>
 
     # JWT configuration
-    JWT_SECRET_KEY=
-    JWT_EXPIRES_IN=
+    JWT_SECRET_KEY=<jwt secret for your application>
+    JWT_EXPIRES_IN=<jwt expiration for your application>
 
-    SITE_DOMAIN=""
+    SITE_DOMAIN=<domain of your website, leave blank string if running locally>
     ```
 
 - Create another env file in client folder
     ```
-    VITE_BASE_URL=http://localhost:3000
+    VITE_BASE_URL=<frontend url>
     ```
 
 - Install client dependencies
