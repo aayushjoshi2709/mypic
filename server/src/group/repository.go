@@ -87,11 +87,13 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int) ([]Group
 
 func (repository *Repository) Add(ctx *gin.Context, name string) error {
 	userId, _ := ctx.Get("userId")
-	
+
 	group := Group{
 		Id:        bson.NewObjectID(),
 		Name:      name,
 		createdBy: userId.(bson.ObjectID),
+		UserIds:   make([]bson.ObjectID, 0),
+		ImageIds:  make([]bson.ObjectID, 0),
 		CreatedAt: bson.NewDateTimeFromTime(time.Now()),
 		UpdatedAt: bson.NewDateTimeFromTime(time.Now()),
 	}
@@ -116,4 +118,104 @@ func (repository *Repository) Delete(ctx *gin.Context, id string) error {
 		"createdBy": userId,
 	})
 	return err
+}
+
+func (repository *Repository) AddImage(ctx *gin.Context, id string, imageId bson.ObjectID) error {
+	userId, _ := ctx.Get("userId")
+	groupId, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = repository.collection.UpdateOne(ctx,
+		bson.M{
+			"_id":       groupId,
+			"createdBy": userId,
+		},
+		bson.M{
+			"$push": bson.M{
+				"imageIds": imageId,
+			},
+		},
+	)
+	return err
+}
+
+func (repository *Repository) AddUser(ctx *gin.Context, id string, userIdToAdd bson.ObjectID) error {
+	userId, _ := ctx.Get("userId")
+	groupId, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = repository.collection.UpdateOne(ctx,
+		bson.M{
+			"_id":       groupId,
+			"createdBy": userId,
+		},
+		bson.M{
+			"$push": bson.M{
+				"userIds": userIdToAdd,
+			},
+		},
+	)
+	return err
+}
+
+func (repository *Repository) GetImageIds(ctx *gin.Context, id string, pageInt, limitInt int) ([]bson.ObjectID, error) {
+	userId, _ := ctx.Get("userId")
+	groupId, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var groupObj struct {
+		ImageIds []bson.ObjectID
+	}
+	err = repository.collection.FindOne(
+		ctx,
+		bson.M{
+			"_id":     groupId,
+			"userIds": userId,
+		},
+		options.FindOne().SetProjection(bson.M{
+			"imageIds": bson.M{
+				"$slice": []int{
+					(pageInt - 1) * limitInt,
+					limitInt,
+				},
+			},
+		}),
+	).Decode(&groupObj)
+
+	return groupObj.ImageIds, nil
+}
+
+func (repository *Repository) GetUserIds(ctx *gin.Context, id string, pageInt, limitInt int) ([]bson.ObjectID, error) {
+	userId, _ := ctx.Get("userId")
+	groupId, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var groupObj struct {
+		UserIds []bson.ObjectID
+	}
+	err = repository.collection.FindOne(
+		ctx,
+		bson.M{
+			"_id":     groupId,
+			"userIds": userId,
+		},
+		options.FindOne().SetProjection(bson.M{
+			"userIds": bson.M{
+				"$slice": []int{
+					(pageInt - 1) * limitInt,
+					limitInt,
+				},
+			},
+		}),
+	).Decode(&groupObj)
+
+	return groupObj.UserIds, nil
 }

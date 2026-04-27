@@ -15,3 +15,11 @@ func (getGroupResponse *GetGroupResponse) Set(ctx *gin.Context, group *Group) {
 type CreateGroupRequest struct {
 	Name string `json:"name"`
 }
+
+type AddImageRequest struct {
+	ImageId string `json:"imageId"`
+}
+
+type AddUserRequest struct {
+	UserId string `json:"userId"`
+}

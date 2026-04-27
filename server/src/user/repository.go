@@ -153,3 +153,25 @@ func (repository *Repository) Delete(ctx *gin.Context, id string) error {
 	_, err = repository.collection.DeleteOne(ctx, bson.M{"_id": objectId})
 	return err
 }
+
+func (repository *Repository) FindByIds(ctx *gin.Context, ids []bson.ObjectID) ([]User, error) {
+	cursor, err := repository.collection.Find(
+		ctx,
+		bson.M{
+			"_id": bson.M{
+				"$in": ids,
+			},
+		},
+		options.Find().SetProjection(bson.M{
+			"password": 0,
+		}),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	users := []User{}
+	err = cursor.All(ctx, &users)
+	return users, err
+}

@@ -59,12 +59,8 @@ func (h *Handler) get(ctx *gin.Context) {
 // @Failure 400 {object} common.ErrorResponseDto
 // @Router /api/v1/image [get]
 func (h *Handler) getAll(ctx *gin.Context) {
-	page := ctx.Query("page")
-	limit := ctx.Query("limit")
-
-	if page == "" {
-		page = "1"
-	}
+	page := ctx.DefaultQuery("page", "1")
+	limit := ctx.DefaultQuery("limit", "10")
 
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
@@ -73,9 +69,6 @@ func (h *Handler) getAll(ctx *gin.Context) {
 		return
 	}
 
-	if limit == "" {
-		limit = "10"
-	}
 
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {

@@ -140,3 +140,24 @@ func (repository *Repository) Delete(ctx *gin.Context, id string) error {
 	})
 	return err
 }
+
+
+
+func (repository *Repository) FindByIds(ctx *gin.Context, ids []bson.ObjectID) ([]Image, error) {
+	cursor, err := repository.collection.Find(
+		ctx,
+		bson.M{
+			"_id": bson.M{
+				"$in": ids,
+			},
+		},
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	images := []Image{}
+	err = cursor.All(ctx, &images)
+	return images, err
+}
