@@ -7,5 +7,4 @@ import (
 
 func Routes(group *gin.RouterGroup, handler *Handler) {
 	group.POST("", middleware.AuthMiddleware, handler.getUrl)
-	group.GET("/:id", handler.getImageByPublicUrl)
 }

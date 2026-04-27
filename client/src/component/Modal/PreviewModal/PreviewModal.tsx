@@ -42,7 +42,7 @@ const PreviewModal = () => {
                 loading?
                 <p>Loading...</p>
                 :
-                <img src={routes.IMAGE_PREFIX + imageData?.key}/>
+                <img src={imageData?.url}/>
             }
             
         </div>

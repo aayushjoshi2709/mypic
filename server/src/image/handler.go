@@ -3,21 +3,27 @@ package image
 import (
 	"fmt"
 	"log/slog"
+	"os"
 	"strconv"
 
 	"github.com/aayushjoshi2709/mypic/src/common"
-	"github.com/aayushjoshi2709/mypic/src/presign"
 	"github.com/gin-gonic/gin"
 
 	"net/http"
 )
 
 type Handler struct {
-	repos map[string]any
+	repos         map[string]any
+	cloudFrontUrl string
 }
 
 func (h *Handler) New(repos map[string]any) {
 	h.repos = repos
+	h.cloudFrontUrl = os.Getenv("AWS_CLOUD_FRONT_URL")
+	if h.cloudFrontUrl == "" {
+		slog.Error("Cloudfront url not found")
+		panic("Cloudfront url not found")
+	}
 }
 
 // @Summary Get an image by ID
@@ -38,14 +44,7 @@ func (h *Handler) get(ctx *gin.Context) {
 		return
 	}
 	var getImageResponse GetImageResponse
-	getImageResponse.Set(ctx, image)
-	key, err := presign.GeneratePublicUrl(ctx, getImageResponse.Key)
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error getting image with id: %s", id), "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while getting the image"})
-		return
-	}
-	getImageResponse.Key = key
+	getImageResponse.Set(ctx, h.cloudFrontUrl, image)
 	ctx.JSON(http.StatusOK, getImageResponse)
 }
 
@@ -88,23 +87,10 @@ func (h *Handler) getAll(ctx *gin.Context) {
 	images, err := h.repos["imageRepository"].(*Repository).GetAll(ctx, pageInt, limitInt)
 
 	GetImageResponseArr := []GetImageResponse{}
-
-	imageUrl := []string{}
 	for _, image := range images {
 		var getImageResponse GetImageResponse
-		getImageResponse.Set(ctx, &image)
-		imageUrl = append(imageUrl, image.Key)
+		getImageResponse.Set(ctx, h.cloudFrontUrl, &image)
 		GetImageResponseArr = append(GetImageResponseArr, getImageResponse)
-	}
-	imageUrlArr, err := presign.GeneratePublicUrls(ctx, imageUrl)
-	if err != nil {
-		slog.Error("Error generating public URLs for images", "error", err)
-		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating public URLs for the images"})
-		return
-	}
-
-	for i := range GetImageResponseArr {
-		GetImageResponseArr[i].Key = imageUrlArr[i]
 	}
 	ctx.JSON(http.StatusOK, GetImageResponseArr)
 }
@@ -128,23 +114,14 @@ func (h *Handler) create(ctx *gin.Context) {
 		return
 	}
 
-	image, err := h.repos["imageRepository"].(*Repository).Add(ctx, createImageRequest.Key)
+	err = h.repos["imageRepository"].(*Repository).Add(ctx, createImageRequest.Key, createImageRequest.OriginalName)
 
 	if err != nil {
 		slog.Error("Error creating image", "error", err)
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while creating the image"})
 		return
 	}
-
-	var getImageResponse GetImageResponse
-	getImageResponse.Set(ctx, image)
-	getImageResponse.Key, err = presign.GeneratePublicUrl(ctx, image.Key)
-	if err != nil {
-		slog.Error("Error generating public URL for image", "error", err)
-		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating the public URL for the image"})
-		return
-	}
-	ctx.JSON(http.StatusCreated, getImageResponse)
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Image created successfully"})
 }
 
 // @UpdateImage godoc
@@ -166,7 +143,7 @@ func (h *Handler) update(ctx *gin.Context) {
 		return
 	}
 
-	image, err := h.repos["imageRepository"].(*Repository).Update(ctx, ctx.Param("id"), UpdateImageRequest.Key)
+	image, err := h.repos["imageRepository"].(*Repository).Update(ctx, ctx.Param("id"), UpdateImageRequest.Key, UpdateImageRequest.OriginalName)
 
 	if err != nil {
 		slog.Error("Error updating image", "error", err)
@@ -175,13 +152,7 @@ func (h *Handler) update(ctx *gin.Context) {
 	}
 
 	var getImageResponse GetImageResponse
-	getImageResponse.Set(ctx, image)
-	getImageResponse.Key, err = presign.GeneratePublicUrl(ctx, image.Key)
-	if err != nil {
-		slog.Error("Error generating public URL for image", "error", err)
-		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "An error occurred while generating the public URL for the image"})
-		return
-	}
+	getImageResponse.Set(ctx, h.cloudFrontUrl, image)
 	ctx.JSON(200, getImageResponse)
 }
 

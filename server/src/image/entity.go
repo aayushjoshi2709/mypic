@@ -5,9 +5,10 @@ import (
 )
 
 type Image struct {
-	Id        bson.ObjectID      `bson:"_id,omitempty"`
-	Key       string             `bson:"key,omitempty"`
-	CreatedAt bson.DateTime `bson:"createdAt,omitempty"`
-	UpdatedAt bson.DateTime `bson:"updatedAt,omitempty"`
-	UserId    bson.ObjectID  `bson:"userId,omitempty"`
+	Id           bson.ObjectID `bson:"_id,omitempty"`
+	Key          string        `bson:"key,omitempty"`
+	OriginalName string        `bson:"originalName,omitempty"`
+	CreatedAt    bson.DateTime `bson:"createdAt,omitempty"`
+	UpdatedAt    bson.DateTime `bson:"updatedAt,omitempty"`
+	UserId       bson.ObjectID `bson:"userId,omitempty"`
 }

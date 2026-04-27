@@ -68,26 +68,23 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int) ([]Image
 	return images, err
 }
 
-func (repository *Repository) Add(ctx *gin.Context, key string) (*Image, error) {
+func (repository *Repository) Add(ctx *gin.Context, key string, originalName string) error {
 	userId, _ := ctx.Get("userId")
 	slog.Info("Adding image with key", "key", key, "userId", userId.(bson.ObjectID).String())
 	image := &Image{
-		Id:        bson.NewObjectID(),
-		Key:       key,
-		UserId:    userId.(bson.ObjectID),
-		CreatedAt: bson.NewDateTimeFromTime(time.Now()),
-		UpdatedAt: bson.NewDateTimeFromTime(time.Now()),
+		Id:           bson.NewObjectID(),
+		OriginalName: originalName,
+		Key:          key,
+		UserId:       userId.(bson.ObjectID),
+		CreatedAt:    bson.NewDateTimeFromTime(time.Now()),
+		UpdatedAt:    bson.NewDateTimeFromTime(time.Now()),
 	}
 
 	_, err := repository.collection.InsertOne(ctx, image)
-	if err != nil {
-		return nil, err
-	}
-
-	return image, err
+	return err
 }
 
-func (repository *Repository) Update(ctx *gin.Context, id string, key string) (*Image, error) {
+func (repository *Repository) Update(ctx *gin.Context, id string, key string, originalName string) (*Image, error) {
 	objectId, err := bson.ObjectIDFromHex(id)
 	userId, _ := ctx.Get("userId")
 
@@ -99,6 +96,10 @@ func (repository *Repository) Update(ctx *gin.Context, id string, key string) (*
 
 	if key != "" {
 		updateFields["key"] = key
+	}
+
+	if originalName != "" {
+		updateFields["originalName"] = originalName
 	}
 
 	if len(updateFields) == 0 {

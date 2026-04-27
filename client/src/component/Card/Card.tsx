@@ -8,11 +8,12 @@ import DeleteModal from "../Modal/DeleteModal/DeleteModal";
 import PreviewModal from "../Modal/PreviewModal/PreviewModal";
 import { apiClientObj } from "../../common/apiClient";
 import { setFetchImages } from "../../store/image.slice";
+import toast from "react-hot-toast";
 
 interface CardProps {
   imgData: {
-    key: string;
     id: string;
+    url: string;
   };
 }
 
@@ -22,6 +23,7 @@ const Card = ({ imgData }: CardProps) => {
     await apiClientObj.delete(routes.GET_SINGLE_IMAGE + imgData.id);
     dispatch(clearModal())
     dispatch(setFetchImages())
+    toast.success("Image deleted successfully")
   }
   const deleteButton = (key: string) => {
       dispatch(setModal({
@@ -47,7 +49,7 @@ const Card = ({ imgData }: CardProps) => {
     <div className="group break-inside-avoid mb-4 relative">
       <img
         className="rounded-sm w-full hover:shadow-xl min-h-[200px] h-auto block"
-        src={routes.IMAGE_PREFIX + imgData.key}
+        src={imgData.url}
       />
       <div className="absolute bottom-0 right-0 hidden group-hover:flex w-full bg-black/60 justify-end">
         <div className="flex gap-2 m-2">

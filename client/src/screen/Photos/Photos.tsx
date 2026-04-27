@@ -1,40 +1,24 @@
 import { useDispatch, useSelector } from "react-redux";
 import Card from "../../component/Card/Card";
 import type { RootState } from "../../store/store";
-import { useEffect, useState } from "react";
-import { setImages, unsetFetchImages } from "../../store/image.slice";
-import { apiClientObj } from "../../common/apiClient";
-import { routes } from "../../common/routes";
+import { setFetchImages } from "../../store/image.slice";
 import { useNavigate } from "react-router";
+import { useEffect } from "react";
 
 const Photos = () => {
-  const [loading, setLoading] = useState(false);
   const image = useSelector((state: RootState) => state.image);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  useEffect(() => {
-    const fetchImages = async () => {
-      setLoading(true);
-      try {
-        const response = await apiClientObj.get(routes.GET_ALL_IMAGES);
-        dispatch(unsetFetchImages());
-        dispatch(setImages(response));
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching images:", error);
-         dispatch(unsetFetchImages());
-        setLoading(false);
-        return [];
-      }
-    };
-    if(image.fetchImages){
-      fetchImages();
+  useEffect(()=>{
+    if(image.images == null){
+      dispatch(setFetchImages())
     }
-  }, [dispatch, image]);
+  },
+  [image.fetchImages, image.images, dispatch])
   return (
     <>
     <div className="flex-1 justify-center w-full">
-      {loading ? (
+      {image.fetchImages ? (
         <div>Loading...</div>
       ) : image.images && image.images.length > 0 ? (
         <main className="columns-3 gap-4 p-4 my-4">

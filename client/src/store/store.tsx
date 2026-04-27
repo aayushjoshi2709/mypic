@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./user.slice";
-import imageReducer from "./image.slice";
+import imageReducer, { listenerMiddleware } from "./image.slice";
 import modalReducer from "./modal.slice"
 export const store = configureStore({
   reducer: {
@@ -8,6 +8,8 @@ export const store = configureStore({
     image: imageReducer,
     modal: modalReducer
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().prepend(listenerMiddleware.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

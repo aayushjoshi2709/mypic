@@ -7,12 +7,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/aayushjoshi2709/mypic/src/utils/redis"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Repository struct {
@@ -118,22 +116,4 @@ func (repository *Repository) GetObjectStream(ctx *gin.Context, key string) (*s3
 		return nil, err
 	}
 	return out, nil
-}
-
-func GeneratePublicUrl(ctx *gin.Context, imageKey string) (string, error) {
-	randomHash := "presign_image_" + bson.NewObjectID().Hex()
-	redis.Init().Set(ctx, randomHash, imageKey, time.Minute*2)
-	return randomHash, nil
-}
-
-func GeneratePublicUrls(ctx *gin.Context, imageKeys []string) ([]string, error) {
-	publicUrls := make([]string, len(imageKeys))
-	var keyVal map[string]string = make(map[string]string)
-	for i, key := range imageKeys {
-		randomHash := "presign_image_" + bson.NewObjectID().Hex()
-		keyVal[randomHash] = key
-		publicUrls[i] = randomHash
-	}
-	redis.Init().BulkSet(ctx, keyVal, time.Minute*2)
-	return publicUrls, nil
 }

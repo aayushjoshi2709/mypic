@@ -25,8 +25,9 @@ const Upload = () => {
     });
   }
 
-  async function updateImageDatabase(key: string) {
+  async function updateImageDatabase(originalName: string, key: string) {
     await apiClientObj.post(routes.CREATE_IMAGE, {
+      originalName,
       key,
     });
     dispatch(setFetchImages());
@@ -48,7 +49,7 @@ const Upload = () => {
           : "videos";
         const { url, key } = await getPresinedUrl(fileName, imageOrVedio);
         await uploadImageToS3(url, file);
-        await updateImageDatabase(key);
+        await updateImageDatabase(fileName, key);
         toast.success("Image uploaded successfully!");
       }
       setLoading(false);

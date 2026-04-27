@@ -10,7 +10,6 @@ const endpoints = {
   CREATE_IMAGE: "/api/v1/image",
   GET_ALL_IMAGES: "/api/v1/image",
   GET_SINGLE_IMAGE:"/api/v1/image/",
-  IMAGE_PREFIX: "/api/v1/presign/",
 };
 
 function getFullUrl(route: string) {
@@ -27,6 +26,5 @@ export const routes = {
   GET_PRESIGNED_URL: getFullUrl(endpoints.GET_PRESIGNED_URL),
   CREATE_IMAGE: getFullUrl(endpoints.CREATE_IMAGE),
   GET_ALL_IMAGES: getFullUrl(endpoints.GET_ALL_IMAGES),
-  IMAGE_PREFIX: getFullUrl(endpoints.IMAGE_PREFIX),
   GET_SINGLE_IMAGE:  getFullUrl(endpoints.GET_SINGLE_IMAGE)
 };
