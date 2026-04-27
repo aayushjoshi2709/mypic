@@ -34,6 +34,7 @@ func (h *Handler) New(repos map[string]any) {
 // @Param id path string true "Image ID"
 // @Success 200 {object} GetImageResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/image/{id} [get]
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -57,6 +58,7 @@ func (h *Handler) get(ctx *gin.Context) {
 // @Param limit query number false "Number of images per page" default(10)
 // @Success 200 {object} []GetImageResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/image [get]
 func (h *Handler) getAll(ctx *gin.Context) {
 	page := ctx.DefaultQuery("page", "1")
@@ -96,6 +98,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 // @Param image body CreateImageRequest true "Image details"
 // @Success 201 {object} GetImageResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/image [post]
 func (h *Handler) create(ctx *gin.Context) {
 	createImageRequest := &CreateImageRequest{}
@@ -127,6 +130,7 @@ func (h *Handler) create(ctx *gin.Context) {
 // @Param image body UpdateImageRequest true "Updated image details"
 // @Success 200 {object} GetImageResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/image/{id} [put]
 func (h *Handler) update(ctx *gin.Context) {
 	UpdateImageRequest := &UpdateImageRequest{}
@@ -157,6 +161,7 @@ func (h *Handler) update(ctx *gin.Context) {
 // @Param id path string true "Image ID"
 // @Success 204 "No Content"
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/image/{id} [delete]
 func (h *Handler) delete(ctx *gin.Context) {
 	err := h.repos["imageRepository"].(*Repository).Delete(ctx, ctx.Param("id"))

@@ -24,11 +24,15 @@ func init() {
 	db.Init()
 }
 
-// @title MyPic API
+// @title My API
 // @version 1.0
-// @description API for MyPic application
+// @description API for my project
 // @host localhost:3000
-// @basePath /
+// @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	router := gin.Default()
 

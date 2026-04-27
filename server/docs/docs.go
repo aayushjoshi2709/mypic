@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/api/v1/group": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get all group",
                 "consumes": [
                     "application/json"
@@ -63,6 +68,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Add new group",
                 "consumes": [
                     "application/json"
@@ -76,8 +86,8 @@ const docTemplate = `{
                 "summary": "Add new group",
                 "parameters": [
                     {
-                        "description": "User details",
-                        "name": "user",
+                        "description": "Group details",
+                        "name": "group",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -106,6 +116,11 @@ const docTemplate = `{
         },
         "/api/v1/group/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get an group by its unique ID",
                 "consumes": [
                     "application/json"
@@ -120,7 +135,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Image ID",
+                        "description": "Group ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -142,6 +157,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete a group",
                 "consumes": [
                     "application/json"
@@ -177,6 +197,11 @@ const docTemplate = `{
         },
         "/api/v1/group/{id}/image": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get all images of the group",
                 "consumes": [
                     "application/json"
@@ -223,6 +248,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Add image to the group",
                 "consumes": [
                     "application/json"
@@ -266,6 +296,11 @@ const docTemplate = `{
         },
         "/api/v1/group/{id}/image/{imageId}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete a image from the group",
                 "consumes": [
                     "application/json"
@@ -308,6 +343,11 @@ const docTemplate = `{
         },
         "/api/v1/group/{id}/user": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get all users of the group",
                 "consumes": [
                     "application/json"
@@ -354,6 +394,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Add user to the group",
                 "consumes": [
                     "application/json"
@@ -397,6 +442,11 @@ const docTemplate = `{
         },
         "/api/v1/group/{id}/user/{userId}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete a user from the group",
                 "consumes": [
                     "application/json"
@@ -439,6 +489,11 @@ const docTemplate = `{
         },
         "/api/v1/image": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get all images in the database",
                 "consumes": [
                     "application/json"
@@ -485,6 +540,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new image with the provided details",
                 "consumes": [
                     "application/json"
@@ -525,6 +585,11 @@ const docTemplate = `{
         },
         "/api/v1/image/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get an image by its unique ID",
                 "consumes": [
                     "application/json"
@@ -561,6 +626,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update an existing image with the provided details",
                 "consumes": [
                     "application/json"
@@ -606,6 +676,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete an existing image by ID",
                 "consumes": [
                     "application/json"
@@ -641,6 +716,11 @@ const docTemplate = `{
         },
         "/api/v1/presign": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get presigned URL for uploading an object to S3",
                 "consumes": [
                     "application/json"
@@ -767,6 +847,11 @@ const docTemplate = `{
         },
         "/api/v1/user/logout": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Logout a user by invalidating their token",
                 "consumes": [
                     "application/json"
@@ -805,8 +890,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get current user details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get current user details",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.GetUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.ErrorResponseDto"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get a user by their unique ID",
                 "consumes": [
                     "application/json"
@@ -843,6 +967,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update an existing user with the provided details",
                 "consumes": [
                     "application/json"
@@ -894,6 +1023,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete an existing user by ID",
                 "consumes": [
                     "application/json"
@@ -1142,6 +1276,13 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -1151,8 +1292,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:3000",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "MyPic API",
-	Description:      "API for MyPic application",
+	Title:            "My API",
+	Description:      "API for my project",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

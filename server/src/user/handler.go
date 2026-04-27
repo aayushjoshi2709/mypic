@@ -32,6 +32,7 @@ func (h *Handler) New(repos map[string]any) {
 // @Param id path string true "User ID"
 // @Success 200 {object} GetUserResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/user/{id} [get]
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -120,6 +121,7 @@ func (h *Handler) create(ctx *gin.Context) {
 // @Success 200 {object} GetUserResponse
 // @Failure 400 {object} common.ErrorResponseDto
 // @Failure 404 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/user/{id} [put]
 func (h *Handler) update(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -156,6 +158,7 @@ func (h *Handler) update(ctx *gin.Context) {
 // @Param id path string true "User ID"
 // @Success 204 "No Content"
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/user/{id} [delete]
 func (h *Handler) delete(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -232,6 +235,7 @@ func (h *Handler) login(ctx *gin.Context) {
 // @Param token body LogoutUserRequest true "Logout payload"
 // @Success 200 {object} LogoutUserResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/user/logout [delete]
 func (h *Handler) logout(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
@@ -258,6 +262,16 @@ func (h *Handler) logout(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, LogoutUserResponse{Message: "Successfully logged out"})
 }
 
+// GetCurrentUser godoc
+// @Summary Get current user details
+// @Description Get current user details
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Success 200 {object} GetUserResponse
+// @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
+// @Router /api/v1/user/me [get]
 func (h *Handler) getCurrentUser(ctx *gin.Context) {
 	user, err := h.repos["userRepository"].(*Repository).getCurrentUser(ctx)
 

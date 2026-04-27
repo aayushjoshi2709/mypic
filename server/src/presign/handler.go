@@ -27,6 +27,7 @@ func (h *Handler) New(repos map[string]any) {
 // @Param presignedObjectRequest body PresignedObjectRequest true "Presigned Object Request"
 // @Success 200 {object} PresignedObjectResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/presign [post]
 func (h *Handler) getUrl(ctx *gin.Context) {
 	var presignedObjectRequest = &PresignedObjectRequest{}

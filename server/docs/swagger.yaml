@@ -145,8 +145,8 @@ definitions:
 host: localhost:3000
 info:
   contact: {}
-  description: API for MyPic application
-  title: MyPic API
+  description: API for my project
+  title: My API
   version: "1.0"
 paths:
   /api/v1/group:
@@ -178,6 +178,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Get all groups
       tags:
       - Group
@@ -186,9 +188,9 @@ paths:
       - application/json
       description: Add new group
       parameters:
-      - description: User details
+      - description: Group details
         in: body
-        name: user
+        name: group
         required: true
         schema:
           $ref: '#/definitions/group.CreateGroupRequest'
@@ -205,6 +207,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Add new group
       tags:
       - Group
@@ -228,6 +232,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Delete a group
       tags:
       - Group
@@ -236,7 +242,7 @@ paths:
       - application/json
       description: Get an group by its unique ID
       parameters:
-      - description: Image ID
+      - description: Group ID
         in: path
         name: id
         required: true
@@ -252,6 +258,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Get an group by ID
       tags:
       - Group
@@ -284,6 +292,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Get all images of the group
       tags:
       - Group
@@ -311,6 +321,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Add image to the group
       tags:
       - Group
@@ -339,6 +351,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Delete a image from the group
       tags:
       - Group
@@ -371,6 +385,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Get all users of the group
       tags:
       - Group
@@ -398,6 +414,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Add user to the group
       tags:
       - Group
@@ -426,6 +444,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Delete a user from the group
       tags:
       - Group
@@ -458,6 +478,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Get all images
       tags:
       - Images
@@ -483,6 +505,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Create a new image
       tags:
       - Images
@@ -506,6 +530,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Delete an existing image
       tags:
       - Images
@@ -530,6 +556,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Get an image by ID
       tags:
       - Images
@@ -560,6 +588,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Update an existing image
       tags:
       - Images
@@ -586,6 +616,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Get presigned URL for uploading an object to S3
       tags:
       - Presign
@@ -635,6 +667,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Delete an existing user
       tags:
       - Users
@@ -659,6 +693,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Get a user by ID
       tags:
       - Users
@@ -693,6 +729,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Update an existing user
       tags:
       - Users
@@ -749,7 +787,35 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
       summary: Logout a user
       tags:
       - Users
+  /api/v1/user/me:
+    get:
+      consumes:
+      - application/json
+      description: Get current user details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.GetUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponseDto'
+      security:
+      - BearerAuth: []
+      summary: Get current user details
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

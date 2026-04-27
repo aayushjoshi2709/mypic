@@ -35,6 +35,7 @@ func (h *Handler) New(repos map[string]any) {
 // @Param group body CreateGroupRequest true "Group details"
 // @Success 201 {object} map[string]string
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/group [post]
 func (h *Handler) add(ctx *gin.Context) {
 	createGroupRequest := &CreateGroupRequest{}
@@ -60,6 +61,7 @@ func (h *Handler) add(ctx *gin.Context) {
 // @Param id path string true "Group ID"
 // @Success 200 {object} GetGroupResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/group/{id} [get]
 func (h *Handler) get(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -83,6 +85,7 @@ func (h *Handler) get(ctx *gin.Context) {
 // @Param limit query number false "Number of groups per page" default(10)
 // @Success 200 {object} []GetGroupResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/group [get]
 func (h *Handler) getAll(ctx *gin.Context) {
 	page := ctx.DefaultQuery("page", "1")
@@ -121,6 +124,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 // @Param id path string true "Group ID"
 // @Success 204 "No Content"
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/group/{id} [delete]
 func (h *Handler) delete(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -142,6 +146,7 @@ func (h *Handler) delete(ctx *gin.Context) {
 // @Param image body AddImageRequest true "Image details"
 // @Success 201 {object} map[string]string
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/group/{id}/image [post]
 func (h *Handler) addImage(ctx *gin.Context) {
 	groupId := ctx.Param("id")
@@ -182,6 +187,7 @@ func (h *Handler) addImage(ctx *gin.Context) {
 // @Param user body AddUserRequest true "User details"
 // @Success 201 {object} map[string]string
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/group/{id}/user [post]
 func (h *Handler) addUser(ctx *gin.Context) {
 	groupId := ctx.Param("id")
@@ -223,6 +229,7 @@ func (h *Handler) addUser(ctx *gin.Context) {
 // @Param limit query number false "Number of images per page" default(10)
 // @Success 200 {object} []image.GetImageResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/group/{id}/image [get]
 func (h *Handler) getImages(ctx *gin.Context) {
 	groupId := ctx.Param("id")
@@ -270,6 +277,7 @@ func (h *Handler) getImages(ctx *gin.Context) {
 // @Param limit query number false "Number of users per page" default(10)
 // @Success 200 {object} []user.GetUserResponse
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/group/{id}/user [get]
 func (h *Handler) getUsers(ctx *gin.Context) {
 	groupId := ctx.Param("id")
@@ -316,6 +324,7 @@ func (h *Handler) getUsers(ctx *gin.Context) {
 // @Param imageId path string true "Image ID"
 // @Success 204 "No Content"
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/group/{id}/image/{imageId} [delete]
 func (h *Handler) deleteImage(ctx *gin.Context) {
 	groupId := ctx.Param("id")
@@ -338,6 +347,7 @@ func (h *Handler) deleteImage(ctx *gin.Context) {
 // @Param userId path string true "User ID"
 // @Success 204 "No Content"
 // @Failure 400 {object} common.ErrorResponseDto
+// @Security BearerAuth
 // @Router /api/v1/group/{id}/user/{userId} [delete]
 func (h *Handler) deleteUser(ctx *gin.Context) {
 	groupId := ctx.Param("id")
