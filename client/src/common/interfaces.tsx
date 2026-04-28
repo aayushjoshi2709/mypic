@@ -5,6 +5,12 @@ export interface ImageInterface {
   updatedAt: string;
 }
 
+export interface ImageDataInterface{
+  images: ImageInterface[] | null;
+  currentImage: ImageInterface | null;
+  fetchImages: boolean;
+}
+
 export interface UserInterface {
   id: string;
   username: string;
@@ -13,9 +19,16 @@ export interface UserInterface {
   updatedAt: string;
 }
 
-
-export interface GroupInterface{
+export interface GroupInterface {
   id: string;
   name: string;
   imageUrl: string;
+  userData: UserInterface[],
+  imageData: ImageDataInterface
+}
+
+export interface GroupDataInterface {
+    groups: GroupInterface[] | null,
+    currentGroup: GroupInterface | null,
+    fetchGroups: boolean
 }

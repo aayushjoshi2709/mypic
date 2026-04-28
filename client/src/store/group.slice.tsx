@@ -1,13 +1,9 @@
 import { createListenerMiddleware, createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type { GroupInterface } from "../common/interfaces"
+import type { GroupDataInterface, GroupInterface } from "../common/interfaces"
 import { apiClientObj } from "../common/apiClient"
 import { routes } from "../common/routes"
 
-const initialState: {
-    groups: GroupInterface[] | null,
-    currentGroup: GroupInterface | null,
-    fetchGroups: boolean
-} = {
+const initialState: GroupDataInterface = {
     groups: null,
     currentGroup: null,
     fetchGroups: true

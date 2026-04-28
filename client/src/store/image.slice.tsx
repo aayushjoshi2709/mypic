@@ -2,16 +2,12 @@ import { createSlice, createListenerMiddleware } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { apiClientObj } from "../common/apiClient";
 import { routes } from "../common/routes";
-import type { ImageInterface } from "../common/interfaces";
+import type { ImageDataInterface, ImageInterface } from "../common/interfaces";
 
 
 
 
-const initialState: {
-  images: ImageInterface[] | null;
-  currentImage: ImageInterface | null;
-  fetchImages: boolean;
-} = {
+const initialState: ImageDataInterface = {
   images: null,
   currentImage: null,
   fetchImages: true,
