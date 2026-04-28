@@ -2,14 +2,14 @@ import { createSlice, createListenerMiddleware } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { apiClientObj } from "../common/apiClient";
 import { routes } from "../common/routes";
-import type { ImageDataInterface } from "../common/interfaces";
+import type { ImageInterface } from "../common/interfaces";
 
 
 
 
 const initialState: {
-  images: ImageDataInterface[] | null;
-  currentImage: ImageDataInterface | null;
+  images: ImageInterface[] | null;
+  currentImage: ImageInterface | null;
   fetchImages: boolean;
 } = {
   images: null,
@@ -21,7 +21,7 @@ const ImageSlice = createSlice({
   name: "image",
   initialState,
   reducers: {
-    setImages: (state, action: PayloadAction<ImageDataInterface[]>) => {
+    setImages: (state, action: PayloadAction<ImageInterface[]>) => {
       state.images = [...action.payload];
     },
     setCurrentImage: (state, action: PayloadAction<{id: string}>) =>{

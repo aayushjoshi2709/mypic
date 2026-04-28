@@ -1,11 +1,11 @@
-export interface ImageDataInterface {
+export interface ImageInterface {
   id: string;
   url: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface UserDataInterface {
+export interface UserInterface {
   id: string;
   username: string;
   email: string;
@@ -14,7 +14,7 @@ export interface UserDataInterface {
 }
 
 
-export interface GroupDataInterface{
+export interface GroupInterface{
   id: string;
   name: string;
   imageUrl: string;

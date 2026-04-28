@@ -1,11 +1,11 @@
 import { createListenerMiddleware, createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type { GroupDataInterface } from "../common/interfaces"
+import type { GroupInterface } from "../common/interfaces"
 import { apiClientObj } from "../common/apiClient"
 import { routes } from "../common/routes"
 
 const initialState: {
-    groups: GroupDataInterface[] | null,
-    currentGroup: GroupDataInterface | null,
+    groups: GroupInterface[] | null,
+    currentGroup: GroupInterface | null,
     fetchGroups: boolean
 } = {
     groups: null,
@@ -17,8 +17,7 @@ const GroupSlice = createSlice({
     name: "group",
     initialState: initialState,
     reducers: {
-        setGroups: (state, action: PayloadAction<GroupDataInterface[]>) => {
-            console.log("here we are 22")
+        setGroups: (state, action: PayloadAction<GroupInterface[]>) => {
             state.groups = [...action.payload];
         },
         setCurrentGroup: (state, action: PayloadAction<{id: string}>) =>{
@@ -48,7 +47,6 @@ groupListenerMiddleware.startListening({
   actionCreator: setFetchGroups,
   effect: async (_, listenerApi) => {
     try {
-      console.log('here we are')
       const res = await apiClientObj.get(routes.GET_ALL_GROUPS)
       listenerApi.dispatch(setGroups(res));
       listenerApi.dispatch(unsetFetchGroups());

@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
-import type { GroupDataInterface } from '../../common/interfaces'
+import type { GroupInterface } from '../../common/interfaces'
 
-const GroupCard = ({groupData}: {groupData: GroupDataInterface}) => {
+const GroupCard = ({groupData}: {groupData: GroupInterface}) => {
   return (
     <Link to={`/dashboard/groups/${groupData.id}`}>
       <div className="text-center w-fit">
