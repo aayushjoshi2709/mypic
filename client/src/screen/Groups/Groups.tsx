@@ -33,7 +33,7 @@ const Groups = () => {
             </h2>
             {
               (group.groups?.length ?? 0) > 0 && <h3 className="mb-2">
-                View them or
+                View them below or
               </h3>
             }
             <RoundedButtonSecondary text="Create new group" onClick={() => {

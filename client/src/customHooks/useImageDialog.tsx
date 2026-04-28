@@ -5,7 +5,7 @@ import { routes } from "../common/routes";
 const useImageDialog = () => {
   const [s3Key, setS3Key] = useState<string>("");
   const [originalFileName, setOriginalFileName] = useState<string>("");
-  const [uploadInProgress, setUploadInProgress] = useState<boolean>(true);
+  const [uploadInProgress, setUploadInProgress] = useState<boolean>(false);
 
   async function getPresignedUrl(name: string, type: string) {
     return await apiClientObj.post(routes.GET_PRESIGNED_URL, {

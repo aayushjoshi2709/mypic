@@ -1090,6 +1090,9 @@ const docTemplate = `{
         "group.CreateGroupRequest": {
             "type": "object",
             "properties": {
+                "imageKey": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }
@@ -1099,6 +1102,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
+                    "type": "string"
+                },
+                "imageUrl": {
                     "type": "string"
                 },
                 "name": {

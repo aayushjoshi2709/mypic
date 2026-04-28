@@ -17,12 +17,16 @@ definitions:
     type: object
   group.CreateGroupRequest:
     properties:
+      imageKey:
+        type: string
       name:
         type: string
     type: object
   group.GetGroupResponse:
     properties:
       id:
+        type: string
+      imageUrl:
         type: string
       name:
         type: string

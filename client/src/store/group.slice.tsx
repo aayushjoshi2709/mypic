@@ -1,5 +1,5 @@
 import { createListenerMiddleware, createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type { GroupDataInterface, GroupInterface } from "../common/interfaces"
+import type { GroupDataInterface, GroupInterface, ImageInterface } from "../common/interfaces"
 import { apiClientObj } from "../common/apiClient"
 import { routes } from "../common/routes"
 
@@ -17,9 +17,20 @@ const GroupSlice = createSlice({
             state.groups = [...action.payload];
         },
         setCurrentGroup: (state, action: PayloadAction<{id: string}>) =>{
+            const selectedGroup = state.groups?.find((group) => group.id === action.payload.id) || null
+
+            const currentGroup: GroupInterface = {
+                ...selectedGroup,
+                imageData: {
+                    images: null,
+                    currentImage: null,
+                    fetchImages: false
+                },
+                userData: []
+            } as GroupInterface
             const newState = {
                 ...state,
-                currentGroup: state.groups?.find((group) => group.id === action.payload.id) || null
+                currentGroup: currentGroup
             }
             return newState
         },
@@ -31,11 +42,31 @@ const GroupSlice = createSlice({
         },
         unsetFetchGroups: (state)=>{
             state.fetchGroups = false;
+        },
+        setGroupImageData: (state, action: PayloadAction<ImageInterface[]>)=>{
+            if(state.currentGroup){
+                state.currentGroup.imageData = {
+                    images: [...action.payload, ...state.currentGroup.imageData?.images??[]],
+                    currentImage: null,
+                    fetchImages: false
+                }
+            }
+        },
+        setGroupCurrentImage: (state, action: PayloadAction<{id: string}>)=>{
+            const allImages = state.currentGroup?.imageData?.images??[]
+            const currentImage = allImages.find((image)=> image.id === action.payload.id)??null;
+            if(state.currentGroup){
+                state.currentGroup.imageData = {
+                    images: allImages,
+                    currentImage: currentImage,
+                    fetchImages: false
+                }
+            }
         }
     }
 })
 
-export const {setGroups, setCurrentGroup, clearGroup, setFetchGroups, unsetFetchGroups} = GroupSlice.actions;
+export const {setGroups, setCurrentGroup, clearGroup, setFetchGroups, unsetFetchGroups, setGroupCurrentImage, setGroupImageData} = GroupSlice.actions;
 
 
 export const groupListenerMiddleware = createListenerMiddleware();

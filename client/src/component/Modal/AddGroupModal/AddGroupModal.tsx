@@ -9,6 +9,7 @@ import { clearModal } from "../../../store/modal.slice";
 import toast from "react-hot-toast";
 import useImageDialog from "../../../customHooks/useImageDialog";
 import { setFetchGroups } from "../../../store/group.slice";
+import { RoundedButtonSecondary } from "../../Button/RoundedButton";
 
 export interface DeleteModalInterface{
   heading: string,
@@ -65,23 +66,24 @@ const AddGroupModal = () => {
   return (
     modal.name == ModalNames.ADD_GROUP?
     <Modal>
-        <div className="bg-black rounded w-fit" onClick={(e) => e.stopPropagation()} >
-            <h3 className="p-2  text-white">Add new group</h3>
-            <hr className="text-white"/>
+        <div className="bg-white rounded w-fit" onClick={(e) => e.stopPropagation()} >
             <div className="p-4 px-10 mt-4 flex flex-col w-full gap-4 items-center justify-center">
-                <label htmlFor="name" className=" text-white">What you want to name your group?</label>
-                <input className="bg-white rounded p-2 w-full" type="text" id="name" value={name} onChange={(e) => setName(e.target.value)}/>
-                <div className="flex gap-2 justify-around my-4 w-full">
-                    <label htmlFor="name" className="text-white">Add group image?</label>
-                    <input type="button" className="text-white hover:border-b-1" value="Upload Image" onClick={()=>
+                <label htmlFor="name" className=" ">What you want to name your group?</label>
+                <input className="border-1 rounded p-2 w-full" type="text" id="name" value={name} onChange={(e) => setName(e.target.value)}/>
+                <div className="flex gap-2 justify-around items-center  my-4 w-full">
+                    <label htmlFor="name" className="">Add group image?</label>
+                    <RoundedButtonSecondary
+                      text="Upload"
+                      onClick={()=>
                         openFileDialog()
-                    }/>
+                      }
+                    />
                 </div>
                 {error?<p className="sm text-red-700">{error}</p>:""}
                 <input
-                className="text-white px-8 py-2 rounded bg-green-700 hover:bg-green-800 border-1 border-white"
-                disabled={uploadInProgress}
-                type="button" value={loading?"Adding Group":(uploadInProgress?"Uploading Image":"Add")} onClick={()=>{
+                  className=" px-8 py-2 rounded-full text-white bg-green-700 hover:bg-green-800 border-1 border-white"
+                  disabled={uploadInProgress}
+                  type="button" value={loading?"Adding Group":(uploadInProgress?"Uploading Image":"Add")} onClick={()=>{
                   createGroup()
                 }}/>
             </div>

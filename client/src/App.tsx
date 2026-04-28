@@ -8,6 +8,7 @@ import Upload from "./screen/Upload/Upload";
 import AuthenticatedRoutes from "./component/AuthenticatedRoutes/AuthenticatedRoutes";
 import Search from "./screen/Search/Search";
 import Groups from "./screen/Groups/Groups";
+import GroupPhotos from "./screen/GroupPhotos/GroupPhotos";
 function App() {
   return <>
     <Routes>
@@ -19,6 +20,7 @@ function App() {
         <Route path="upload" element={<Upload />} />
         <Route path="search" element={<Search />} />
         <Route path="groups" element={<Groups />} />
+        <Route path="groups/:groupId" element={<GroupPhotos />} />
       </Route>
     </Routes>
   </>

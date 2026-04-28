@@ -18,9 +18,8 @@ const Photos = () => {
   return (
     <>
     <div className="flex-1 justify-center w-full">
-      <ImageList imageData={imageData}/>
       {
-        imageData.images && imageData.images.length > 0 && (
+        imageData.images && imageData.images.length == 0 && (
         <div className="h-100 m-4 d-flex rounded-2xl content-center text-center border-2 border-dashed border-gray-400 bg-blue-100">
           <h1 className="text-4xl font-bold mb-4">No Photos Uploaded Yet</h1>
           <button
@@ -31,6 +30,7 @@ const Photos = () => {
           </button>
         </div>
       )}
+      <ImageList imageData={imageData}/>
     </div>
     </>
   );
