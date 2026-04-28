@@ -1,32 +1,26 @@
 import { useDispatch, useSelector } from "react-redux";
-import Card from "../../component/ImageCard/ImageCard";
 import type { RootState } from "../../store/store";
 import { setFetchImages } from "../../store/image.slice";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
+import ImageList from "../../component/ImageList/ImageList";
 
 const Photos = () => {
-  const image = useSelector((state: RootState) => state.image);
+  const imageData = useSelector((state: RootState) => state.image);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(()=>{
-    if(image.images == null){
+    if(imageData.images == null){
       dispatch(setFetchImages())
     }
   },
-  [image.fetchImages, image.images, dispatch])
+  [imageData.fetchImages, imageData.images, dispatch])
   return (
     <>
     <div className="flex-1 justify-center w-full">
-      {image.fetchImages ? (
-        <div>Loading...</div>
-      ) : image.images && image.images.length > 0 ? (
-        <main className="columns-3 gap-4 p-4 my-4">
-          {image.images?.map((img, idx) => (
-            <Card key={idx} imgData={img} />
-          ))}
-        </main>
-      ) : (
+      <ImageList imageData={imageData}/>
+      {
+        imageData.images && imageData.images.length > 0 && (
         <div className="h-100 m-4 d-flex rounded-2xl content-center text-center border-2 border-dashed border-gray-400 bg-blue-100">
           <h1 className="text-4xl font-bold mb-4">No Photos Uploaded Yet</h1>
           <button
