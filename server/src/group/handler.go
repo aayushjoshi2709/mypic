@@ -44,7 +44,7 @@ func (h *Handler) add(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid value for the group name"})
 	}
 
-	err = h.repos["groupRepository"].(*Repository).Add(ctx, createGroupRequest.Name)
+	err = h.repos["groupRepository"].(*Repository).Add(ctx, createGroupRequest.Name, createGroupRequest.ImageKey)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "Something went wrong"})
@@ -72,7 +72,7 @@ func (h *Handler) get(ctx *gin.Context) {
 		return
 	}
 	var getGroupResponse GetGroupResponse
-	getGroupResponse.Set(ctx, group)
+	getGroupResponse.Set(ctx, h.cloudFrontUrl, group)
 	ctx.JSON(http.StatusOK, getGroupResponse)
 }
 
@@ -109,7 +109,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 
 	for _, group := range groups {
 		var getGroupResponse GetGroupResponse
-		getGroupResponse.Set(ctx, &group)
+		getGroupResponse.Set(ctx, h.cloudFrontUrl, &group)
 		getGroupResponseArr = append(getGroupResponseArr, getGroupResponse)
 	}
 	ctx.JSON(http.StatusOK, getGroupResponseArr)

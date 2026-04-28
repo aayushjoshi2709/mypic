@@ -49,8 +49,8 @@ const ImageSlice = createSlice({
 export const { setImages, clearImage, setCurrentImage, setFetchImages, unsetFetchImages } = ImageSlice.actions;
 
 
-export const listenerMiddleware = createListenerMiddleware();
-listenerMiddleware.startListening({
+export const imageListenerMiddleware = createListenerMiddleware();
+imageListenerMiddleware.startListening({
   actionCreator: setFetchImages,
   effect: async (_, listenerApi) => {
     try {

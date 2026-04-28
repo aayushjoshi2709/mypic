@@ -7,8 +7,8 @@ import (
 
 func Routes(group *gin.RouterGroup, handler *Handler) {
 	group.Use(middleware.AuthMiddleware)
-	group.POST("/", handler.add)
-	group.GET("/", handler.getAll)
+	group.POST("", handler.add)
+	group.GET("", handler.getAll)
 	group.GET("/:id", handler.get)
 	group.DELETE("/:id", handler.delete)
 	group.POST("/:id/image", handler.addImage)

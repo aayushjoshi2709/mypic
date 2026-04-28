@@ -1,4 +1,5 @@
 export const ModalNames = {
     DELETE_MODAL: "DELETE_MODAL",
-    PREVIEW_MODAL: "PREVIEW_MODAL"
+    PREVIEW_MODAL: "PREVIEW_MODAL",
+    ADD_GROUP: "ADD_GROUP"
 }

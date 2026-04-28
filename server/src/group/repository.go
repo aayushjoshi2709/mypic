@@ -47,8 +47,9 @@ func (repository *Repository) GetById(ctx *gin.Context, groupId string) (*Group,
 			FindOne().
 			SetProjection(
 				bson.M{
-					"_id":  1,
-					"name": 1,
+					"_id":      1,
+					"name":     1,
+					"imageKey": 1,
 				},
 			),
 	).Decode(group)
@@ -68,8 +69,9 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int) ([]Group
 		},
 		options.Find().
 			SetProjection(bson.M{
-				"_id":  1,
-				"name": 1,
+				"_id":      1,
+				"name":     1,
+				"imageKey": 1,
 			}).
 			SetSort(bson.M{"created_at": 1}).
 			SetSkip(int64(limit*(page-1))).
@@ -85,14 +87,18 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int) ([]Group
 	return images, err
 }
 
-func (repository *Repository) Add(ctx *gin.Context, name string) error {
+func (repository *Repository) Add(ctx *gin.Context, name string, imageKey string) error {
 	userId, _ := ctx.Get("userId")
+
+	userIds := make([]bson.ObjectID, 0)
+	userIds = append(userIds, userId.(bson.ObjectID))
 
 	group := Group{
 		Id:        bson.NewObjectID(),
 		Name:      name,
 		createdBy: userId.(bson.ObjectID),
-		UserIds:   make([]bson.ObjectID, 0),
+		ImageKey:  imageKey,
+		UserIds:   userIds,
 		ImageIds:  make([]bson.ObjectID, 0),
 		CreatedAt: bson.NewDateTimeFromTime(time.Now()),
 		UpdatedAt: bson.NewDateTimeFromTime(time.Now()),
@@ -162,7 +168,6 @@ func (repository *Repository) AddUser(ctx *gin.Context, groupId string, userIdTo
 	return err
 }
 
-
 func (repository *Repository) RemoveImage(ctx *gin.Context, groupId string, imageId string) error {
 	userId, _ := ctx.Get("userId")
 	groupIdBson, err := bson.ObjectIDFromHex(groupId)
@@ -170,13 +175,10 @@ func (repository *Repository) RemoveImage(ctx *gin.Context, groupId string, imag
 		return err
 	}
 
-
 	imageIdBson, err := bson.ObjectIDFromHex(imageId)
 	if err != nil {
 		return err
 	}
-
-
 
 	_, err = repository.collection.UpdateOne(ctx,
 		bson.M{

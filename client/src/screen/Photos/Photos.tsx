@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import Card from "../../component/Card/Card";
+import Card from "../../component/ImageCard/ImageCard";
 import type { RootState } from "../../store/store";
 import { setFetchImages } from "../../store/image.slice";
 import { useNavigate } from "react-router";
