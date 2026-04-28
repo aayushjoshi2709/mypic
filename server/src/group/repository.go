@@ -1,6 +1,8 @@
 package group
 
 import (
+	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/aayushjoshi2709/mypic/src/utils/db"
@@ -90,13 +92,17 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int) ([]Group
 func (repository *Repository) Add(ctx *gin.Context, name string, imageKey string) error {
 	userId, _ := ctx.Get("userId")
 
+	userIdBsonObj := userId.(bson.ObjectID)
+
 	userIds := make([]bson.ObjectID, 0)
-	userIds = append(userIds, userId.(bson.ObjectID))
+	userIds = append(userIds, userIdBsonObj)
+
+	slog.Info("Creating group", "userId", userIdBsonObj.Hex())
 
 	group := Group{
 		Id:        bson.NewObjectID(),
 		Name:      name,
-		createdBy: userId.(bson.ObjectID),
+		CreatedBy: userIdBsonObj,
 		ImageKey:  imageKey,
 		UserIds:   userIds,
 		ImageIds:  make([]bson.ObjectID, 0),
@@ -133,13 +139,15 @@ func (repository *Repository) AddImage(ctx *gin.Context, groupId string, imageId
 		return err
 	}
 
+	slog.Info(fmt.Sprintf("goingt to update the group id: %s and user id: %s", groupId, userId))
+
 	_, err = repository.collection.UpdateOne(ctx,
 		bson.M{
 			"_id":       groupIdBson,
 			"createdBy": userId,
 		},
 		bson.M{
-			"$push": bson.M{
+			"$addToSet": bson.M{
 				"imageIds": imageId,
 			},
 		},
@@ -160,7 +168,7 @@ func (repository *Repository) AddUser(ctx *gin.Context, groupId string, userIdTo
 			"createdBy": userId,
 		},
 		bson.M{
-			"$push": bson.M{
+			"$addToSet": bson.M{
 				"userIds": userIdToAdd,
 			},
 		},

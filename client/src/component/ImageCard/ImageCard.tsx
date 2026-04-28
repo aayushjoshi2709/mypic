@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { routes } from "../../common/routes";
-import { faDownload, faEye, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faDownload, faEye, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { clearModal, setModal } from "../../store/modal.slice";
 import { ModalNames } from "../../common/Constants";
@@ -10,6 +10,7 @@ import { apiClientObj } from "../../common/apiClient";
 import { setCurrentImage, setFetchImages } from "../../store/image.slice";
 import toast from "react-hot-toast";
 import type { ImageInterface } from "../../common/interfaces";
+import AddImageToGroup from "../Modal/AddImageToGroupModal/AddImageToGroup";
 
 interface CardProps {
   imgData: ImageInterface
@@ -39,9 +40,18 @@ const Card = ({ imgData }: CardProps) => {
         name: ModalNames.PREVIEW_MODAL
       }));
   }
+
+  const addToGroup = (id: string) =>{
+    dispatch(setCurrentImage({id}))
+    dispatch(setModal({
+      name: ModalNames.ADD_IMAGE_TO_GROUP
+    }));
+  }
+
   return <>
     <DeleteModal/>
     <PreviewModal/>
+    <AddImageToGroup/>
     <div className="group break-inside-avoid mb-4 relative">
       <img
         className="rounded-sm w-full hover:shadow-xl min-h-[200px] h-auto block"
@@ -51,6 +61,9 @@ const Card = ({ imgData }: CardProps) => {
         <div className="flex gap-2 m-2">
             <button className="rounded p-2 bg-green-600 text-white">
               <FontAwesomeIcon icon={faDownload} />
+            </button>
+            <button className="rounded p-2 bg-blue-600 text-white"  onClick={()=> addToGroup(imgData.id)}>
+              <FontAwesomeIcon icon={faAdd} />
             </button>
             <button className="rounded p-2 bg-yellow-600 text-white" onClick={()=> previewButton(imgData.id)}>
               <FontAwesomeIcon icon={faEye}/>

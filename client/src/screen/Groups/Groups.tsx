@@ -7,9 +7,11 @@ import { useEffect } from "react";
 import { setFetchGroups } from "../../store/group.slice";
 import GroupCard from "../../component/GroupCard/GroupCard";
 import {  RoundedButtonSecondary } from "../../component/Button/RoundedButton";
+import { useNavigate } from "react-router";
 
 const Groups = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const group = useSelector((state:RootState) => state.group)
 
   useEffect(()=>{
@@ -45,7 +47,9 @@ const Groups = () => {
       
         <main className="p-8 m-4 flex flex-wrap gap-5 max-w-[calc(100%-1rem)]">
           {group.groups?.map((group)=>{
-            return <GroupCard groupData={group}/>
+            return <GroupCard groupData={group} onClick={(groupId)=>{
+              navigate(`/dashboard/groups/${groupId}`)
+            }}/>
           })}
         </main>
       </div>

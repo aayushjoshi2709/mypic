@@ -158,7 +158,7 @@ func (h *Handler) addImage(ctx *gin.Context) {
 		return
 	}
 
-	imageObj, err := h.repos["imageRepostiory"].(*image.Repository).GetById(ctx, addImageRequest.ImageId)
+	imageObj, err := h.repos["imageRepository"].(*image.Repository).GetById(ctx, addImageRequest.ImageId)
 
 	if err != nil {
 		slog.Error(fmt.Sprintf("Unable to get image with : %s", addImageRequest.ImageId), "error", err)

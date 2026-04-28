@@ -10,7 +10,7 @@ type Group struct {
 	ImageKey  string          `bson:"imageKey,omitempty"`
 	UserIds   []bson.ObjectID `bson:"userIds,omitempty"`
 	ImageIds  []bson.ObjectID `bson:"imageIds,omitempty"`
-	createdBy bson.ObjectID   `bson:"createdBy,omitempty"`
+	CreatedBy bson.ObjectID   `bson:"createdBy,omitempty"`
 	CreatedAt bson.DateTime   `bson:"createdAt,omitempty"`
 	UpdatedAt bson.DateTime   `bson:"updatedAt,omitempty"`
 }

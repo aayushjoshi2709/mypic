@@ -12,7 +12,8 @@ const endpoints = {
   GET_SINGLE_IMAGE:"/api/v1/image/",
   CREATE_GROUP:"/api/v1/group",
   GET_ALL_GROUPS:"/api/v1/group",
-  GET_GROUP_IMAGES: "/api/v1/group/{}/images"
+  GET_GROUP_IMAGES: "/api/v1/group/{}/images",
+  ADD_IMAGE_TO_GROUP: "/api/v1/group/{}/images"
 };
 
 function getFullUrl(route: string) {
@@ -32,5 +33,6 @@ export const routes = {
   GET_ALL_IMAGES: getFullUrl(endpoints.GET_ALL_IMAGES),
   GET_GROUP_IMAGES: getFullUrl(endpoints.GET_GROUP_IMAGES),
   GET_SINGLE_IMAGE:  getFullUrl(endpoints.GET_SINGLE_IMAGE),
-  GET_ALL_GROUPS: getFullUrl(endpoints.GET_ALL_GROUPS)
+  GET_ALL_GROUPS: getFullUrl(endpoints.GET_ALL_GROUPS),
+  ADD_IMAGE_TO_GROUP: getFullUrl(endpoints.ADD_IMAGE_TO_GROUP)
 };

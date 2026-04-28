@@ -1,16 +1,18 @@
-import { Link } from 'react-router'
-import type { GroupInterface } from '../../common/interfaces'
+import type { GroupListInterface } from '../../common/interfaces'
 
-const GroupCard = ({groupData}: {groupData: GroupInterface}) => {
+interface GroupCardInterface{
+  groupData: GroupListInterface,
+  onClick: (id:string) => void
+}
+
+const GroupCard = ({groupData, onClick}: GroupCardInterface) => {
   return (
-    <Link to={`/dashboard/groups/${groupData.id}`}>
-      <div className="text-center w-fit">
+      <div onClick={()=>onClick(groupData.id)} className="text-center w-fit">
           <div className="shadow w-[200px] h-[200px] rounded-full flex justify-center align-center items-center">
               <img className='w-full h-full rounded-full' src={groupData.imageUrl}/>
           </div>
           <p className='text-xl mt-2'>{groupData.name}</p>
       </div>
-    </Link>
   )
 }
 

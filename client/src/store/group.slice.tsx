@@ -46,7 +46,7 @@ const GroupSlice = createSlice({
         setGroupImageData: (state, action: PayloadAction<ImageInterface[]>)=>{
             if(state.currentGroup){
                 state.currentGroup.imageData = {
-                    images: [...action.payload, ...state.currentGroup.imageData?.images??[]],
+                    images: [...action.payload],
                     currentImage: null,
                     fetchImages: false
                 }
