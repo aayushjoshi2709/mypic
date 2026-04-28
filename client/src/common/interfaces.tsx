@@ -19,6 +19,12 @@ export interface UserInterface {
   updatedAt: string;
 }
 
+export interface GroupListInterface {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
 export interface GroupInterface {
   id: string;
   name: string;
@@ -28,7 +34,7 @@ export interface GroupInterface {
 }
 
 export interface GroupDataInterface {
-    groups: GroupInterface[] | null,
-    currentGroup: GroupInterface | null,
+    groups: GroupListInterface[] | null,
+    currentGroup: Partial<GroupInterface> | null,
     fetchGroups: boolean
 }
