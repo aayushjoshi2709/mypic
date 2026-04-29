@@ -35,6 +35,6 @@ export interface GroupInterface {
 
 export interface GroupDataInterface {
     groups: GroupListInterface[] | null,
-    currentGroup: Partial<GroupInterface> | null,
+    currentGroup: GroupInterface | null,
     fetchGroups: boolean
 }

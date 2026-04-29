@@ -9,11 +9,12 @@ const endpoints = {
   GET_PRESIGNED_URL: "/api/v1/presign",
   CREATE_IMAGE: "/api/v1/image",
   GET_ALL_IMAGES: "/api/v1/image",
-  GET_SINGLE_IMAGE:"/api/v1/image/",
-  CREATE_GROUP:"/api/v1/group",
-  GET_ALL_GROUPS:"/api/v1/group",
-  GET_GROUP_IMAGES: "/api/v1/group/{}/images",
-  ADD_IMAGE_TO_GROUP: "/api/v1/group/{}/images"
+  GET_SINGLE_IMAGE: "/api/v1/image/",
+  CREATE_GROUP: "/api/v1/group",
+  GET_ALL_GROUPS: "/api/v1/group",
+  GET_GROUP_IMAGES: "/api/v1/group/{0}/images",
+  ADD_IMAGE_TO_GROUP: "/api/v1/group/{0}/images",
+  REMOVE_IMAGE_FROM_GROUP: "/api/v1/group/{1}/images/{2}",
 };
 
 function getFullUrl(route: string) {
@@ -32,7 +33,8 @@ export const routes = {
   CREATE_GROUP: getFullUrl(endpoints.CREATE_GROUP),
   GET_ALL_IMAGES: getFullUrl(endpoints.GET_ALL_IMAGES),
   GET_GROUP_IMAGES: getFullUrl(endpoints.GET_GROUP_IMAGES),
-  GET_SINGLE_IMAGE:  getFullUrl(endpoints.GET_SINGLE_IMAGE),
+  GET_SINGLE_IMAGE: getFullUrl(endpoints.GET_SINGLE_IMAGE),
   GET_ALL_GROUPS: getFullUrl(endpoints.GET_ALL_GROUPS),
-  ADD_IMAGE_TO_GROUP: getFullUrl(endpoints.ADD_IMAGE_TO_GROUP)
+  ADD_IMAGE_TO_GROUP: getFullUrl(endpoints.ADD_IMAGE_TO_GROUP),
+  REMOVE_IMAGE_FROM_GROUP: getFullUrl(endpoints.REMOVE_IMAGE_FROM_GROUP),
 };

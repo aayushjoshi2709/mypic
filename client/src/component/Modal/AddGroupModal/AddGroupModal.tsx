@@ -11,7 +11,7 @@ import useImageDialog from "../../../customHooks/useImageDialog";
 import { setFetchGroups } from "../../../store/group.slice";
 import { RoundedButtonSecondary } from "../../Button/RoundedButton";
 
-export interface DeleteModalInterface{
+export interface DeleteModalDataInterface{
   heading: string,
   id: string,
   onSubmit: ()=>void
