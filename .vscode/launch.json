@@ -11,6 +11,16 @@
             "request": "launch",
             "mode": "debug",
             "program":"${workspaceFolder}/server/main.go"
+        },
+        {
+            "name": "Debug Vite Client",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/client",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"]
         }
     ]
 }
