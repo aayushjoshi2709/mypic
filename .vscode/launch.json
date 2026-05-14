@@ -19,7 +19,6 @@
             "cwd": "${workspaceFolder}/client",
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run", "dev"],
-            "console": "integratedTerminal",
             "skipFiles": ["<node_internals>/**"]
         }
     ]
