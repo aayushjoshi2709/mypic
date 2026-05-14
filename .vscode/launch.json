@@ -11,7 +11,7 @@
             "request": "launch",
             "mode": "debug",
             "program":"${workspaceFolder}/server/main.go",
-            "console": "integratedTerminal",
+            "console": "integratedTerminal"
         },
         {
             "name": "Debug Vite Client",
@@ -21,7 +21,7 @@
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run", "dev"],
             "skipFiles": ["<node_internals>/**"],
-            "console": "integratedTerminal",
+            "console": "integratedTerminal"
         }
     ]
 }
