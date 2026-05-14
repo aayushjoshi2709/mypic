@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"strconv"
 
 	"github.com/aayushjoshi2709/mypic/src/common"
 	"github.com/gin-gonic/gin"
@@ -56,30 +55,33 @@ func (h *Handler) get(ctx *gin.Context) {
 // @Produce json
 // @Param page query number false "Page number" default(1)
 // @Param limit query number false "Number of images per page" default(10)
-// @Success 200 {object} []GetImageResponse
+// @Success 200 {object} common.PaginatedResponseDto[GetImageResponse]
 // @Failure 400 {object} common.ErrorResponseDto
 // @Security BearerAuth
 // @Router /api/v1/image [get]
 func (h *Handler) getAll(ctx *gin.Context) {
-	page := ctx.DefaultQuery("page", "1")
-	limit := ctx.DefaultQuery("limit", "10")
-
-	pageInt, err := strconv.Atoi(page)
+	page, limit, err := common.GetPageAndLimit(ctx)
 	if err != nil {
-		slog.Error("Error converting page variable", "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for page is not valid"})
 		return
 	}
 
+	totalImages, err := h.repos["imageRepository"].(*Repository).GetCount(ctx)
+	offset := (page - 1) * limit
 
-	limitInt, err := strconv.Atoi(limit)
-	if err != nil {
-		slog.Error("Error converting limit variable", "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for limit is not valid"})
+	if offset >= totalImages && totalImages > 0 {
+		slog.Error("Invalid pagination params",
+			"page", page,
+			"limit", limit,
+		)
+
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{
+			Error: "Invalid page number or limit",
+		})
 		return
 	}
 
-	images, err := h.repos["imageRepository"].(*Repository).GetAll(ctx, pageInt, limitInt)
+	totalPages := (totalImages + limit - 1) / limit
+	images, err := h.repos["imageRepository"].(*Repository).GetAll(ctx, page, limit)
 
 	GetImageResponseArr := []GetImageResponse{}
 	for _, image := range images {
@@ -87,7 +89,10 @@ func (h *Handler) getAll(ctx *gin.Context) {
 		getImageResponse.Set(ctx, h.cloudFrontUrl, &image)
 		GetImageResponseArr = append(GetImageResponseArr, getImageResponse)
 	}
-	ctx.JSON(http.StatusOK, GetImageResponseArr)
+	PaginatedResponse := common.PaginatedResponseDto[GetImageResponse]{}
+	PaginatedResponse.Init(GetImageResponseArr, page, limit, totalPages)
+
+	ctx.JSON(http.StatusOK, PaginatedResponse)
 }
 
 // @Summary Create a new image

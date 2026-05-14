@@ -1,63 +1,89 @@
-import { createSlice, createListenerMiddleware } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { apiClientObj } from "../common/apiClient";
-import { routes } from "../common/routes";
 import type { ImageDataInterface, ImageInterface } from "../common/interfaces";
-
-
-
 
 const initialState: ImageDataInterface = {
   images: null,
   currentImage: null,
-  fetchImages: true,
+  currentPage: 0,
+  currentLimit: 10,
+  totalPages: 0,
 };
 
 const ImageSlice = createSlice({
   name: "image",
   initialState,
   reducers: {
-    setImages: (state, action: PayloadAction<ImageInterface[]>) => {
-      state.images = [...action.payload];
-    },
-    setCurrentImage: (state, action: PayloadAction<{id: string}>) =>{
-      const newState = {
-        ...state,
-        currentImage: state.images?.find((image) => image.id === action.payload.id) || null
+    appendImages: (
+      state,
+      action: PayloadAction<{
+        images: ImageInterface[];
+        arrange: "before" | "after";
+      }>,
+    ) => {
+      const { arrange, images } = action.payload;
+      if (arrange === "before") {
+        state.images = [...images, ...(state?.images ?? [])];
+        if (state.images.length > state.currentLimit * 3) {
+          state.images = state.images.slice(
+            0,
+            state.images.length - state.currentLimit,
+          );
+        }
+      } else {
+        state.images = [...(state?.images ?? []), ...images];
+        if (state.images.length > state.currentLimit * 3) {
+          state.images = state.images.slice(
+            state.currentLimit + 1,
+            state.images.length,
+          );
+        }
       }
-      return newState
+    },
+    setCurrentImage: (state, action: PayloadAction<{ id: string }>) => {
+      const newState: ImageDataInterface = {
+        ...state,
+        currentImage:
+          state.images?.find((image) => image.id === action.payload.id) || null,
+      };
+      return newState;
     },
     clearImage: () => {
       return initialState;
     },
-    setFetchImages: (state)=>{
-      state.fetchImages = true;
+
+    setTotalPages: (state, action: PayloadAction<number>) => {
+      const newState: ImageDataInterface = {
+        ...state,
+        totalPages: action.payload,
+      };
+      return newState;
     },
-    unsetFetchImages: (state)=>{
-      state.fetchImages = false;
-    }
+
+    setCurrentPage: (state, action: PayloadAction<number>) => {
+      const newState: ImageDataInterface = {
+        ...state,
+        currentPage: action.payload,
+      };
+      return newState;
+    },
+    setCurrentLimit: (state, action: PayloadAction<number>) => {
+      const newState: ImageDataInterface = {
+        ...state,
+        currentLimit: action.payload,
+      };
+      return newState;
+    },
   },
 });
 
-
-
-
-export const { setImages, clearImage, setCurrentImage, setFetchImages, unsetFetchImages } = ImageSlice.actions;
-
-
-export const imageListenerMiddleware = createListenerMiddleware();
-imageListenerMiddleware.startListening({
-  actionCreator: setFetchImages,
-  effect: async (_, listenerApi) => {
-    try {
-      const res = await apiClientObj.get(routes.GET_ALL_IMAGES)
-      listenerApi.dispatch(setImages(res));
-      listenerApi.dispatch(unsetFetchImages());
-    } catch (err) {
-      console.error(err)
-    }
-  }
-})
-
+export const {
+  appendImages,
+  clearImage,
+  setCurrentImage,
+  setCurrentPage,
+  setTotalPages,
+  setCurrentLimit,
+} = ImageSlice.actions;
 
 export default ImageSlice.reducer;

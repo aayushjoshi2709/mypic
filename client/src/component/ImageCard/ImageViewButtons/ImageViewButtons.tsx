@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { clearModal, setModal } from "../../../store/modal.slice";
 import { ImageLoadTypes, ModalNames } from "../../../common/Constants";
 import { apiClientObj } from "../../../common/apiClient";
-import { setCurrentImage, setFetchImages } from "../../../store/image.slice";
+import { setCurrentImage } from "../../../store/image.slice";
 import toast from "react-hot-toast";
 import type { ImageInterface } from "../../../common/interfaces";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,7 +24,6 @@ const ImageViewButtons = ({ imgData }: ImageViewButtonsInterface) => {
   const deleteImage = async () => {
     await apiClientObj.delete(routes.GET_SINGLE_IMAGE + imgData.id);
     dispatch(clearModal());
-    dispatch(setFetchImages());
     toast.success("Image deleted successfully");
   };
 
