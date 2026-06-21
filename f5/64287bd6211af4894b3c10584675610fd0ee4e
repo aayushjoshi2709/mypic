@@ -1,0 +1,28 @@
+client/src/customHooks/useGroups.tsx
+  h_433e0a6a1836a6 35,43-44,105-106
+client/src/screen/Groups/Groups.tsx
+  h_433e0a6a1836a6 8-9,14,17-23
+server/src/image/handler.go
+  h_433e0a6a1836a6 65-66
+client/src/component/ImageCard/GroupViewButtons/GroupViewButtons.tsx
+  h_433e0a6a1836a6 54
+client/src/component/Modal/AddImageToGroupModal/AddImageToGroup.tsx
+  h_433e0a6a1836a6 11,25-26
+server/src/group/handler.go
+  h_433e0a6a1836a6 91,93-94,98-109,112-113,121-124
+server/src/group/repository.go
+  h_433e0a6a1836a6 65,80,288-303
+client/src/screen/GroupPhotos/GroupPhotos.tsx
+  h_433e0a6a1836a6 6,14-15,18-24,26-27,29,31-32,34-39,44,49-50,63-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "f564287bd6211af4894b3c10584675610fd0ee4e",
+  "prompts": {},
+  "humans": {
+    "h_433e0a6a1836a6": {
+      "author": "aayushjoshi2709 <aayushjoshi2709@gmail.com>"
+    }
+  }
+}
