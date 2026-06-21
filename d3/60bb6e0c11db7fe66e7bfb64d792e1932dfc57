@@ -1,0 +1,22 @@
+client/src/common/interfaces.tsx
+  h_433e0a6a1836a6 41-43
+client/src/customHooks/useGroups.tsx
+  h_433e0a6a1836a6 1-102
+client/src/store/group.slice.tsx
+  h_433e0a6a1836a6 5,11-13,23-24,26-27,29-30,32-36,38-41,43,51-53,55
+client/src/customHooks/useImages.tsx
+  h_433e0a6a1836a6 42,46-48,52
+client/src/store/store.tsx
+  h_433e0a6a1836a6 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "d360bb6e0c11db7fe66e7bfb64d792e1932dfc57",
+  "prompts": {},
+  "humans": {
+    "h_433e0a6a1836a6": {
+      "author": "aayushjoshi2709 <aayushjoshi2709@gmail.com>"
+    }
+  }
+}
