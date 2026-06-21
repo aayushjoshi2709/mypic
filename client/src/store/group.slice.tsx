@@ -43,6 +43,27 @@ const GroupSlice = createSlice({
         state.currentGroup.imageData = action.payload;
       }
     },
+    setCurrentGroupImagesTotalPages: (state, action: PayloadAction<number>) => {
+      if (state.currentGroup) {
+        state.currentGroup.imageData.totalPages = action.payload;
+      }
+    },
+    setCurrentGroupImagesCurrentPage: (
+      state,
+      action: PayloadAction<number>,
+    ) => {
+      if (state.currentGroup) {
+        state.currentGroup.imageData.currentPage = action.payload;
+      }
+    },
+    setCurrentGroupImagesCurrentLimit: (
+      state,
+      action: PayloadAction<number>,
+    ) => {
+      if (state.currentGroup) {
+        state.currentGroup.imageData.currentLimit = action.payload;
+      }
+    },
   },
 });
 
@@ -53,6 +74,9 @@ export const {
   setTotalPages,
   setCurrentGroup,
   setCurrentGroupImages,
+  setCurrentGroupImagesTotalPages,
+  setCurrentGroupImagesCurrentPage,
+  setCurrentGroupImagesCurrentLimit,
 } = GroupSlice.actions;
 
 export default GroupSlice.reducer;
