@@ -1,0 +1,16 @@
+client/src/store/group.slice.tsx
+  h_433e0a6a1836a6 46-66,77-79
+client/src/customHooks/useGroups.tsx
+  h_433e0a6a1836a6 2,7-10,23-27,29-30,32,36-41,44-48,51-54,56-57,63-75,77,79,82-96,98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "1cdda37e3ae6ee16869f76316b97170a9298f9d5",
+  "prompts": {},
+  "humans": {
+    "h_433e0a6a1836a6": {
+      "author": "aayushjoshi2709 <aayushjoshi2709@gmail.com>"
+    }
+  }
+}
