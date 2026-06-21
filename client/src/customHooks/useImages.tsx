@@ -39,16 +39,17 @@ const useImages = () => {
     [totalPages, dispatch, groupId],
   );
 
-  const fetchNextPage = () => {
+  const fetchNextPage = useCallback(() => {
     if (currentPage + 1 > 0) {
       fetchImages(currentPage + 1, currentLimit, "after");
     }
-  };
-  const fetchPrevPage = () => {
+  }, [fetchImages, currentPage, currentLimit]);
+
+  const fetchPrevPage = useCallback(() => {
     if (currentPage - 1 > 0) {
       fetchImages(currentPage - 1, currentLimit, "before");
     }
-  };
+  }, [fetchImages, currentPage, currentLimit]);
 
   return {
     groupId,

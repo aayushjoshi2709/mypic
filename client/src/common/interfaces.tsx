@@ -38,5 +38,7 @@ export interface GroupInterface {
 export interface GroupDataInterface {
   groups: GroupListInterface[] | null;
   currentGroup: GroupInterface | null;
-  fetchGroups: boolean;
+  currentPage: number;
+  currentLimit: number;
+  totalPages: number | null;
 }

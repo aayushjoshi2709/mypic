@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./user.slice";
-import groupReducer, { groupListenerMiddleware } from "./group.slice";
+import groupReducer from "./group.slice";
 import imageReducer from "./image.slice";
 import modalReducer from "./modal.slice";
 export const store = configureStore({
@@ -10,8 +10,6 @@ export const store = configureStore({
     modal: modalReducer,
     group: groupReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().prepend(groupListenerMiddleware.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

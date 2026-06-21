@@ -199,7 +199,8 @@ func (h *Handler) login(ctx *gin.Context) {
 		loginUserRequest.Username,
 	)
 
-	if err != nil {
+
+	if err != nil{
 		ctx.JSON(http.StatusUnauthorized, common.ErrorResponseDto{Error: "Invalid username"})
 		slog.Error("Error fetching user by username", "error", err)
 		return
