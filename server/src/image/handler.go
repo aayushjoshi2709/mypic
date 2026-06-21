@@ -62,6 +62,8 @@ func (h *Handler) get(ctx *gin.Context) {
 func (h *Handler) getAll(ctx *gin.Context) {
 	page, limit, err := common.GetPageAndLimit(ctx)
 	if err != nil {
+		slog.Error("Error converting page and limit variables", "error", err)
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for page or limit is not valid"})
 		return
 	}
 

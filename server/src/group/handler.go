@@ -88,23 +88,29 @@ func (h *Handler) get(ctx *gin.Context) {
 // @Security BearerAuth
 // @Router /api/v1/group [get]
 func (h *Handler) getAll(ctx *gin.Context) {
-	page := ctx.DefaultQuery("page", "1")
-	limit := ctx.DefaultQuery("limit", "10")
-
-	pageInt, err := strconv.Atoi(page)
+	page, limit, err := common.GetPageAndLimit(ctx)
 	if err != nil {
-		slog.Error("Error converting page variable", "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for page is not valid"})
+		slog.Error("Error converting page and limit variables", "error", err)
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for page or limit is not valid"})
 		return
 	}
 
-	limitInt, err := strconv.Atoi(limit)
-	if err != nil {
-		slog.Error("Error converting limit variable", "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for limit is not valid"})
+	totalGroups, err := h.repos["groupRepository"].(*Repository).GetCount(ctx)
+	offset := (page - 1) * limit
+
+	if offset >= totalGroups && totalGroups > 0 {
+		slog.Error("Invalid pagination params",
+			"page", page,
+			"limit", limit,
+		)
+
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{
+			Error: "Invalid page number or limit",
+		})
 		return
 	}
-	groups, err := h.repos["groupRepository"].(*Repository).GetAll(ctx, pageInt, limitInt)
+
+	groups, err := h.repos["groupRepository"].(*Repository).GetAll(ctx, page, limit)
 	getGroupResponseArr := []GetGroupResponse{}
 
 	for _, group := range groups {
@@ -112,7 +118,10 @@ func (h *Handler) getAll(ctx *gin.Context) {
 		getGroupResponse.Set(ctx, h.cloudFrontUrl, &group)
 		getGroupResponseArr = append(getGroupResponseArr, getGroupResponse)
 	}
-	ctx.JSON(http.StatusOK, getGroupResponseArr)
+
+	PaginatedResponse := common.PaginatedResponseDto[GetGroupResponse]{}
+	PaginatedResponse.Init(getGroupResponseArr, page, limit, totalGroups)
+	ctx.JSON(http.StatusOK, PaginatedResponse)
 
 }
 

@@ -2,23 +2,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { setModal } from "../../store/modal.slice";
 import { ModalNames } from "../../common/Constants";
 import AddGroupModal from "../../component/Modal/AddGroupModal/AddGroupModal";
-import type { RootState } from "../../store/store";
-import { useEffect } from "react";
-import { setFetchGroups } from "../../store/group.slice";
 import GroupCard from "../../component/GroupCard/GroupCard";
 import { RoundedButtonSecondary } from "../../component/Button/RoundedButton";
 import { useNavigate } from "react-router";
+import useGroups from "../../customHooks/useGroups";
+import { useEffect } from "react";
 
 const Groups = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const group = useSelector((state: RootState) => state.group);
+  const { groups, fetchGroupsPrev } = useGroups();
 
   useEffect(() => {
-    if (group.groups == null) {
-      dispatch(setFetchGroups());
-    }
-  }, [dispatch, group.groups]);
+    console.log("fetchGroupsPrev");
+    const fetchData = async () => {
+      await fetchGroupsPrev();
+    };
+    fetchData();
+  }, [fetchGroupsPrev]);
+
 
   return (
     <div>
@@ -28,11 +30,11 @@ const Groups = () => {
           <div className="p-8 m-4 d-flex rounded-2xl content-center text-center border-2 border-dashed border-gray-400 bg-blue-100">
             <h1 className="text-4xl font-bold mb-4">Groups</h1>
             <h2 className="text-2xl mb-4">
-              {(group.groups?.length ?? 0) === 0
+              {(groups?.length ?? 0) === 0
                 ? "Hey, Now you can group your pictures..."
                 : "A lot of friend groups was waiting for you to visit."}
             </h2>
-            {(group.groups?.length ?? 0) > 0 && (
+            {(groups?.length ?? 0) > 0 && (
               <h3 className="mb-2">View them below or</h3>
             )}
             <RoundedButtonSecondary
@@ -48,7 +50,7 @@ const Groups = () => {
           </div>
 
           <main className="p-8 m-4 flex flex-wrap gap-5 max-w-[calc(100%-1rem)]">
-            {group.groups?.map((group) => {
+            {groups?.map((group) => {
               return (
                 <GroupCard
                   key={group.id}

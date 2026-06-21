@@ -1,15 +1,9 @@
-import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../store/store";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import ImageList from "../../component/ImageList/ImageList";
-import {
-  setCurrentGroup,
-  setFetchGroups,
-  setGroupImageData,
-} from "../../store/group.slice";
-import { apiClientObj } from "../../common/apiClient";
-import { routes } from "../../common/routes";
+import { setCurrentGroup } from "../../store/group.slice";
+import useGroups from "../../customHooks/useGroups";
 const GroupPhotos = () => {
   const params = useParams();
   const navigate = useNavigate();
@@ -17,63 +11,45 @@ const GroupPhotos = () => {
 
   const { groupId } = params;
 
-  const group = useSelector((state: RootState) => state.group);
+  const { groups, currentGroup, fetchGroupsPrev, fetchGroupImagesPrev } =
+    useGroups();
 
   useEffect(() => {
-    if (group.groups == null) {
-      dispatch(setFetchGroups());
-    }
-  }, [dispatch, group.groups]);
-
-  useEffect(() => {
-    if (group.groups && groupId && group.currentGroup?.id !== groupId) {
-      dispatch(setCurrentGroup({ id: groupId }));
-    }
-  }, [groupId, group, dispatch]);
-
-  const imageData = group.currentGroup?.imageData;
-
-  const fetchGroupImageData = useCallback(
-    async (groupId: string) => {
-      const currentGroup = group.currentGroup;
-      if (
-        currentGroup &&
-        (groupId !== currentGroup.id ||
-          (groupId == currentGroup.id &&
-            (currentGroup.imageData.images?.length ?? 0) == 0))
-      ) {
-        const res = await apiClientObj.get(
-          routes.GET_GROUP_IMAGES.replace("{0}", groupId),
-        );
-
-        dispatch(setGroupImageData(res));
+    const getGroupData = async () => {
+      if (!groups) {
+        await fetchGroupsPrev();
       }
-    },
-    [dispatch, group],
-  );
-
-  useEffect(() => {
-    if (
-      group.currentGroup &&
-      group.currentGroup.id &&
-      (group.currentGroup.imageData.fetchImages ?? false) === true
-    ) {
-      fetchGroupImageData(group.currentGroup.id);
-    }
-  }, [group, fetchGroupImageData]);
+      if (groups && currentGroup?.id !== groupId) {
+        dispatch(setCurrentGroup(groupId!));
+      }
+      if (
+        !currentGroup?.imageData.images ||
+        currentGroup?.imageData.images.length === 0
+      ) {
+        await fetchGroupImagesPrev();
+      }
+    };
+    getGroupData();
+  }, [
+    currentGroup,
+    dispatch,
+    fetchGroupImagesPrev,
+    fetchGroupsPrev,
+    groupId,
+    groups,
+  ]);
 
   return (
     <>
-      {imageData && (
+      {currentGroup?.imageData && (
         <div className="flex-1 justify-center w-full">
           <div className="m-4 p-8 d-flex rounded-2xl content-center text-center border-2 border-dashed border-gray-400 bg-blue-100">
-            <h1 className="text-4xl font-bold mb-4">
-              {group.currentGroup?.name}
-            </h1>
+            <h1 className="text-4xl font-bold mb-4">{currentGroup?.name}</h1>
 
-            {imageData.images && imageData.images.length == 0 && (
-              <h2 className="mb-2">No photos yet...</h2>
-            )}
+            {currentGroup?.imageData.images &&
+              currentGroup?.imageData.images.length == 0 && (
+                <h2 className="mb-2">No photos yet...</h2>
+              )}
             <h2> Add some photos to group form photos tab</h2>
             <button
               onClick={() => navigate("/dashboard/photos")}
@@ -83,7 +59,10 @@ const GroupPhotos = () => {
             </button>
           </div>
 
-          <ImageList imageData={imageData} isGroupView={true} />
+          <ImageList
+            images={currentGroup?.imageData.images || []}
+            isGroupView={true}
+          />
         </div>
       )}
     </>

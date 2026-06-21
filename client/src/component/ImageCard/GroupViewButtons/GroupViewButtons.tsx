@@ -11,10 +11,6 @@ import { apiClientObj } from "../../../common/apiClient";
 import toast from "react-hot-toast";
 import type { ImageInterface } from "../../../common/interfaces";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  removeCurrentGroupImage,
-  setCurrentGroupImage,
-} from "../../../store/group.slice";
 import type { RootState } from "../../../store/store";
 
 interface ImageViewButtonsInterface {
@@ -36,7 +32,6 @@ const GroupViewButtons = ({ imgData }: ImageViewButtonsInterface) => {
         ),
       );
       dispatch(clearModal());
-      dispatch(removeCurrentGroupImage({ id: imgData.id }));
       toast.success("Image removed from group successfully");
     }
   };
@@ -56,7 +51,7 @@ const GroupViewButtons = ({ imgData }: ImageViewButtonsInterface) => {
   };
 
   const previewButton = (id: string) => {
-    dispatch(setCurrentGroupImage({ id }));
+    // dispatch(setCurrentGroupImage({ id }));
     dispatch(
       setModal({
         name: ModalNames.PREVIEW_MODAL,

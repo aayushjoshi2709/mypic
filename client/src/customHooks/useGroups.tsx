@@ -32,7 +32,7 @@ const useGroups = () => {
     [dispatch],
   );
 
-  const fetchGroupNext = useCallback(async () => {
+  const fetchGroupsNext = useCallback(async () => {
     const nextPage =
       currentPage + 1 <= totalPages! ? currentPage + 1 : totalPages!;
     dispatch(setCurrentPage(nextPage));
@@ -40,8 +40,8 @@ const useGroups = () => {
     dispatch(setGroups([...(groups || []), ...response.data]));
   }, [groups, fetchGroups, currentPage, currentLimit, totalPages, dispatch]);
 
-  const fetchGroupPrev = useCallback(async () => {
-    const prevPage = currentPage - 1 > 0 ? currentPage - 1 : 0;
+  const fetchGroupsPrev = useCallback(async () => {
+    const prevPage = currentPage - 1 > 0 ? currentPage - 1 : 1;
     dispatch(setCurrentPage(prevPage));
     const response = await fetchGroups(prevPage, currentLimit);
     dispatch(setGroups([...response.data, ...(groups || [])]));
@@ -102,8 +102,8 @@ const useGroups = () => {
     currentGroup,
     fetchGroupImagesNext,
     fetchGroupImagesPrev,
-    fetchGroupNext,
-    fetchGroupPrev,
+    fetchGroupsNext,
+    fetchGroupsPrev,
   };
 };
 

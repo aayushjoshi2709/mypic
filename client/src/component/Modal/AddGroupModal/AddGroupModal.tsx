@@ -8,7 +8,6 @@ import { routes } from "../../../common/routes";
 import { clearModal } from "../../../store/modal.slice";
 import toast from "react-hot-toast";
 import useImageDialog from "../../../customHooks/useImageDialog";
-import { setFetchGroups } from "../../../store/group.slice";
 import { RoundedButtonSecondary } from "../../Button/RoundedButton";
 
 export interface DeleteModalDataInterface{
@@ -57,7 +56,6 @@ const AddGroupModal = () => {
             }
         )
         setLoading(false);
-        dispatch(setFetchGroups());
         toast.success("Group created successfully...")
         dispatch(clearModal());
     }

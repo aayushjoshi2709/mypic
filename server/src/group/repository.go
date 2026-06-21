@@ -62,7 +62,7 @@ func (repository *Repository) GetById(ctx *gin.Context, groupId string) (*Group,
 	return group, nil
 }
 
-func (repository *Repository) GetAll(ctx *gin.Context, page, limit int) ([]Group, error) {
+func (repository *Repository) GetAll(ctx *gin.Context, page, limit int64) ([]Group, error) {
 	userId, _ := ctx.Get("userId")
 	cursor, err := repository.collection.Find(
 		ctx,
@@ -76,8 +76,8 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int) ([]Group
 				"imageKey": 1,
 			}).
 			SetSort(bson.M{"created_at": 1}).
-			SetSkip(int64(limit*(page-1))).
-			SetLimit(int64(limit)),
+			SetSkip(limit*(page-1)).
+			SetLimit(limit),
 	)
 
 	if err != nil {
@@ -284,4 +284,20 @@ func (repository *Repository) GetUserIds(ctx *gin.Context, groupId string, pageI
 	).Decode(&groupObj)
 
 	return groupObj.UserIds, nil
+}
+
+func (repository *Repository) GetCount(ctx *gin.Context) (int64, error) {
+	userId, _ := ctx.Get("userId")
+
+	slog.Info("Getting count of all groups for user", "userId", userId.(bson.ObjectID).String())
+	count, err := repository.collection.CountDocuments(
+		ctx,
+		bson.M{"userId": userId},
+	)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return count, err
 }

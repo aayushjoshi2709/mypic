@@ -5,10 +5,10 @@ import { ModalNames } from "../../../common/Constants";
 import { apiClientObj } from "../../../common/apiClient";
 import GroupCard from "../../GroupCard/GroupCard";
 import { useEffect } from "react";
-import { setFetchGroups } from "../../../store/group.slice";
 import { routes } from "../../../common/routes";
 import toast from "react-hot-toast";
 import { clearModal } from "../../../store/modal.slice";
+import useGroups from "../../../customHooks/useGroups";
 
 export interface DeleteModalDataInterface {
   heading: string;
@@ -21,14 +21,9 @@ const AddGroupModal = () => {
   const currentImageId = useSelector(
     (state: RootState) => state.image.currentImage?.id,
   );
-  const group = useSelector((state: RootState) => state.group);
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (group.groups == null) {
-      dispatch(setFetchGroups());
-    }
-  }, [dispatch, group.groups]);
+  const dispatch = useDispatch();
+  const { groups } = useGroups();
 
   async function addImageToGroup(groupId: string) {
     if (currentImageId) {
@@ -55,7 +50,7 @@ const AddGroupModal = () => {
           </label>
           <hr className="text-black w-full" />
           <main className="p-4 flex flex-wrap justify-center gap-5 h-[500px] overflow-y-scroll">
-            {group.groups?.map((group) => {
+            {groups?.map((group) => {
               return (
                 <GroupCard
                   key={group.id}
