@@ -44,13 +44,15 @@ func (h *Handler) add(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "Invalid value for the group name"})
 	}
 
-	err = h.repos["groupRepository"].(*Repository).Add(ctx, createGroupRequest.Name, createGroupRequest.ImageKey)
+	group, err := h.repos["groupRepository"].(*Repository).Add(ctx, createGroupRequest.Name, createGroupRequest.ImageKey)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "Something went wrong"})
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "Group created successfully"})
+	var getGroupResponse GetGroupResponse
+	getGroupResponse.Set(ctx, h.cloudFrontUrl, group)
+	ctx.JSON(http.StatusCreated, getGroupResponse)
 }
 
 // @Summary Get an group by ID

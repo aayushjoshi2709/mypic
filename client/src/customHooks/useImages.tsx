@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import {
   appendImages,
   setCurrentLimit,
@@ -9,24 +9,16 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 import { apiClientObj } from "../common/apiClient";
 import { routes } from "../common/routes";
-
 const useImages = () => {
-  const [groupId, setGroupId] = useState<string>("");
   const { images, currentPage, currentLimit, totalPages } = useSelector(
     (state: RootState) => state.image,
   );
+  const { currentGroup } = useSelector((state: RootState) => state.group);
   const dispatch = useDispatch();
   const fetchImages = useCallback(
-    async (
-      page: number = 1,
-      limit: number = 10,
-      arrange: "before" | "after",
-    ) => {
-      if (page < 0 || (totalPages && page > totalPages)) {
-        throw Error("Page does not exist");
-      }
-
+    async (page: number = 1, limit: number = 10) => {
       let url = `${routes.GET_ALL_IMAGES}?page=${page}&limit=${limit}`;
+      const groupId = currentGroup?.id;
       if (groupId) {
         url = `${url}&groupId=${groupId}`;
       }
@@ -34,29 +26,23 @@ const useImages = () => {
       dispatch(setTotalPages(response.totalPages));
       dispatch(setCurrentPage(response.page));
       dispatch(setCurrentLimit(response.limit));
-      dispatch(appendImages({ images: response.data, arrange: arrange }));
+      dispatch(appendImages({ images: response.data }));
     },
-    [totalPages, dispatch, groupId],
+    [dispatch, currentGroup],
   );
 
   const fetchNextPage = useCallback(() => {
-    if (currentPage + 1 > 0) {
-      fetchImages(currentPage + 1, currentLimit, "after");
-    }
+    fetchImages(currentPage + 1, currentLimit);
   }, [fetchImages, currentPage, currentLimit]);
 
-  const fetchPrevPage = useCallback(() => {
-    if (currentPage - 1 > 0) {
-      fetchImages(currentPage - 1, currentLimit, "before");
-    }
-  }, [fetchImages, currentPage, currentLimit]);
+  const hasMoreImages = () => {
+    return totalPages == null || currentPage + 1 <= totalPages;
+  };
 
   return {
-    groupId,
-    setGroupId,
     fetchImages,
     fetchNextPage,
-    fetchPrevPage,
+    hasMoreImages,
     images,
   };
 };

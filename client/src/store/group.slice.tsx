@@ -1,14 +1,10 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type {
-  GroupDataInterface,
-  GroupInterface,
-  ImageDataInterface,
-} from "../common/interfaces";
+import type { GroupDataInterface, GroupInterface } from "../common/interfaces";
 
 const initialState: GroupDataInterface = {
   groups: null,
   currentGroup: null,
-  currentPage: 1,
+  currentPage: 0,
   currentLimit: 10,
   totalPages: null,
 };
@@ -35,33 +31,11 @@ const GroupSlice = createSlice({
           (group) => group.id === action.payload,
         ) as GroupInterface) || null;
     },
-    setCurrentGroupImages: (
-      state,
-      action: PayloadAction<ImageDataInterface>,
-    ) => {
-      if (state.currentGroup) {
-        state.currentGroup.imageData = action.payload;
-      }
-    },
-    setCurrentGroupImagesTotalPages: (state, action: PayloadAction<number>) => {
-      if (state.currentGroup) {
-        state.currentGroup.imageData.totalPages = action.payload;
-      }
-    },
-    setCurrentGroupImagesCurrentPage: (
-      state,
-      action: PayloadAction<number>,
-    ) => {
-      if (state.currentGroup) {
-        state.currentGroup.imageData.currentPage = action.payload;
-      }
-    },
-    setCurrentGroupImagesCurrentLimit: (
-      state,
-      action: PayloadAction<number>,
-    ) => {
-      if (state.currentGroup) {
-        state.currentGroup.imageData.currentLimit = action.payload;
+    addGroup: (state, action: PayloadAction<GroupInterface>) => {
+      if (state.groups) {
+        state.groups.concat(action.payload);
+      } else {
+        state.groups = [action.payload];
       }
     },
   },
@@ -73,10 +47,7 @@ export const {
   setCurrentLimit,
   setTotalPages,
   setCurrentGroup,
-  setCurrentGroupImages,
-  setCurrentGroupImagesTotalPages,
-  setCurrentGroupImagesCurrentPage,
-  setCurrentGroupImagesCurrentLimit,
+  addGroup,
 } = GroupSlice.actions;
 
 export default GroupSlice.reducer;

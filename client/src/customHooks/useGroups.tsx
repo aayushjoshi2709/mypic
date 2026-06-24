@@ -1,13 +1,9 @@
 import { useCallback } from "react";
-import { setTotalPages } from "../store/image.slice";
+import { setTotalPages } from "../store/group.slice";
 import {
   setCurrentPage,
   setCurrentLimit,
   setGroups,
-  setCurrentGroupImages,
-  setCurrentGroupImagesTotalPages,
-  setCurrentGroupImagesCurrentPage,
-  setCurrentGroupImagesCurrentLimit,
 } from "../store/group.slice";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store/store";
@@ -15,8 +11,9 @@ import { apiClientObj } from "../common/apiClient";
 import { routes } from "../common/routes";
 
 const useGroups = () => {
-  const { groups, totalPages, currentGroup, currentPage, currentLimit } =
-    useSelector((state: RootState) => state.group);
+  const { groups, totalPages, currentPage, currentLimit } = useSelector(
+    (state: RootState) => state.group,
+  );
   const dispatch = useDispatch();
 
   const fetchGroups = useCallback(
@@ -33,77 +30,23 @@ const useGroups = () => {
   );
 
   const fetchGroupsNext = useCallback(async () => {
-    const nextPage =
-      currentPage + 1 <= totalPages! ? currentPage + 1 : totalPages!;
+    const nextPage = currentPage + 1;
     dispatch(setCurrentPage(nextPage));
     const response = await fetchGroups(nextPage, currentLimit);
     dispatch(setGroups([...(groups || []), ...response.data]));
-  }, [groups, fetchGroups, currentPage, currentLimit, totalPages, dispatch]);
-
-  const fetchGroupsPrev = useCallback(async () => {
-    const prevPage = currentPage - 1 > 0 ? currentPage - 1 : 1;
-    dispatch(setCurrentPage(prevPage));
-    const response = await fetchGroups(prevPage, currentLimit);
-    dispatch(setGroups([...response.data, ...(groups || [])]));
   }, [groups, fetchGroups, currentPage, currentLimit, dispatch]);
 
-  const fetchGroupImages = useCallback(
-    async (page: number = 1, limit: number = 10) => {
-      const url = `${routes.GET_ALL_IMAGES}?page=${page}&limit=${limit}&groupId=${currentGroup?.id}`;
-      dispatch(setCurrentGroupImagesCurrentPage(page));
-      dispatch(setCurrentGroupImagesCurrentLimit(limit));
-      const response = await apiClientObj.get(url);
-      dispatch(setCurrentGroupImagesTotalPages(response.totalPages));
-      return response;
-    },
-    [dispatch, currentGroup?.id],
-  );
-
-  const fetchGroupImagesNext = useCallback(async () => {
-    const groupImagesPage = currentGroup?.imageData?.currentPage ?? 1;
-    const nextPage = groupImagesPage + 1;
-    if (nextPage > 0) {
-      const response = await fetchGroupImages(nextPage, currentLimit);
-      if (currentGroup?.imageData) {
-        dispatch(
-          setCurrentGroupImages({
-            ...currentGroup?.imageData,
-            images: [
-              ...(currentGroup?.imageData.images || []),
-              ...response.data,
-            ],
-          }),
-        );
-      }
-    }
-  }, [fetchGroupImages, currentLimit, currentGroup?.imageData, dispatch]);
-
-  const fetchGroupImagesPrev = useCallback(async () => {
-    const groupImagesPage = currentGroup?.imageData?.currentPage ?? 1;
-    const prevPage = groupImagesPage - 1;
-    if (prevPage > 0) {
-      const response = await fetchGroupImages(prevPage, currentLimit);
-      if (currentGroup?.imageData) {
-        dispatch(
-          setCurrentGroupImages({
-            ...currentGroup?.imageData,
-            images: [
-              ...response.data,
-              ...(currentGroup?.imageData.images || []),
-            ],
-          }),
-        );
-      }
-    }
-  }, [fetchGroupImages, currentLimit, currentGroup?.imageData, dispatch]);
+  const hasMoreGroups = () => {
+    console.log(
+      `Here are totalpage: ${totalPages} currentPage + 1: ${currentPage + 1}`,
+    );
+    return totalPages == null || currentPage + 1 <= totalPages;
+  };
 
   return {
     groups,
-    currentGroup,
-    fetchGroupImagesNext,
-    fetchGroupImagesPrev,
     fetchGroupsNext,
-    fetchGroupsPrev,
+    hasMoreGroups,
   };
 };
 

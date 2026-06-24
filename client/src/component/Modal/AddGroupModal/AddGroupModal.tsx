@@ -9,6 +9,7 @@ import { clearModal } from "../../../store/modal.slice";
 import toast from "react-hot-toast";
 import useImageDialog from "../../../customHooks/useImageDialog";
 import { RoundedButtonSecondary } from "../../Button/RoundedButton";
+import { addGroup } from "../../../store/group.slice";
 
 export interface DeleteModalDataInterface{
   heading: string,
@@ -48,14 +49,12 @@ const AddGroupModal = () => {
   async function createGroup(){
     if(validateInput()){
         setLoading(true);
-        await apiClientObj.post(
-            routes.CREATE_GROUP,
-            {
-                name: name,
-                imageKey: s3Key
-            }
-        )
+        const group = await apiClientObj.post(routes.CREATE_GROUP, {
+          name: name,
+          imageKey: s3Key,
+        });
         setLoading(false);
+        dispatch(addGroup(group));
         toast.success("Group created successfully...")
         dispatch(clearModal());
     }

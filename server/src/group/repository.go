@@ -89,7 +89,7 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int64) ([]Gro
 	return images, err
 }
 
-func (repository *Repository) Add(ctx *gin.Context, name string, imageKey string) error {
+func (repository *Repository) Add(ctx *gin.Context, name string, imageKey string) (*Group, error) {
 	userId, _ := ctx.Get("userId")
 
 	userIdBsonObj := userId.(bson.ObjectID)
@@ -111,7 +111,7 @@ func (repository *Repository) Add(ctx *gin.Context, name string, imageKey string
 	}
 
 	_, err := repository.collection.InsertOne(ctx, group)
-	return err
+	return &group, err
 }
 
 func (repository *Repository) Update() (Group, error) {

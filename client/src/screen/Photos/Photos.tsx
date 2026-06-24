@@ -1,19 +1,12 @@
 import { useNavigate } from "react-router";
 import ImageList from "../../component/ImageList/ImageList";
-import { useEffect } from "react";
 import useImages from "../../customHooks/useImages";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const Photos = () => {
   const navigate = useNavigate();
 
-  const { setGroupId, groupId, fetchImages, images } = useImages();
-
-  useEffect(() => {
-    if (!images || groupId) {
-      setGroupId("");
-      fetchImages(1, 10, "after");
-    }
-  }, [images, fetchImages, groupId, setGroupId]);
+  const { fetchNextPage, images, hasMoreImages } = useImages();
 
   return (
     <>
@@ -33,11 +26,14 @@ const Photos = () => {
             </div>
           ))}
 
-        {images ? (
-          <ImageList images={images} isGroupView={false} />
-        ) : (
-          <p>Loading...</p>
-        )}
+        <InfiniteScroll
+          dataLength={images?.length ?? 0}
+          next={fetchNextPage}
+          hasMore={hasMoreImages()}
+          loader={<p>Loading...</p>}
+        >
+          <ImageList images={images ?? []} isGroupView={false} />
+        </InfiniteScroll>
       </div>
     </>
   );

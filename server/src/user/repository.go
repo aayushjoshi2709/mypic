@@ -51,10 +51,6 @@ func (repository *Repository) GetByUsername(ctx *gin.Context, username string) (
 		return nil, err
 	}
 
-	if user != nil {
-		
-	}
-
 	return user, err
 }
 

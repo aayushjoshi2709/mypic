@@ -26,3 +26,5 @@ client/src/data
 /client/*.sln
 /client/*.sw?
 server/__debug_bin*
+client/.env
+client/.env

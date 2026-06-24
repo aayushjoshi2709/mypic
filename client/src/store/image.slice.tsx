@@ -7,7 +7,7 @@ const initialState: ImageDataInterface = {
   currentImage: null,
   currentPage: 0,
   currentLimit: 10,
-  totalPages: 0,
+  totalPages: null,
 };
 
 const ImageSlice = createSlice({
@@ -18,27 +18,9 @@ const ImageSlice = createSlice({
       state,
       action: PayloadAction<{
         images: ImageInterface[];
-        arrange: "before" | "after";
       }>,
     ) => {
-      const { arrange, images } = action.payload;
-      if (arrange === "before") {
-        state.images = [...images, ...(state?.images ?? [])];
-        if (state.images.length > state.currentLimit * 3) {
-          state.images = state.images.slice(
-            0,
-            state.images.length - state.currentLimit,
-          );
-        }
-      } else {
-        state.images = [...(state?.images ?? []), ...images];
-        if (state.images.length > state.currentLimit * 3) {
-          state.images = state.images.slice(
-            state.currentLimit + 1,
-            state.images.length,
-          );
-        }
-      }
+      state.images = [...(state?.images ?? []), ...action.payload.images];
     },
     setCurrentImage: (state, action: PayloadAction<{ id: string }>) => {
       const newState: ImageDataInterface = {

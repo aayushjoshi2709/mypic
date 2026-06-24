@@ -200,11 +200,12 @@ func (h *Handler) login(ctx *gin.Context) {
 	)
 
 
-	if err != nil{
-		ctx.JSON(http.StatusUnauthorized, common.ErrorResponseDto{Error: "Invalid username"})
+	if err != nil || user == nil{
+		ctx.JSON(http.StatusUnauthorized, common.ErrorResponseDto{Error: "Som username"})
 		slog.Error("Error fetching user by username", "error", err)
 		return
 	}
+
 
 	bcryptEncodedPassword := user.Password
 	err = encrypt.CompareHashAndPassword(bcryptEncodedPassword, loginUserRequest.Password)

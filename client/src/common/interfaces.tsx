@@ -10,7 +10,7 @@ export interface ImageDataInterface {
   currentImage: ImageInterface | null;
   currentPage: number;
   currentLimit: number;
-  totalPages: number;
+  totalPages: number | null;
 }
 
 export interface UserInterface {
@@ -32,7 +32,6 @@ export interface GroupInterface {
   name: string;
   imageUrl: string;
   userData: UserInterface[];
-  imageData: ImageDataInterface;
 }
 
 export interface GroupDataInterface {

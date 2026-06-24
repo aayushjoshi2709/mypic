@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { apiClientObj, UNAUTHORIZED_EVENT } from "../../common/apiClient";
 import { setUser } from "../../store/user.slice";
 import { routes } from "../../common/routes";
@@ -12,18 +12,19 @@ const AuthenticatedRoutes = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-
   useEffect(() => {
     const handleUnauthorized = () => navigate("/login");
     window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
     return () =>
-    window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
+      window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
   }, [navigate]);
+
+  const fetchUserData = useCallback(async () => {
+    const userData = await apiClientObj.get(routes.CURRENT_USER);
+    dispatch(setUser(userData));
+  }, [dispatch]);
+
   useEffect(() => {
-    const fetchUserData = async () => {
-      const userData = await apiClientObj.get(routes.CURRENT_USER);
-      dispatch(setUser(userData));
-    };
     if (localStorage.getItem("token") !== null) {
       if (!user) {
         fetchUserData();
@@ -31,7 +32,7 @@ const AuthenticatedRoutes = () => {
     } else {
       navigate("/login");
     }
-  }, [navigate, dispatch, user]);
+  }, [navigate, dispatch, user, fetchUserData]);
   return (
     <HeaderNavWrapper>
       <Outlet />

@@ -1,9 +1,11 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useEffect } from "react";
 import ImageList from "../../component/ImageList/ImageList";
 import { setCurrentGroup } from "../../store/group.slice";
-import useGroups from "../../customHooks/useGroups";
+import InfiniteScroll from "react-infinite-scroll-component";
+import useImages from "../../customHooks/useImages";
+import type { RootState } from "../../store/store";
 const GroupPhotos = () => {
   const params = useParams();
   const navigate = useNavigate();
@@ -11,45 +13,23 @@ const GroupPhotos = () => {
 
   const { groupId } = params;
 
-  const { groups, currentGroup, fetchGroupsPrev, fetchGroupImagesPrev } =
-    useGroups();
+  const { currentGroup } = useSelector((state: RootState) => state.group);
+  const { fetchNextPage, images, hasMoreImages } = useImages();
 
   useEffect(() => {
-    const getGroupData = async () => {
-      if (!groups) {
-        await fetchGroupsPrev();
-      }
-      if (groups && currentGroup?.id !== groupId) {
-        dispatch(setCurrentGroup(groupId!));
-      }
-      if (
-        !currentGroup?.imageData.images ||
-        currentGroup?.imageData.images.length === 0
-      ) {
-        await fetchGroupImagesPrev();
-      }
-    };
-    getGroupData();
-  }, [
-    currentGroup,
-    dispatch,
-    fetchGroupImagesPrev,
-    fetchGroupsPrev,
-    groupId,
-    groups,
-  ]);
+    if (groupId) {
+      dispatch(setCurrentGroup(groupId));
+    }
+  }, [dispatch, groupId]);
 
   return (
     <>
-      {currentGroup?.imageData && (
+      {currentGroup && (
         <div className="flex-1 justify-center w-full">
           <div className="m-4 p-8 d-flex rounded-2xl content-center text-center border-2 border-dashed border-gray-400 bg-blue-100">
             <h1 className="text-4xl font-bold mb-4">{currentGroup?.name}</h1>
 
-            {currentGroup?.imageData.images &&
-              currentGroup?.imageData.images.length == 0 && (
-                <h2 className="mb-2">No photos yet...</h2>
-              )}
+            {images?.length == 0 && <h2 className="mb-2">No photos yet...</h2>}
             <h2> Add some photos to group form photos tab</h2>
             <button
               onClick={() => navigate("/dashboard/photos")}
@@ -59,10 +39,14 @@ const GroupPhotos = () => {
             </button>
           </div>
 
-          <ImageList
-            images={currentGroup?.imageData.images || []}
-            isGroupView={true}
-          />
+          <InfiniteScroll
+            dataLength={images?.length ?? 0}
+            next={fetchNextPage}
+            hasMore={hasMoreImages()}
+            loader={<p>Loading...</p>}
+          >
+            <ImageList images={images ?? []} isGroupView={true} />
+          </InfiniteScroll>
         </div>
       )}
     </>
