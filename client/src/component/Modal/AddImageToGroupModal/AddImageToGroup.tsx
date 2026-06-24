@@ -4,7 +4,6 @@ import type { RootState } from "../../../store/store";
 import { ModalNames } from "../../../common/Constants";
 import { apiClientObj } from "../../../common/apiClient";
 import GroupCard from "../../GroupCard/GroupCard";
-import { useEffect } from "react";
 import { routes } from "../../../common/routes";
 import toast from "react-hot-toast";
 import { clearModal } from "../../../store/modal.slice";

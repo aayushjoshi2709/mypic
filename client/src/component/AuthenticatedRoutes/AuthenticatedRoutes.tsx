@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import { apiClientObj, UNAUTHORIZED_EVENT } from "../../common/apiClient";
 import { setUser } from "../../store/user.slice";
 import { routes } from "../../common/routes";

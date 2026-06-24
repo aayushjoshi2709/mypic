@@ -51,7 +51,7 @@ const GroupViewButtons = ({ imgData }: ImageViewButtonsInterface) => {
   };
 
   const previewButton = (id: string) => {
-    // dispatch(setCurrentGroupImage({ id }));
+    console.log(id);
     dispatch(
       setModal({
         name: ModalNames.PREVIEW_MODAL,
