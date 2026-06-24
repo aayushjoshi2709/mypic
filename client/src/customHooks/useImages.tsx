@@ -26,7 +26,7 @@ const useImages = () => {
       dispatch(setTotalPages(response.totalPages));
       dispatch(setCurrentPage(response.page));
       dispatch(setCurrentLimit(response.limit));
-      dispatch(appendImages({ images: response.data }));
+      dispatch(appendImages(response.data));
     },
     [dispatch, currentGroup],
   );

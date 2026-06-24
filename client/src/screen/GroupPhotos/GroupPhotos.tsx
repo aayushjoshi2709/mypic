@@ -6,19 +6,26 @@ import { setCurrentGroup } from "../../store/group.slice";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useImages from "../../customHooks/useImages";
 import type { RootState } from "../../store/store";
+import {
+  clearImages,
+  setCurrentPage,
+  setTotalPages,
+} from "../../store/image.slice";
 const GroupPhotos = () => {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { groupId } = params;
-
   const { currentGroup } = useSelector((state: RootState) => state.group);
   const { fetchNextPage, images, hasMoreImages } = useImages();
 
   useEffect(() => {
     if (groupId) {
+      dispatch(clearImages());
       dispatch(setCurrentGroup(groupId));
+      dispatch(setCurrentPage(0));
+      dispatch(setTotalPages(null));
     }
   }, [dispatch, groupId]);
 

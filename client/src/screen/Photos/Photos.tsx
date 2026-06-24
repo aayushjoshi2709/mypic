@@ -2,11 +2,27 @@ import { useNavigate } from "react-router";
 import ImageList from "../../component/ImageList/ImageList";
 import useImages from "../../customHooks/useImages";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import {
+  clearImages,
+  setCurrentPage,
+  setTotalPages,
+} from "../../store/image.slice";
+import { setCurrentGroup } from "../../store/group.slice";
 
 const Photos = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const { fetchNextPage, images, hasMoreImages } = useImages();
+
+   useEffect(() => {
+     dispatch(setCurrentGroup(null));
+     dispatch(clearImages());
+     dispatch(setCurrentPage(0));
+     dispatch(setTotalPages(null));
+   }, [dispatch]);
 
   return (
     <>

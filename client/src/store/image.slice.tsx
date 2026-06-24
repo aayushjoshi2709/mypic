@@ -14,27 +14,22 @@ const ImageSlice = createSlice({
   name: "image",
   initialState,
   reducers: {
-    appendImages: (
-      state,
-      action: PayloadAction<{
-        images: ImageInterface[];
-      }>,
-    ) => {
-      state.images = [...(state?.images ?? []), ...action.payload.images];
+    appendImages: (state, action: PayloadAction<ImageInterface[]>) => {
+      state.images = [...(state?.images ?? []), ...action.payload];
     },
-    setCurrentImage: (state, action: PayloadAction<{ id: string }>) => {
+    setCurrentImage: (state, action: PayloadAction<string>) => {
       const newState: ImageDataInterface = {
         ...state,
         currentImage:
-          state.images?.find((image) => image.id === action.payload.id) || null,
+          state.images?.find((image) => image.id === action.payload) || null,
       };
       return newState;
     },
-    clearImage: () => {
+    clearImages: () => {
       return initialState;
     },
 
-    setTotalPages: (state, action: PayloadAction<number>) => {
+    setTotalPages: (state, action: PayloadAction<number | null>) => {
       const newState: ImageDataInterface = {
         ...state,
         totalPages: action.payload,
@@ -61,7 +56,7 @@ const ImageSlice = createSlice({
 
 export const {
   appendImages,
-  clearImage,
+  clearImages,
   setCurrentImage,
   setCurrentPage,
   setTotalPages,

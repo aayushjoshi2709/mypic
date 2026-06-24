@@ -45,13 +45,19 @@ func (repository *Repository) GetById(ctx *gin.Context, id string) (*Image, erro
 	return image, err
 }
 
-func (repository *Repository) GetAll(ctx *gin.Context, page, limit int64) ([]Image, error) {
+func (repository *Repository) GetAll(ctx *gin.Context, groupId string, page, limit int64) ([]Image, error) {
 	userId, _ := ctx.Get("userId")
+
+	filters := bson.M{"userId": userId}
+
+	if groupId != "" {
+		filters["groupId"] = groupId
+	}
 
 	slog.Info("Getting all images for user", "userId", userId.(bson.ObjectID).String(), "page", page, "limit", limit)
 	cursor, err := repository.collection.Find(
 		ctx,
-		bson.M{"userId": userId},
+		filters,
 		options.
 			Find().
 			SetSort(bson.M{"created_at": 1}).
@@ -68,13 +74,19 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int64) ([]Ima
 	return images, err
 }
 
-func (repository *Repository) GetCount(ctx *gin.Context) (int64, error) {
+func (repository *Repository) GetCount(ctx *gin.Context, groupId string) (int64, error) {
 	userId, _ := ctx.Get("userId")
+
+	filters := bson.M{"userId": userId}
+
+	if groupId != "" {
+		filters["groupId"] = groupId
+	}
 
 	slog.Info("Getting count of all images for user", "userId", userId.(bson.ObjectID).String())
 	count, err := repository.collection.CountDocuments(
 		ctx,
-		bson.M{"userId": userId},
+		filters,
 	)
 
 	if err != nil {

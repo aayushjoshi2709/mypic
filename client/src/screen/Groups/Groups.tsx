@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setModal } from "../../store/modal.slice";
 import { ModalNames } from "../../common/Constants";
 import AddGroupModal from "../../component/Modal/AddGroupModal/AddGroupModal";

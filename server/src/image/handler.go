@@ -61,13 +61,15 @@ func (h *Handler) get(ctx *gin.Context) {
 // @Router /api/v1/image [get]
 func (h *Handler) getAll(ctx *gin.Context) {
 	page, limit, err := common.GetPageAndLimit(ctx)
+	
 	if err != nil {
 		slog.Error("Error converting page and limit variables", "error", err)
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for page or limit is not valid"})
 		return
 	}
 
-	totalImages, err := h.repos["imageRepository"].(*Repository).GetCount(ctx)
+	groupId := ctx.Query("groupId")
+	totalImages, err := h.repos["imageRepository"].(*Repository).GetCount(ctx, groupId)
 	offset := (page - 1) * limit
 
 	if offset >= totalImages && totalImages > 0 {
@@ -83,7 +85,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 	}
 
 	totalPages := (totalImages + limit - 1) / limit
-	images, err := h.repos["imageRepository"].(*Repository).GetAll(ctx, page, limit)
+	images, err := h.repos["imageRepository"].(*Repository).GetAll(ctx, groupId, page, limit)
 
 	GetImageResponseArr := []GetImageResponse{}
 	for _, image := range images {

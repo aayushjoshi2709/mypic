@@ -42,7 +42,7 @@ const ImageViewButtons = ({ imgData }: ImageViewButtonsInterface) => {
   };
 
   const previewButton = (id: string) => {
-    dispatch(setCurrentImage({ id }));
+    dispatch(setCurrentImage(id));
     dispatch(
       setModal({
         name: ModalNames.PREVIEW_MODAL,
@@ -54,7 +54,7 @@ const ImageViewButtons = ({ imgData }: ImageViewButtonsInterface) => {
   };
 
   const addToGroup = (id: string) => {
-    dispatch(setCurrentImage({ id }));
+    dispatch(setCurrentImage(id));
     dispatch(
       setModal({
         name: ModalNames.ADD_IMAGE_TO_GROUP,
