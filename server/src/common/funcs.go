@@ -22,5 +22,6 @@ func GetPageAndLimit(ctx *gin.Context) (int64, int64, error) {
 		ctx.JSON(http.StatusBadRequest, ErrorResponseDto{Error: "The value provided for limit is not valid"})
 		return 0, 0, err
 	}
+	limitInt = min(limitInt, 50)
 	return int64(pageInt), int64(limitInt), nil
 }
