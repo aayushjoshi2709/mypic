@@ -22,7 +22,7 @@ const GroupSlice = createSlice({
     setCurrentLimit: (state, action: PayloadAction<number>) => {
       state.currentLimit = action.payload;
     },
-    setTotalPages: (state, action: PayloadAction<number>) => {
+    setTotalPages: (state, action: PayloadAction<number | null>) => {
       state.totalPages = action.payload;
     },
     setCurrentGroup: (state, action: PayloadAction<string | null>) => {
@@ -30,6 +30,9 @@ const GroupSlice = createSlice({
         (state.groups?.find(
           (group) => group.id === action.payload,
         ) as GroupInterface) || null;
+    },
+    clearGroups: () => {
+      return initialState;
     },
     addGroup: (state, action: PayloadAction<GroupInterface>) => {
       if (state.groups) {
@@ -48,6 +51,7 @@ export const {
   setTotalPages,
   setCurrentGroup,
   addGroup,
+  clearGroups,
 } = GroupSlice.actions;
 
 export default GroupSlice.reducer;

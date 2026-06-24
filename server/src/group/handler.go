@@ -115,6 +115,8 @@ func (h *Handler) getAll(ctx *gin.Context) {
 	groups, err := h.repos["groupRepository"].(*Repository).GetAll(ctx, page, limit)
 	getGroupResponseArr := []GetGroupResponse{}
 
+	totalPages := (totalGroups + limit - 1) / limit
+
 	for _, group := range groups {
 		var getGroupResponse GetGroupResponse
 		getGroupResponse.Set(ctx, h.cloudFrontUrl, &group)
@@ -122,7 +124,7 @@ func (h *Handler) getAll(ctx *gin.Context) {
 	}
 
 	PaginatedResponse := common.PaginatedResponseDto[GetGroupResponse]{}
-	PaginatedResponse.Init(getGroupResponseArr, page, limit, totalGroups)
+	PaginatedResponse.Init(getGroupResponseArr, page, limit, totalPages)
 	ctx.JSON(http.StatusOK, PaginatedResponse)
 
 }

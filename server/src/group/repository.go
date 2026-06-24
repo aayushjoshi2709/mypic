@@ -84,9 +84,9 @@ func (repository *Repository) GetAll(ctx *gin.Context, page, limit int64) ([]Gro
 		return nil, err
 	}
 
-	images := []Group{}
-	err = cursor.All(ctx, &images)
-	return images, err
+	groups := []Group{}
+	err = cursor.All(ctx, &groups)
+	return groups, err
 }
 
 func (repository *Repository) Add(ctx *gin.Context, name string, imageKey string) (*Group, error) {
@@ -292,7 +292,9 @@ func (repository *Repository) GetCount(ctx *gin.Context) (int64, error) {
 	slog.Info("Getting count of all groups for user", "userId", userId.(bson.ObjectID).String())
 	count, err := repository.collection.CountDocuments(
 		ctx,
-		bson.M{"userId": userId},
+		bson.M{
+			"userIds": userId,
+		},
 	)
 
 	if err != nil {

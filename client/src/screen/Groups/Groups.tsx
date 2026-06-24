@@ -7,11 +7,24 @@ import { RoundedButtonSecondary } from "../../component/Button/RoundedButton";
 import { useNavigate } from "react-router";
 import useGroups from "../../customHooks/useGroups";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useEffect } from "react";
+import {
+  setCurrentPage,
+  setTotalPages,
+  clearGroups,
+} from "../../store/group.slice";
 
 const Groups = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { groups, fetchGroupsNext, hasMoreGroups } = useGroups();
+
+  useEffect(() => {
+    dispatch(clearGroups());
+    dispatch(setCurrentPage(0));
+    dispatch(setTotalPages(null));
+  }, [dispatch]);
+
   return (
     <div>
       <AddGroupModal />
@@ -39,13 +52,13 @@ const Groups = () => {
             />
           </div>
 
-          <main className="p-8 m-4 flex flex-wrap gap-5 max-w-[calc(100%-1rem)]">
-            <InfiniteScroll
-              dataLength={groups?.length ?? 0}
-              next={fetchGroupsNext}
-              hasMore={hasMoreGroups()}
-              loader={<p>Loading...</p>}
-            >
+          <InfiniteScroll
+            dataLength={groups?.length ?? 0}
+            next={fetchGroupsNext}
+            hasMore={hasMoreGroups()}
+            loader={<p>Loading...</p>}
+          >
+            <main className="p-8 m-4 flex flex-wrap gap-5 max-w-[calc(100%-1rem)]">
               {groups?.map((group) => {
                 return (
                   <GroupCard
@@ -57,8 +70,8 @@ const Groups = () => {
                   />
                 );
               })}
-            </InfiniteScroll>
-          </main>
+            </main>
+          </InfiniteScroll>
         </div>
       }
     </div>
