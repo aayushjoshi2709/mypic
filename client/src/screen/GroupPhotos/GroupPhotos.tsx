@@ -18,16 +18,18 @@ const GroupPhotos = () => {
 
   const { groupId } = params;
   const { currentGroup } = useSelector((state: RootState) => state.group);
-  const { fetchNextPage, images, hasMoreImages } = useImages();
+  const { fetchNextGroupPage, images, hasMoreImages } = useImages();
 
   useEffect(() => {
+     console.log("effect fired", groupId);
     if (groupId) {
-      dispatch(clearImages());
       dispatch(setCurrentGroup(groupId));
+      dispatch(clearImages());
       dispatch(setCurrentPage(0));
       dispatch(setTotalPages(null));
     }
   }, [dispatch, groupId]);
+
 
   return (
     <>
@@ -48,7 +50,7 @@ const GroupPhotos = () => {
 
           <InfiniteScroll
             dataLength={images?.length ?? 0}
-            next={fetchNextPage}
+            next={fetchNextGroupPage}
             hasMore={hasMoreImages()}
             loader={<p>Loading...</p>}
           >

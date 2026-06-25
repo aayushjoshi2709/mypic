@@ -228,7 +228,7 @@ func (repository *Repository) RemoveUser(ctx *gin.Context, groupId string, userI
 	return err
 }
 
-func (repository *Repository) GetImageIds(ctx *gin.Context, groupId string, pageInt, limitInt int) ([]bson.ObjectID, error) {
+func (repository *Repository) GetImageIds(ctx *gin.Context, groupId string, pageInt, limitInt int64) ([]bson.ObjectID, error) {
 	userId, _ := ctx.Get("userId")
 	groupIdBson, err := bson.ObjectIDFromHex(groupId)
 	if err != nil {
@@ -246,7 +246,7 @@ func (repository *Repository) GetImageIds(ctx *gin.Context, groupId string, page
 		},
 		options.FindOne().SetProjection(bson.M{
 			"imageIds": bson.M{
-				"$slice": []int{
+				"$slice": []int64{
 					(pageInt - 1) * limitInt,
 					limitInt,
 				},
@@ -255,6 +255,49 @@ func (repository *Repository) GetImageIds(ctx *gin.Context, groupId string, page
 	).Decode(&groupObj)
 
 	return groupObj.ImageIds, nil
+}
+
+func (repository *Repository) GetImageCount(
+    ctx *gin.Context,
+    groupId string,
+) (int64, error) {
+    userId, _ := ctx.Get("userId")
+
+    groupIdBson, err := bson.ObjectIDFromHex(groupId)
+    if err != nil {
+        return 0, err
+    }
+
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: bson.M{
+			"_id":     groupIdBson,
+			"userIds": userId,
+		}}},
+		bson.D{{Key: "$project", Value: bson.M{
+			"count": bson.M{
+				"$size": "$imageIds",
+			},
+		}}},
+	}
+
+    cursor, err := repository.collection.Aggregate(ctx, pipeline)
+    if err != nil {
+        return 0, err
+    }
+
+    var result []struct {
+        Count int64 `bson:"count"`
+    }
+
+    if err := cursor.All(ctx, &result); err != nil {
+        return 0, err
+    }
+
+    if len(result) == 0 {
+        return 0, mongo.ErrNoDocuments
+    }
+
+    return result[0].Count, nil
 }
 
 func (repository *Repository) GetUserIds(ctx *gin.Context, groupId string, pageInt, limitInt int) ([]bson.ObjectID, error) {

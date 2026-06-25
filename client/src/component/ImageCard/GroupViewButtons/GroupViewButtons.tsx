@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import type { ImageInterface } from "../../../common/interfaces";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { RootState } from "../../../store/store";
+import { setCurrentImage } from "../../../store/image.slice";
 
 interface ImageViewButtonsInterface {
   imgData: ImageInterface;
@@ -51,13 +52,10 @@ const GroupViewButtons = ({ imgData }: ImageViewButtonsInterface) => {
   };
 
   const previewButton = (id: string) => {
-    console.log(id);
+    dispatch(setCurrentImage(id));
     dispatch(
       setModal({
         name: ModalNames.PREVIEW_MODAL,
-        data: {
-          type: ImageLoadTypes.GROUP,
-        },
       }),
     );
   };

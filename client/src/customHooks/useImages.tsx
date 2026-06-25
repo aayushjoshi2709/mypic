@@ -16,24 +16,26 @@ const useImages = () => {
   const { currentGroup } = useSelector((state: RootState) => state.group);
   const dispatch = useDispatch();
   const fetchImages = useCallback(
-    async (page: number = 1, limit: number = 10) => {
-      let url = `${routes.GET_ALL_IMAGES}?page=${page}&limit=${limit}`;
-      const groupId = currentGroup?.id;
-      if (groupId) {
-        url = `${url}&groupId=${groupId}`;
-      }
+    async (url: string) => {
       const response = await apiClientObj.get(url);
       dispatch(setTotalPages(response.totalPages));
       dispatch(setCurrentPage(response.page));
       dispatch(setCurrentLimit(response.limit));
       dispatch(appendImages(response.data));
     },
-    [dispatch, currentGroup],
+    [dispatch],
   );
 
   const fetchNextPage = useCallback(() => {
-    fetchImages(currentPage + 1, currentLimit);
+    const url = `${routes.GET_ALL_IMAGES}?page=${currentPage + 1}&limit=${currentLimit}`;
+    fetchImages(url);
   }, [fetchImages, currentPage, currentLimit]);
+
+  const fetchNextGroupPage = useCallback(() => {
+    const groupId = currentGroup?.id ?? "";
+    const url = `${routes.GET_GROUP_IMAGES.replace("{0}", groupId)}?page=${currentPage + 1}&limit=${currentLimit}`;
+    fetchImages(url);
+  }, [currentGroup?.id, currentPage, currentLimit, fetchImages]);
 
   const hasMoreImages = () => {
     return totalPages == null || currentPage + 1 <= totalPages;
@@ -43,6 +45,7 @@ const useImages = () => {
     fetchImages,
     fetchNextPage,
     hasMoreImages,
+    fetchNextGroupPage,
     images,
   };
 };

@@ -243,27 +243,33 @@ func (h *Handler) addUser(ctx *gin.Context) {
 // @Success 200 {object} []image.GetImageResponse
 // @Failure 400 {object} common.ErrorResponseDto
 // @Security BearerAuth
-// @Router /api/v1/group/{id}/image [get]
+// @Router /api/v1/group/{id}/images [get]
 func (h *Handler) getImages(ctx *gin.Context) {
 	groupId := ctx.Param("id")
-	page := ctx.DefaultQuery("page", "1")
-	limit := ctx.DefaultQuery("limit", "10")
+	page, limit, err := common.GetPageAndLimit(ctx)
 
-	pageInt, err := strconv.Atoi(page)
 	if err != nil {
-		slog.Error("Error converting page variable", "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for page is not valid"})
+		slog.Error("Error converting page and limit variables", "error", err)
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for page or limit is not valid"})
 		return
 	}
 
-	limitInt, err := strconv.Atoi(limit)
-	if err != nil {
-		slog.Error("Error converting limit variable", "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "The value provided for limit is not valid"})
+	totalImages, err := h.repos["groupRepository"].(*Repository).GetImageCount(ctx, groupId)
+	offset := (page - 1) * limit
+
+	if offset >= totalImages && totalImages > 0 {
+		slog.Error("Invalid pagination params",
+			"page", page,
+			"limit", limit,
+		)
+
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{
+			Error: "Invalid page number or limit",
+		})
 		return
 	}
 
-	imageIds, err := h.repos["groupRepository"].(*Repository).GetImageIds(ctx, groupId, pageInt, limitInt)
+	imageIds, err := h.repos["groupRepository"].(*Repository).GetImageIds(ctx, groupId, page, limit)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Unable to get images for groupId : %s", groupId), "error", err)
 		ctx.JSON(http.StatusInternalServerError, common.ErrorResponseDto{Error: "Unable to images for the group"})
@@ -277,8 +283,13 @@ func (h *Handler) getImages(ctx *gin.Context) {
 		getImageResponse.Set(ctx, h.cloudFrontUrl, &imageObj)
 		getImageResponseArr = append(getImageResponseArr, getImageResponse)
 	}
-	ctx.JSON(http.StatusOK, getImageResponseArr)
 
+	totalPages := (totalImages + limit - 1) / limit
+
+	PaginatedResponse := common.PaginatedResponseDto[image.GetImageResponse]{}
+	PaginatedResponse.Init(getImageResponseArr, page, limit, totalPages)
+
+	ctx.JSON(http.StatusOK, PaginatedResponse)
 }
 
 // @Summary Get all users of the group
