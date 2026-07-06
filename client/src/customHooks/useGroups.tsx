@@ -1,5 +1,5 @@
-import { useCallback } from "react";
-import { setTotalPages } from "../store/group.slice";
+import { useCallback, useMemo } from "react";
+import { setCurrentGroup, setTotalPages } from "../store/group.slice";
 import {
   setCurrentPage,
   setCurrentLimit,
@@ -36,17 +36,22 @@ const useGroups = () => {
     dispatch(setGroups([...(groups || []), ...response.data]));
   }, [groups, fetchGroups, currentPage, currentLimit, dispatch]);
 
-  const hasMoreGroups = () => {
-    console.log(
-      `Here are totalpage: ${totalPages} currentPage + 1: ${currentPage + 1}`,
-    );
+  const hasMoreGroups = useMemo(() => {
     return totalPages == null || currentPage + 1 <= totalPages;
+  }, [currentPage, totalPages]);
+
+  const fetchAndSetCurrentGroup = async (groupId: string) => {
+    const groupDetails = await apiClientObj.get(
+      routes.GET_GROUP_DETAILS.replace("{0}", groupId),
+    );
+    dispatch(setCurrentGroup(groupDetails));
   };
 
   return {
     groups,
     fetchGroupsNext,
     hasMoreGroups,
+    fetchAndSetCurrentGroup,
   };
 };
 

@@ -4,6 +4,7 @@ import type { ImageInterface } from "../../common/interfaces";
 import AddImageToGroup from "../Modal/AddImageToGroupModal/AddImageToGroup";
 import GroupViewButtons from "./GroupViewButtons/GroupViewButtons";
 import ImageViewButtons from "./ImageViewButtons/ImageViewButtons";
+import { memo } from "react";
 
 interface CardProps {
   imgData: ImageInterface;
@@ -33,4 +34,4 @@ const Card = ({ imgData, isGroupView }: CardProps) => {
   );
 };
 
-export default Card;
+export default memo(Card);

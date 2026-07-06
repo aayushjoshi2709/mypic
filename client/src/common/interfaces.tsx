@@ -1,6 +1,7 @@
 export interface ImageInterface {
   id: string;
   url: string;
+  originalName: string;
   createdAt: string;
   updatedAt: string;
 }

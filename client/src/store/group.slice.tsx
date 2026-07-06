@@ -25,11 +25,8 @@ const GroupSlice = createSlice({
     setTotalPages: (state, action: PayloadAction<number | null>) => {
       state.totalPages = action.payload;
     },
-    setCurrentGroup: (state, action: PayloadAction<string | null>) => {
-      state.currentGroup =
-        (state.groups?.find(
-          (group) => group.id === action.payload,
-        ) as GroupInterface) || null;
+    setCurrentGroup: (state, action: PayloadAction<GroupInterface | null>) => {
+      state.currentGroup = action.payload;
     },
     clearGroups: () => {
       return initialState;

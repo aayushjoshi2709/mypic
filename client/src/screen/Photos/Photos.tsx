@@ -45,7 +45,7 @@ const Photos = () => {
         <InfiniteScroll
           dataLength={images?.length ?? 0}
           next={fetchNextPage}
-          hasMore={hasMoreImages()}
+          hasMore={hasMoreImages}
           loader={<p>Loading...</p>}
         >
           <ImageList images={images ?? []} isGroupView={false} />

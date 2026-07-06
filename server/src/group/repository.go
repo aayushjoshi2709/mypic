@@ -42,7 +42,7 @@ func (repository *Repository) GetById(ctx *gin.Context, groupId string) (*Group,
 	group := &Group{}
 
 	err = repository.collection.FindOne(ctx, bson.M{
-		"id":      groupIdBson,
+		"_id":      groupIdBson,
 		"userIds": userId,
 	},
 		options.

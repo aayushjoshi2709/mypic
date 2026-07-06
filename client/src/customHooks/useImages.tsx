@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   appendImages,
   setCurrentLimit,
@@ -33,13 +33,15 @@ const useImages = () => {
 
   const fetchNextGroupPage = useCallback(() => {
     const groupId = currentGroup?.id ?? "";
+    if (!groupId) return;
     const url = `${routes.GET_GROUP_IMAGES.replace("{0}", groupId)}?page=${currentPage + 1}&limit=${currentLimit}`;
     fetchImages(url);
   }, [currentGroup?.id, currentPage, currentLimit, fetchImages]);
 
-  const hasMoreImages = () => {
-    return totalPages == null || currentPage + 1 <= totalPages;
-  };
+  const hasMoreImages = useMemo(() => {
+    if (totalPages === null) return true;
+    return currentPage < totalPages;
+  }, [currentPage, totalPages]);
 
   return {
     fetchImages,

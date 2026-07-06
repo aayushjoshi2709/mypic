@@ -70,7 +70,7 @@ func (h *Handler) get(ctx *gin.Context) {
 	group, err := h.repos["groupRepository"].(*Repository).GetById(ctx, id)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error getting group with id: %s", id), "error", err)
-		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while getting the image"})
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponseDto{Error: "An error occurred while getting the group information"})
 		return
 	}
 	var getGroupResponse GetGroupResponse

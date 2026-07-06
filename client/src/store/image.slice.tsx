@@ -15,7 +15,11 @@ const ImageSlice = createSlice({
   initialState,
   reducers: {
     appendImages: (state, action: PayloadAction<ImageInterface[]>) => {
-      state.images = [...(state?.images ?? []), ...action.payload];
+     const newState: ImageDataInterface = {
+       ...state,
+       images: [...(state?.images ?? []), ...action.payload],
+     };
+     return newState;
     },
     setCurrentImage: (state, action: PayloadAction<string>) => {
       const newState: ImageDataInterface = {

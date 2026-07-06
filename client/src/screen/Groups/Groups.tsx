@@ -54,8 +54,8 @@ const Groups = () => {
 
           <InfiniteScroll
             dataLength={groups?.length ?? 0}
-            next={fetchGroupsNext}
-            hasMore={hasMoreGroups()}
+            next={async () => await fetchGroupsNext()}
+            hasMore={hasMoreGroups}
             loader={<p>Loading...</p>}
           >
             <main className="p-8 m-4 flex flex-wrap gap-5 max-w-[calc(100%-1rem)]">

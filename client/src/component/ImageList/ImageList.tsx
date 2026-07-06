@@ -1,5 +1,6 @@
 import type { ImageInterface } from "../../common/interfaces";
 import Card from "../ImageCard/ImageCard";
+import { memo } from "react";
 
 interface ImageListInterface {
   images: ImageInterface[];
@@ -20,4 +21,4 @@ const ImageList = ({ images, isGroupView }: ImageListInterface) => {
   );
 };
 
-export default ImageList;
+export default memo(ImageList);
