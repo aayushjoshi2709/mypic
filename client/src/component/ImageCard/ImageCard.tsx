@@ -19,8 +19,9 @@ const Card = ({ imgData, isGroupView }: CardProps) => {
       <AddImageToGroup />
       <div className="group break-inside-avoid mb-4 relative">
         <img
-          className="rounded-sm w-full hover:shadow-xl min-h-[200px] h-auto block"
+          className="rounded-sm w-full hover:shadow-xl min-h-50 h-auto block"
           src={imgData.url}
+          alt={"Image for " + imgData.originalName}
         />
         <div className="absolute bottom-0 right-0 hidden group-hover:flex w-full bg-black/60 justify-end">
           {isGroupView ? (

@@ -66,7 +66,7 @@ const AddGroupModal = () => {
         <div className="bg-white rounded w-fit" onClick={(e) => e.stopPropagation()} >
             <div className="p-4 px-10 mt-4 flex flex-col w-full gap-4 items-center justify-center">
                 <label htmlFor="name" className=" ">What you want to name your group?</label>
-                <input className="border-1 rounded p-2 w-full" type="text" id="name" value={name} onChange={(e) => setName(e.target.value)}/>
+                <input className="border rounded p-2 w-full" type="text" id="name" value={name} onChange={(e) => setName(e.target.value)}/>
                 <div className="flex gap-2 justify-around items-center  my-4 w-full">
                     <label htmlFor="name" className="">Add group image?</label>
                     <RoundedButtonSecondary
@@ -78,7 +78,7 @@ const AddGroupModal = () => {
                 </div>
                 {error?<p className="sm text-red-700">{error}</p>:""}
                 <input
-                  className=" px-8 py-2 rounded-full text-white bg-green-700 hover:bg-green-800 border-1 border-white"
+                  className=" px-8 py-2 rounded-full text-white bg-green-700 hover:bg-green-800 border border-white"
                   disabled={uploadInProgress}
                   type="button" value={loading?"Adding Group":(uploadInProgress?"Uploading Image":"Add")} onClick={()=>{
                   createGroup()

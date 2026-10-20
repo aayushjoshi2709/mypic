@@ -33,7 +33,7 @@ const GroupPhotos = () => {
       fetchGroupDetails(groupId);
       setIsLoading(false);
     }
-  }, []);
+  }, [dispatch, fetchAndSetCurrentGroup, params]);
 
   return (
     <>
